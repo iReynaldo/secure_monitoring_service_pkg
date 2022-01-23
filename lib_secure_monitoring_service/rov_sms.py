@@ -12,6 +12,14 @@ class ROVSMS(ROVPPV1SimpleAS):
 
     trusted_server = TrustedServer()
 
+    def __init__(self, *args, reset_trusted_server=True, **kwargs):
+        """When everything is being reset, reset the trust server also"""
+
+        # At the end of the graphing, everything should be reset
+        if reset_trusted_server:
+            self.trusted_server.__init__()
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
     def recieve_ann(self, ann: Ann, *args, **kwargs):
         """Recieves ann and reports it"""
 

@@ -6,20 +6,27 @@ from lib_bgp_simulator import Announcement as Ann
 from .report import Report
 
 
+
 class TrustedServer:
-    __slots__ = ("raw_data", "recommendations")
+
+    __slots__ = ("_raw_data", "_recommendations", "_make_recs")
 
     def __init__(self):
         # {prefix: ann_list}
         self._raw_data: Dict[str, List[Ann]] =\
             defaultdict(list)
         self._recommendations: Dict[str, List[int]] = defaultdict(list)
+        self.make_recs = False
 
     def rec_blackhole(subprefix: str, as_path: Tuple[int, ...]) -> bool:
         """Recommends a blackhole for a subprefix"""
 
-        
-        raise NotImplementedError
+        # Checks if the suspect is in the given as_path
+        for suspect in self._recommendations.get(subprefix, []):
+            if suspect in as_path:
+                return True
+        return False
+
 
     def recieve_report(self, unprocessed_invalid_ann):
         """Process report about an invalid ann"""
@@ -29,10 +36,10 @@ class TrustedServer:
         self._raw_data[unprocessed_invalid_ann.prefix].append(
             unprocessed_invalid_ann)
 
-        self.updated_recs(unprocessed_invalid_ann.prefix)
+        self.update_recs(unprocessed_invalid_ann.prefix)
 
     def update_recs(self, prefix):
         """Updates recommendations"""
 
-        anns = self._raw_data[prefix]
-        
+        for ann in self._raw_data[prefix]:
+            self._recommendations[ann.prefix].extend(ann.as_path)
