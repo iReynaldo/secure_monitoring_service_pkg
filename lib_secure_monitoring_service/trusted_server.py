@@ -3,22 +3,20 @@ from typing import Dict, List, Tuple
 
 from lib_bgp_simulator import Announcement as Ann
 
-from .report import Report
-
-
 
 class TrustedServer:
 
     __slots__ = ("_raw_data", "_recommendations", "_make_recs")
+    name="TrustedServer"
 
     def __init__(self):
         # {prefix: ann_list}
         self._raw_data: Dict[str, List[Ann]] =\
             defaultdict(list)
         self._recommendations: Dict[str, List[int]] = defaultdict(list)
-        self.make_recs = False
+        self._make_recs = False
 
-    def rec_blackhole(subprefix: str, as_path: Tuple[int, ...]) -> bool:
+    def rec_blackhole(self, subprefix: str, as_path: Tuple[int, ...]) -> bool:
         """Recommends a blackhole for a subprefix"""
 
         # Checks if the suspect is in the given as_path
