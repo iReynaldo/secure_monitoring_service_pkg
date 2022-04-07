@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, List, Tuple
+from typing import Dict, Set, List, Tuple
 
 from lib_bgp_simulator import Announcement as Ann
 
@@ -10,10 +10,10 @@ class TrustedServer:
     name="TrustedServer"
 
     def __init__(self):
-        # {prefix: ann_list}
+        # {prefix: ann_Set}
         self._raw_data: Dict[str, List[Ann]] =\
             defaultdict(list)
-        self._recommendations: Dict[str, List[int]] = defaultdict(list)
+        self._recommendations: Dict[str, Set[int]] = defaultdict(set)
         self._make_recs = False
 
     def rec_blackhole(self, subprefix: str, as_path: Tuple[int, ...]) -> bool:
@@ -40,4 +40,4 @@ class TrustedServer:
         """Updates recommendations"""
 
         for ann in self._raw_data[prefix]:
-            self._recommendations[ann.prefix].extend(ann.as_path)
+            self._recommendations[ann.prefix].update(ann.as_path)
