@@ -41,3 +41,18 @@ class TrustedServer:
 
         for ann in self._raw_data[prefix]:
             self._recommendations[ann.prefix].update(ann.as_path)
+
+
+    def reports_to_path_list(self, prefix):
+        """
+        For a given prefix, return the edge list
+        for the associated list of reports.
+        """
+        edge_list = list()  # Will be a list of tuples (i.e. edge list)
+        for ann in self._raw_data[prefix]:
+            as_path_length = len(ann.as_path)
+            # Extract edge list from path
+            for i in range(as_path_length-1):
+                edge_list.append((ann.as_path[i], ann.as_path[i+1]))
+        return edge_list
+
