@@ -1,6 +1,8 @@
 import igraph as ig
 from igraph import plot
 import copy
+from lib_secure_monitoring_service.sim_logger import test_logger as logger
+
 
 
 ################################
@@ -62,7 +64,7 @@ def create_report_graph_object_with_capacities(edge_list):
         directed=True
     )
 
-    print("Graph edge list", edge_list)
+    logger.debug("Graph edge list: {0}".format(edge_list))
 
     # Add edge capacities to graph
     capacity_list = list()
@@ -87,16 +89,35 @@ def paths_to_edge_list(path_list):
     return list(edge_set)
 
 
-def get_max_number_of_vertex_disjoint_paths(path_list, target_asn):
-    """
+def create_vin_vout_vertices(path_list):
+    # Convert paths
+    # (i.e. each nodes must be split into v_in and v_out)
+    # v_in will be the negative of v_out
+    # For example:
+    # Input:  [1, 2, 3]
+    # Output: [-1, 1, -2, 2, -3, 3]
+    converted_target_asn_path_list = list()
+    for path in path_list:
+        converted_path = list()
+        for asn in path:
+            converted_path.append(asn * -1)
+            converted_path.append(asn)
+        converted_target_asn_path_list.append(converted_path)
+    return converted_target_asn_path_list
 
+
+def get_mvdp_with_subgraph_pictures(path_list, target_asn):
+    """
+    TODO: Complete Documentation
+
+    Use this method only for debugging. Not used for simulations.
     :param path_list:
     :param target_asn:
     :param k: maximum number of dishonest nodes
     :return:
     """
     path_list_copy = copy.deepcopy(path_list)
-    print("Path List: ", path_list_copy)
+    logger.debug("Path List: {0}".format(path_list_copy))
 
     # Get list of paths that include target_asn
     target_asn_path_list = list()
@@ -105,25 +126,12 @@ def get_max_number_of_vertex_disjoint_paths(path_list, target_asn):
             path_to_target_asn = path[:path.index(target_asn) + 1]
             target_asn_path_list.append(path_to_target_asn)
 
-    # TODO: move to its own function
-    # Convert paths
-    # (i.e. each nodes must be split into v_in and v_out)
-    # v_in will be the negative of v_out
-    # For example:
-    # Input:  [1, 2, 3]
-    # Output: [-1, 1, -2, 2, -3, 3]
-    converted_target_asn_path_list = list()
-    for path in target_asn_path_list:
-        converted_path = list()
-        for asn in path:
-            converted_path.append(asn * -1)  # TODO: Change This will only work for small test
-            converted_path.append(asn)
-        converted_target_asn_path_list.append(converted_path)
-    print("Converted target asn path list: ", converted_target_asn_path_list)
+    # Create v_in and v_out vertices
+    converted_target_asn_path_list = create_vin_vout_vertices(path_list_copy)
 
     # Remap asns to sequence
     (seq_asn_map, asn_seq_map) = map_asns_to_seq(converted_target_asn_path_list)
-    print("Remapped Converted target asn path list: ", converted_target_asn_path_list)
+    logger.debug("Remapped Converted target asn path list: {0}".format(converted_target_asn_path_list))
 
     # TODO: move to its own function
     # Create artificial source edges
@@ -144,17 +152,16 @@ def get_max_number_of_vertex_disjoint_paths(path_list, target_asn):
 
     # Run the max flow
     adjusted_target = asn_seq_map[target_asn * -1]
-    print("Artificial Source: ", artificial_source_asn)
-    print("Adjusted Target: ", adjusted_target)
+    logger.debug("Artificial Source: {0}".format(artificial_source_asn))
+    logger.debug("Adjusted Target: {0}".format(adjusted_target))
     flow = report_graph.maxflow(source=artificial_source_asn,
                                 target=adjusted_target,
                                 capacity=report_graph.es["capacity"]
                                 )
 
-    # TODO: Remove lines after debugging
-    print("Capacities", report_graph.es["capacity"])
-    print("Max flow:", flow.value)
-    print("Edge assignments:", flow.flow)
+    logger.debug("Capacities: {0}".format(report_graph.es["capacity"]))
+    logger.debug("Max flow: {0}".format(flow.value))
+    logger.debug("Edge assignments: {0}".format(flow.flow))
 
     for v in report_graph.vs:
         v["label"] = seq_asn_map[v.index]
@@ -166,6 +173,7 @@ def get_max_number_of_vertex_disjoint_paths(path_list, target_asn):
 
 def create_report_graph(path_list):
     """
+    TODO: Complete Documentation
 
     :param path_list:
     :param target_asn:
@@ -173,29 +181,15 @@ def create_report_graph(path_list):
     :return:
     """
     path_list_copy = copy.deepcopy(path_list)
-    print("Path List: ", path_list_copy)
+    logger.debug("Path List: {0}".format(path_list_copy))
 
-    # TODO: move to its own function
-    # Convert paths
-    # (i.e. each nodes must be split into v_in and v_out)
-    # v_in will be the negative of v_out
-    # For example:
-    # Input:  [1, 2, 3]
-    # Output: [-1, 1, -2, 2, -3, 3]
-    converted_path_list = list()
-    for path in path_list_copy:
-        converted_path = list()
-        for asn in path:
-            converted_path.append(asn * -1)
-            converted_path.append(asn)
-        converted_path_list.append(converted_path)
-    print("Converted path list: ", converted_path_list)
+    # Create v_in and v_out vertices
+    converted_path_list = create_vin_vout_vertices(path_list_copy)
 
     # Remap asns to sequence
     (seq_asn_map, asn_seq_map) = map_asns_to_seq(converted_path_list)
-    print("Remapped Converted path list: ", converted_path_list)
+    logger.debug("Remapped Converted path list: {0}".format(converted_path_list))
 
-    # TODO: move to its own function
     # Create artificial source edges
     artificial_source_asn = max(seq_asn_map) + 1
     seq_asn_map[artificial_source_asn] = artificial_source_asn
@@ -218,22 +212,21 @@ def create_report_graph(path_list):
 def get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_asn, target_asn):
     # Run the max flow
     adjusted_target = asn_seq_map[target_asn * -1]
-    print("Artificial Source: ", artificial_source_asn)
-    print("Adjusted Target: ", adjusted_target)
+    logger.debug("Artificial Source: {0}".format(artificial_source_asn))
+    logger.debug("Adjusted Target: {0}".format(adjusted_target))
     flow = report_graph.maxflow(source=artificial_source_asn,
                                 target=adjusted_target,
                                 capacity=report_graph.es["capacity"]
                                 )
 
-    # TODO: Remove lines after debugging
-    print("Capacities", report_graph.es["capacity"])
-    print("Max flow:", flow.value)
-    print("Edge assignments:", flow.flow)
-
-    for v in report_graph.vs:
-        v["label"] = seq_asn_map[v.index]
-    layout = report_graph.layout("kk")
-    plot(report_graph, layout=layout)
+    # logger.debug("Capacities: {0}".format(report_graph.es["capacity"]))
+    # logger.debug("Max flow: {0}".format(flow.value))
+    # logger.debug("Edge assignments: {0}".format(flow.flow))
+    #
+    # for v in report_graph.vs:
+    #     v["label"] = seq_asn_map[v.index]
+    # layout = report_graph.layout("kk")
+    # plot(report_graph, layout=layout)
 
     return flow.value
 
@@ -246,40 +239,8 @@ def get_avoid_list(reports_path_list, max_num_dishonest_nodes):
         max_num_vdp = get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_asn, target_asn)
         if max_num_vdp > max_num_dishonest_nodes:
             avoid_list.append(target_asn)
-    print("Avoid List: ", avoid_list)
+    logger.debug("Avoid List: {0}".format(avoid_list))
     return avoid_list
 
 
-# TODO: quick test of functions
-reports_path_list = [
-    [10, 3, 2, 1],
-    [20, 3, 2, 1],
-    [30, 4, 2, 1],
-    [40, 5, 1]
-]
-# get_max_number_of_vertex_disjoint_paths(reports_path_list, 1)
-# get_suspects(reports_path_list, 1)
-get_avoid_list(reports_path_list, 1)
 
-# reports_path_list = [
-#      [2, 4, 5, 7],
-#      [3, 4, 6, 7]
-# ]
-# get_max_number_of_vertex_disjoint_paths(reports_path_list, 7)
-
-# reports_path_list = [
-#     [10, 3],
-#     [20, 3],
-# ]
-# get_max_number_of_vertex_disjoint_paths(reports_path_list, 3)
-
-# Mapper Test
-# -------------------------------------------------
-# reports_path_list = [
-#     [999, 222],
-#     [4444, 222],
-# ]
-# the_map = map_asns_to_seq(reports_path_list)
-# print(reports_path_list)
-# print(the_map)
-# -------------------------------------------------

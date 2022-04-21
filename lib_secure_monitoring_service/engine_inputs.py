@@ -1,16 +1,14 @@
 from lib_rovpp import ROVPPSubprefixHijack
+from lib_secure_monitoring_service.sim_logger import sim_logger as logger
 
 
 class V4SubprefixHijack(ROVPPSubprefixHijack):
 
     def post_propagation_hook(self, engine, data_point, *args, **kwargs):
         """Runs after a round of propagation"""
-        print("Entered Post propagation hook")
+        logger.info("Entered Post propagation hook")
         # For each AS
         for as_obj in engine:
-            if hasattr(as_obj, "trusted_server"):
-                print(as_obj.trusted_server._recommendations)
-                # print(as_obj._local_rib)
             # Clear the AS, but not the relationship info or server info
             as_obj.__init__(reset_base=False, reset_trusted_server=False)
             # Set the trusted server flag to True
