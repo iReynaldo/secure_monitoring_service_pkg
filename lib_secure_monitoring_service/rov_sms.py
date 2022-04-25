@@ -61,3 +61,14 @@ class ROVSMS(ROVPPV1SimpleAS):
                 holes[ann] = tuple(ann_holes)
         return holes
 
+
+
+class ROVSMSK1(ROVSMS):
+    name = "ROV V4 K1"
+
+    __slots__ = tuple()
+
+    trusted_server = TrustedServer(1)
+
+    def __init__(self, *args, reset_trusted_server=True, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
