@@ -5,7 +5,7 @@ import pytest
 from lib_bgp_simulator import BaseGraphSystemTester
 from lib_bgp_simulator import BGPSimpleAS
 from lib_bgp_simulator import ROVSimpleAS
-from lib_bgp_simulator import Graph032
+from lib_bgp_simulator import Graph040
 
 from ...unstable import Unstable  # NOTE: not sure if this is needed
 from lib_rovpp import ROVPPV1SimpleAS
@@ -14,7 +14,7 @@ from .....rov_sms import ROVSMS
 from .....engine_inputs import V4SubprefixHijack
 
 class BaseHiddenHijackTester(Unstable, BaseGraphSystemTester):
-    GraphInfoCls = Graph032
+    GraphInfoCls = Graph040
     BaseASCls = BGPSimpleAS
     EngineInputCls = V4SubprefixHijack
     base_dir = Path(__file__).parent

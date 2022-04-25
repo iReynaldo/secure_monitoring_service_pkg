@@ -36,7 +36,11 @@ class TrustedServer:
             unprocessed_invalid_ann)
 
         # TODO: try moving this to post propagation hook
-        self.update_recs(unprocessed_invalid_ann.prefix)
+        # self.update_recs(unprocessed_invalid_ann.prefix)
+
+    def create_recs(self):
+        for prefix in self._raw_data:
+            self.update_recs(prefix)
 
     def update_recs(self, prefix):
         """Updates recommendations"""

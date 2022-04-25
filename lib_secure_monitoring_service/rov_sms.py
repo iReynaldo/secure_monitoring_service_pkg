@@ -70,5 +70,5 @@ class ROVSMSK1(ROVSMS):
 
     trusted_server = TrustedServer(1)
 
-    def __init__(self, *args, reset_trusted_server=True, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(ROVSMS, self).__init__(*args, **kwargs)
