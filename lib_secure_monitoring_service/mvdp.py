@@ -100,8 +100,8 @@ def create_vin_vout_vertices(path_list):
     for path in path_list:
         converted_path = list()
         for asn in path:
-            converted_path.append(asn * -1)
             converted_path.append(asn)
+            converted_path.append(asn * -1)
         converted_target_asn_path_list.append(converted_path)
     return converted_target_asn_path_list
 
@@ -151,7 +151,7 @@ def get_mvdp_with_subgraph_pictures(path_list, target_asn):
     report_graph = create_report_graph_object_with_capacities(graph_edge_list)
 
     # Run the max flow
-    adjusted_target = asn_seq_map[target_asn * -1]
+    adjusted_target = asn_seq_map[target_asn]
     logger.debug("Artificial Source: {0}".format(artificial_source_asn))
     logger.debug("Adjusted Target: {0}".format(adjusted_target))
     flow = report_graph.maxflow(source=artificial_source_asn,
@@ -180,11 +180,11 @@ def create_report_graph(path_list):
     :param k: maximum number of dishonest nodes
     :return:
     """
-    path_list_copy = copy.deepcopy(path_list)
-    logger.debug("Path List: {0}".format(path_list_copy))
+    # path_list_copy = copy.deepcopy(path_list)
+    # logger.debug("Path List: {0}".format(path_list_copy))
 
     # Create v_in and v_out vertices
-    converted_path_list = create_vin_vout_vertices(path_list_copy)
+    converted_path_list = create_vin_vout_vertices(path_list)
 
     # Remap asns to sequence
     (seq_asn_map, asn_seq_map) = map_asns_to_seq(converted_path_list)
@@ -211,7 +211,7 @@ def create_report_graph(path_list):
 
 def get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_asn, target_asn):
     # Run the max flow
-    adjusted_target = asn_seq_map[target_asn * -1]
+    adjusted_target = asn_seq_map[target_asn]
     logger.debug("Artificial Source: {0}".format(artificial_source_asn))
     logger.debug("Adjusted Target: {0}".format(adjusted_target))
     flow = report_graph.maxflow(source=artificial_source_asn,
