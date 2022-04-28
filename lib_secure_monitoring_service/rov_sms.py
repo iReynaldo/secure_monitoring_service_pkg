@@ -72,3 +72,25 @@ class ROVSMSK1(ROVSMS):
 
     def __init__(self, *args, **kwargs):
         super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK2(ROVSMS):
+    name = "ROV V4 K1"
+
+    __slots__ = tuple()
+
+    trusted_server = TrustedServer(2)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK3(ROVSMS):
+    name = "ROV V4 K1"
+
+    __slots__ = tuple()
+
+    trusted_server = TrustedServer(3)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
