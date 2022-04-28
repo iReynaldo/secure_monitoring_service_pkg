@@ -3,7 +3,7 @@
 # IMPORTANT NOTE:
 # Make sure the python environment is activated before this script is run
 
-output_file_template="performance_${policy}_${percent}_percent_${num_trials}_trial.profile"
+export PYTHONHASHSEED="1"
 
 for policy in v1 v4 v4k1
 do

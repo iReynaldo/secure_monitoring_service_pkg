@@ -3,7 +3,10 @@ from lib_secure_monitoring_service.engine_inputs import V4SubprefixHijack
 from lib_secure_monitoring_service.rov_sms import ROVSMS, ROVSMSK1
 from lib_rovpp import ROVPPV1SimpleAS
 
+import random
 import sys
+
+random.seed(1)
 
 # Read in arguments
 policy_str=sys.argv[1]
