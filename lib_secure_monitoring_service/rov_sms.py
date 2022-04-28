@@ -75,7 +75,7 @@ class ROVSMSK1(ROVSMS):
 
 
 class ROVSMSK2(ROVSMS):
-    name = "ROV V4 K1"
+    name = "ROV V4 K2"
 
     __slots__ = tuple()
 
@@ -86,7 +86,7 @@ class ROVSMSK2(ROVSMS):
 
 
 class ROVSMSK3(ROVSMS):
-    name = "ROV V4 K1"
+    name = "ROV V4 K3"
 
     __slots__ = tuple()
 
