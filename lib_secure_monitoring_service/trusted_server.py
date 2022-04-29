@@ -36,11 +36,20 @@ class TrustedServer:
             unprocessed_invalid_ann)
 
         # TODO: try moving this to post propagation hook
-        # self.update_recs(unprocessed_invalid_ann.prefix)
+        self.update_recs(unprocessed_invalid_ann.prefix)
 
     def create_recs(self):
         for prefix in self._raw_data:
             self.update_recs(prefix)
+
+    def update_recs_with_ann(self, ann):
+        """Updates recommendations"""
+
+        if self._max_num_dishonest_nodes == 0:
+            self._recommendations[ann.prefix].update(ann.as_path)
+        elif self._max_num_dishonest_nodes > 0:
+            self._recommendations[ann.prefix] = mvdp.get_avoid_list(self.reports_to_path_list(ann.prefix),
+                                                                    self._max_num_dishonest_nodes)
 
     def update_recs(self, prefix):
         """Updates recommendations"""
