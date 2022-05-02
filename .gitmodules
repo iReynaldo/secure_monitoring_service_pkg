@@ -1,0 +1,3 @@
+[submodule "lib_secure_monitoring_service/tests/overleaf_systest_doc"]
+	path = lib_secure_monitoring_service/tests/overleaf_systest_doc
+	url = https://git.overleaf.com/626c2cb342b2921480f2d676
