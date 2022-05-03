@@ -1,7 +1,7 @@
 #!/bin/sh
 
 output_filename="all_tests.md"
-output_dir="system_test_images"
+output_dir="../overleaf_systest_doc/figs/system_test_images"
 
 for hijack_type in v4_subprefix_hijack ;
 do
