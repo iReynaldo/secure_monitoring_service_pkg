@@ -35,13 +35,18 @@ class TrustedServer:
         self._raw_data[unprocessed_invalid_ann.prefix].append(
             unprocessed_invalid_ann)
 
-        # TODO: try moving this to post propagation hook
-        self.update_recs(unprocessed_invalid_ann.prefix)
+        # TODO: delete this when finish implementing v4 lite
+        # self.update_recs(unprocessed_invalid_ann.prefix)
+
 
     def create_recs(self):
         for prefix in self._raw_data:
             self.update_recs(prefix)
+        print("Path List: ", self.reports_to_path_list("1.2.3.0/24"))
+        print("Avoid List: ", self._recommendations)
 
+
+    # TODO: Delete this unused function once v4 lite works
     def update_recs_with_ann(self, ann):
         """Updates recommendations"""
 

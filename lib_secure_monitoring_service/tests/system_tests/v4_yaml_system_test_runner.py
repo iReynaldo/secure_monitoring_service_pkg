@@ -1,0 +1,26 @@
+from lib_bgp_simulator.tests.utils.yaml_system_test_runner import YamlSystemTestRunner
+from lib_bgp_simulator.simulator.data_point import DataPoint
+
+from lib_secure_monitoring_service.v4_scenario import V4Scenario
+
+class V4YamlSystemTestRunner(YamlSystemTestRunner):
+
+    def get_results(self,
+                    engine,
+                    engine_input,
+                    BaseASCls,
+                    propagation_round,
+                    preloaded=False):
+        if not preloaded:
+            engine.setup(engine_input, BaseASCls, None)
+
+        scenario = V4Scenario(engine=engine, engine_input=engine_input)
+        subgraphs = {"all_ases": set([x.asn for x in engine])}
+
+        # 0 for the propagation round. Change this later
+        traceback_guess = scenario.run(subgraphs, propagation_round)
+
+        # Run post propagation hooks for policies that have them
+        dp = DataPoint(None, None, propagation_round)
+        engine_input.post_propagation_hook(engine, dp)
+        return scenario, traceback_guess
