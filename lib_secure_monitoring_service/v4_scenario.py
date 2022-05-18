@@ -14,12 +14,13 @@ class V4Scenario(Scenario):
                 if hasattr(as_obj, "trusted_server"):
                     new_holes = as_obj._get_ann_to_holes_dict_from_trusted_server(self.engine_input)
                     has_holes_to_process = False
-                    for val in new_holes.values():
-                        if len(val) != 0:
-                            has_holes_to_process = True
-                    if has_holes_to_process:
-                        print("New Holes to add: ", new_holes)
-                        as_obj._force_add_blackholes(new_holes, Relationships.ORIGIN)
+                    if new_holes:
+                        for val in new_holes.values():
+                            if len(val) != 0:
+                                has_holes_to_process = True
+                        if has_holes_to_process:
+                            print("New Holes to add: ", new_holes)
+                            as_obj._force_add_blackholes(new_holes, Relationships.ORIGIN)
 
 
     def run(self, subgraphs, propagation_round: int):
