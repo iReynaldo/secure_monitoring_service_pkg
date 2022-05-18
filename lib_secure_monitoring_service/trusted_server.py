@@ -4,6 +4,7 @@ from typing import Dict, Set, List, Tuple
 from lib_bgp_simulator import Announcement as Ann
 
 from lib_secure_monitoring_service import mvdp
+from lib_secure_monitoring_service.sim_logger import sim_logger as logger
 
 
 class TrustedServer:
@@ -35,26 +36,11 @@ class TrustedServer:
         self._raw_data[unprocessed_invalid_ann.prefix].append(
             unprocessed_invalid_ann)
 
-        # TODO: delete this when finish implementing v4 lite
-        # self.update_recs(unprocessed_invalid_ann.prefix)
-
-
     def create_recs(self):
         for prefix in self._raw_data:
             self.update_recs(prefix)
-        print("Path List: ", self.reports_to_path_list("1.2.3.0/24"))
-        print("Avoid List: ", self._recommendations)
-
-
-    # TODO: Delete this unused function once v4 lite works
-    def update_recs_with_ann(self, ann):
-        """Updates recommendations"""
-
-        if self._max_num_dishonest_nodes == 0:
-            self._recommendations[ann.prefix].update(ann.as_path)
-        elif self._max_num_dishonest_nodes > 0:
-            self._recommendations[ann.prefix] = mvdp.get_avoid_list(self.reports_to_path_list(ann.prefix),
-                                                                    self._max_num_dishonest_nodes)
+        logger.debug("Path List: ", self.reports_to_path_list("1.2.3.0/24"))
+        logger.debug("Avoid List: ", self._recommendations)
 
     def update_recs(self, prefix):
         """Updates recommendations"""

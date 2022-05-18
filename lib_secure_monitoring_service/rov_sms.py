@@ -1,6 +1,7 @@
 from lib_rovpp import ROVPPV1SimpleAS, ROVPPV1LiteSimpleAS
 
 from .trusted_server import TrustedServer
+from lib_secure_monitoring_service.sim_logger import sim_logger as logger
 
 
 class ROVSMS(ROVPPV1LiteSimpleAS):
@@ -13,7 +14,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
 
     def __init__(self, *args, reset_trusted_server=True, **kwargs):
         """When everything is being reset, reset the trust server also"""
-        # print("Created ROVSMS {0}".format(kwargs['asn']))
+        # logger.debug("Created ROVSMS {0}".format(kwargs['asn']))
         # At the end of the graphing, everything should be reset
         if reset_trusted_server:
             self.trusted_server.__init__()
@@ -22,8 +23,9 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
     # TODO: Add typing to function (in this case announcement type)
     def receive_ann(self, ann, *args, **kwargs):
         """Recieves ann and reports it"""
-
+        logger.debug(f"ASN {self.asn} inside receive_ann")
         if ann.invalid_by_roa:
+            logger.debug(f"ASN {self.asn} sending report about {ann.prefix}")
             self.trusted_server.recieve_report(ann)
         return super(ROVSMS, self).receive_ann(ann, *args, **kwargs)
 
@@ -38,7 +40,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
         # Get holes from V1
         holes = super(ROVSMS, self)._get_ann_to_holes_dict(engine_input)
 
-        print("Entered _get_ann_to_holes_dict_from_trusted_server")
+        logger.debug("Entered _get_ann_to_holes_dict_from_trusted_server")
         for _, ann in self._local_rib.prefix_anns():
             ann_holes = []
             # For each hole in ann: (holes are invalid subprefixes)
@@ -49,7 +51,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                     # Check if AS already has blackhole
                     for _, rib_entry in self._local_rib.prefix_anns():
                         if rib_entry.prefix == subprefix:
-                            print(f"Found subprefix in RIB of {self.asn}")
+                            logger.debug(f"Found subprefix in RIB of {self.asn}")
                             does_not_have_subprefix = False
 
                     if does_not_have_subprefix:
@@ -63,7 +65,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                         ann_holes.append(subprefix_ann)
                         holes[subprefix_ann] = holes.get(subprefix_ann, tuple()) + tuple()
             holes[ann] = tuple(ann_holes)
-            print(f"ASN {self.asn} Evaluated Holes: {holes}")
+            logger.debug(f"ASN {self.asn} Evaluated Holes: {holes}")
             return holes
 
 
@@ -110,7 +112,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
         for _, ann in self._local_rib.prefix_anns():
             # For each hole in ann: (holes are invalid subprefixes)
             ann.holes = holes[ann]
-            print(f"Value of ann.holes in ASN {self.asn}: {ann.holes}")
+            logger.debug(f"Value of ann.holes in ASN {self.asn}: {ann.holes}")
             for unprocessed_hole_ann in ann.holes:
                 blackhole = self._copy_and_process(unprocessed_hole_ann,
                                                    from_rel,
@@ -121,7 +123,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                 blackholes_to_add.append(blackhole)
         # Do this here to avoid changing dict size
         for blackhole in blackholes_to_add:
-            print(f"Adding blackhole to ASN {self.asn}: {blackhole}")
+            logger.debug(f"Adding blackhole to ASN {self.asn}: {blackhole}")
             # Add the blackhole
             self._local_rib.add_ann(blackhole)
             # Do nothing - ann should already be a blackhole
@@ -135,7 +137,7 @@ class ROVSMSK1(ROVSMS):
 
     __slots__ = tuple()
 
-    trusted_server = TrustedServer(1)
+    trusted_server = TrustedServer(max_num_dishonest_nodes=1)
 
     def __init__(self, *args, **kwargs):
         super(ROVSMS, self).__init__(*args, **kwargs)
@@ -146,7 +148,7 @@ class ROVSMSK2(ROVSMS):
 
     __slots__ = tuple()
 
-    trusted_server = TrustedServer(2)
+    trusted_server = TrustedServer(max_num_dishonest_nodes=2)
 
     def __init__(self, *args, **kwargs):
         super(ROVSMS, self).__init__(*args, **kwargs)
@@ -157,7 +159,7 @@ class ROVSMSK3(ROVSMS):
 
     __slots__ = tuple()
 
-    trusted_server = TrustedServer(3)
+    trusted_server = TrustedServer(max_num_dishonest_nodes=3)
 
     def __init__(self, *args, **kwargs):
         super(ROVSMS, self).__init__(*args, **kwargs)

@@ -2,12 +2,13 @@ from lib_bgp_simulator.simulator.scenario import Scenario
 from lib_bgp_simulator.enums import Relationships
 
 from lib_secure_monitoring_service.rov_sms import ROVSMS
+from lib_secure_monitoring_service.sim_logger import sim_logger as logger
 
 class V4Scenario(Scenario):
 
 
     def apply_blackholes_from_avoid_list(self, subgraphs):
-        print("Inside apply_blackholes_from_avoid_list")
+        logger.debug"Inside apply_blackholes_from_avoid_list")
         for subg_name, subgraph_asns in subgraphs.items():
             for asn in subgraph_asns:
                 as_obj = self.engine.as_dict[asn]
@@ -19,7 +20,7 @@ class V4Scenario(Scenario):
                             if len(val) != 0:
                                 has_holes_to_process = True
                         if has_holes_to_process:
-                            print("New Holes to add: ", new_holes)
+                            logger.debug("New Holes to add: ", new_holes)
                             as_obj._force_add_blackholes(new_holes, Relationships.ORIGIN)
 
 
