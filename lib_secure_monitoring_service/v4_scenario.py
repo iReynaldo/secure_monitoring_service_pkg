@@ -8,7 +8,7 @@ class V4Scenario(Scenario):
 
 
     def apply_blackholes_from_avoid_list(self, subgraphs):
-        logger.debug"Inside apply_blackholes_from_avoid_list")
+        logger.debug(f"Inside apply_blackholes_from_avoid_list")
         for subg_name, subgraph_asns in subgraphs.items():
             for asn in subgraph_asns:
                 as_obj = self.engine.as_dict[asn]
