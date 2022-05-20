@@ -2,7 +2,7 @@ from lib_rovpp import ROVPPV1SimpleAS, ROVPPV1LiteSimpleAS
 
 from .trusted_server import TrustedServer
 from lib_secure_monitoring_service.sim_logger import sim_logger as logger
-
+from lib_secure_monitoring_service.report import Report
 
 class ROVSMS(ROVPPV1LiteSimpleAS):
 
@@ -20,27 +20,22 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
             self.trusted_server.__init__()
         super(ROVSMS, self).__init__(*args, **kwargs)
 
-    # TODO: Add typing to function (in this case announcement type)
+
     def receive_ann(self, ann, *args, **kwargs):
         """Recieves ann and reports it"""
         logger.debug(f"ASN {self.asn} inside receive_ann")
         if ann.invalid_by_roa:
             logger.debug(f"ASN {self.asn} sending report about {ann.prefix}")
-            self.trusted_server.recieve_report(ann)
+            adjusted_as_path = (self.asn,) + ann.as_path
+            report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=adjusted_as_path)
+            self.trusted_server.recieve_report(report)
         return super(ROVSMS, self).receive_ann(ann, *args, **kwargs)
 
-    # TODO: You need to make a modified version of the method below
-    # So that you can apply holes for subprefixes that were not received
-    # The reason why you don't see blackholes for /24 is because the
-    # the ASes that fall from a hidden hijack don't receive the /24.
-    # So the only criteria for making blackhole comes from rec_blackhole
-    # from the trusted server
-    def _get_ann_to_holes_dict_from_trusted_server(self, engine_input):
-        """Adds blackholes based on recommendations"""
-        # Get holes from V1
-        holes = super(ROVSMS, self)._get_ann_to_holes_dict(engine_input)
 
-        logger.debug("Entered _get_ann_to_holes_dict_from_trusted_server")
+    def _force_add_blackholes_from_avoid_list(self, engine_input):
+        holes = []
+
+        logger.debug("Entered _force_add_blackholes_from_avoid_list")
         for _, ann in self._local_rib.prefix_anns():
             ann_holes = []
             # For each hole in ann: (holes are invalid subprefixes)
@@ -53,83 +48,24 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                         if rib_entry.prefix == subprefix:
                             logger.debug(f"Found subprefix in RIB of {self.asn}")
                             does_not_have_subprefix = False
+                            assert(rib_entry.blackhole == True, "The found subprefix does not have blackhole set to true")
+                            assert(rib_entry.traceback_end == True, "The found subprefix does not have traceback_end set to true")
 
                     if does_not_have_subprefix:
                         # We need to create our own subprefix ann
                         # Since we may not have actually received the hijack
                         # Since this policy is for hidden hijacks
-                        subprefix_ann = ann.copy(
+                        blackhole_ann = ann.copy(
                             prefix=subprefix,
                             roa_valid_length=False,
-                            roa_origin=engine_input.victim_asn)
-                        ann_holes.append(subprefix_ann)
-                        holes[subprefix_ann] = holes.get(subprefix_ann, tuple()) + tuple()
-            holes[ann] = tuple(ann_holes)
-            logger.debug(f"ASN {self.asn} Evaluated Holes: {holes}")
-            return holes
+                            roa_origin=engine_input.victim_asn,
+                            blackhole=True,
+                            traceback_end=True)
+                        holes.append(blackhole_ann)
 
-
-    def _get_ann_to_holes_dict(self, engine_input) -> dict:
-        """Adds blackholes based on recommendations"""
-
-        # Get holes from V1
-        holes = super(ROVSMS, self)._get_ann_to_holes_dict(engine_input)
-
-        # Only blackhole when:
-        # You have a rec to blackhole a subprefix with an ASN
-        # AND you also have a PREFIX that has that ASN in the PATH
-        for _, ann_list in self._recv_q.prefix_anns():
-            for ann in ann_list:
-                ann_holes = []
-                for subprefix in engine_input.prefix_subprefix_dict[ann.prefix]:
-                    for sub_ann in self._recv_q.get_ann_list(subprefix):
-                        # Holes are only from same neighbor
-                        if (sub_ann.invalid_by_roa
-                            and sub_ann.as_path[0] == ann.as_path[0]):
-                            ann_holes.append(sub_ann)
-                    # In real life, this would be push/subscribe method
-                    # But this makes implementation much easier
-                    if self.trusted_server.rec_blackhole(subprefix,
-                                                         ann.as_path):
-                        # We need to create our own subprefix ann
-                        # Since we may not have actually recieved the hijack
-                        # Since this policy is for hidden hijacks
-                        subprefix_ann = ann.copy(
-                            prefix=subprefix,
-                            roa_valid_length=False,
-                            roa_origin=engine_input.victim_asn)
-                        ann_holes.append(subprefix_ann)
-                        holes[subprefix_ann] = holes.get(subprefix_ann, tuple()) + tuple()
-                holes[ann] = tuple(ann_holes)
-        return holes
-
-
-    def _force_add_blackholes(self, holes, from_rel):
-        """Manipulates local RIB by adding blackholes and dropping invalid"""
-
-        blackholes_to_add = []
-        # For each ann in local RIB:
-        for _, ann in self._local_rib.prefix_anns():
-            # For each hole in ann: (holes are invalid subprefixes)
-            ann.holes = holes[ann]
-            logger.debug(f"Value of ann.holes in ASN {self.asn}: {ann.holes}")
-            for unprocessed_hole_ann in ann.holes:
-                blackhole = self._copy_and_process(unprocessed_hole_ann,
-                                                   from_rel,
-                                                   holes=holes,
-                                                   blackhole=True,
-                                                   traceback_end=True)
-
-                blackholes_to_add.append(blackhole)
-        # Do this here to avoid changing dict size
-        for blackhole in blackholes_to_add:
-            logger.debug(f"Adding blackhole to ASN {self.asn}: {blackhole}")
-            # Add the blackhole
-            self._local_rib.add_ann(blackhole)
-            # Do nothing - ann should already be a blackhole
-            assert ((ann.blackhole and ann.invalid_by_roa)
-                    or not ann.invalid_by_roa)
-
+        for hole in holes:
+            # Add blackhole ann to localRIB
+            self._local_rib.add_ann(hole)
 
 
 class ROVSMSK1(ROVSMS):

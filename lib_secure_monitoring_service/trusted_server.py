@@ -31,15 +31,13 @@ class TrustedServer:
     def recieve_report(self, unprocessed_invalid_ann):
         """Process report about an invalid ann"""
 
-        assert unprocessed_invalid_ann.invalid_by_roa
-
         self._raw_data[unprocessed_invalid_ann.prefix].append(
             unprocessed_invalid_ann)
 
     def create_recs(self):
         for prefix in self._raw_data:
             self.update_recs(prefix)
-        logger.debug("Path List: ", self.reports_to_path_list("1.2.3.0/24"))
+        logger.debug(f"Path List: {self.reports_to_path_list('1.2.3.0/24')}")
         logger.debug("Avoid List: ", self._recommendations)
 
     def update_recs(self, prefix):
