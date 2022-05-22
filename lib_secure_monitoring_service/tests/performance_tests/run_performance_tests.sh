@@ -7,12 +7,12 @@ export PYTHONHASHSEED="1"
 
 for policy in v1 v4 v4k1
 do
-    for percent in 80
+    for percent in 1
     do
         for num_trials in 10
         do
             echo "Running ${policy} at ${percent}% adoption for ${num_trials} trials"
-            python -m cProfile -o "performance_${policy}_${percent}_percent_${num_trials}_trial.profile" performance_tester.py $policy $percent $num_trials
+            time python -m cProfile -o "performance_${policy}_${percent}_percent_${num_trials}_trial.profile" performance_tester.py $policy $percent $num_trials
         done
     done
 done
