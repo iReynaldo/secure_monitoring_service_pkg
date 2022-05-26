@@ -4,9 +4,9 @@ import pytest
 
 from lib_bgp_simulator import BaseGraphSystemTester
 from lib_bgp_simulator import BGPSimpleAS
-from lib_bgp_simulator import Graph042
+from lib_bgp_simulator import Graph044
 
-from lib_rovpp import ROVPPV1SimpleAS
+from lib_rovpp import ROVPPV1LiteSimpleAS
 
 from lib_secure_monitoring_service.tests.system_tests.v4_base_graph_system_tester import V4BaseGraphSystemTester
 from lib_secure_monitoring_service.tests.system_tests.unstable import Unstable
@@ -15,18 +15,17 @@ from lib_secure_monitoring_service.engine_inputs import V4SubprefixHijack
 
 
 class BaseHiddenHijackTester(Unstable, V4BaseGraphSystemTester):
-    GraphInfoCls = Graph042
+    GraphInfoCls = Graph044
     BaseASCls = BGPSimpleAS
     EngineInputCls = V4SubprefixHijack
     base_dir = Path(__file__).parent
-    adopting_asns = (32, 33, )
-    rov_adopting_asns = (77, )
+    adopting_asns = (1, 8)
+    rov_adopting_asns = (7,)
+
+class Test007HiddenHijackROVPPV1(BaseHiddenHijackTester):
+    AdoptASCls = ROVPPV1LiteSimpleAS
 
 
-class Test003HiddenHijackROVPPV1(BaseHiddenHijackTester):
-    AdoptASCls = ROVPPV1SimpleAS
-
-
-class Test004HiddenHijackROVSMS(BaseHiddenHijackTester):
+class Test008HiddenHijackROVSMS(BaseHiddenHijackTester):
     AdoptASCls = ROVSMS
 

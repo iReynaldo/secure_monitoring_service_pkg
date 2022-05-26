@@ -28,15 +28,3 @@
 10: !simulator_codec/Outcomes
   name: DISCONNECTED
   value: 2
-11: !simulator_codec/Outcomes
-  name: ATTACKER_SUCCESS
-  value: 0
-12: !simulator_codec/Outcomes
-  name: ATTACKER_SUCCESS
-  value: 0
-13: !simulator_codec/Outcomes
-  name: ATTACKER_SUCCESS
-  value: 0
-14: !simulator_codec/Outcomes
-  name: ATTACKER_SUCCESS
-  value: 0
