@@ -13,7 +13,7 @@ def main():
                                     EngineInputCls=V4SubprefixHijack,
                                     num_trials=20,
                                     BaseASCls=BGPAS)],
-                    mp_method = MPMethod.SINGLE_PROCESS
+                    mp_method = MPMethod.MP
                     )
 
 
