@@ -6,6 +6,7 @@ from lib_secure_monitoring_service.sim_logger import sim_logger as logger
 
 class V4Scenario(Scenario):
 
+    trusted_server_ref = None
 
     def apply_blackholes_from_avoid_list(self, subgraphs):
         logger.debug(f"Inside apply_blackholes_from_avoid_list")
@@ -19,8 +20,10 @@ class V4Scenario(Scenario):
                     # Create the avoid list if it hasn't been
                     # created yet
                     if not avoid_list_created_flag:
+                        self.trusted_server_ref = as_obj.trusted_server
                         as_obj.trusted_server.create_recs()
                     as_obj._force_add_blackholes_from_avoid_list(self.engine_input)
+
 
 
     def run(self, subgraphs, propagation_round: int):
@@ -43,5 +46,10 @@ class V4Scenario(Scenario):
         # classes are already set.
         if hasattr(self.engine_input, 'adopting_asns'):
             del self.engine_input.adopting_asns
+        # Emtpy the trusted server
+        if self.trusted_server_ref:
+            self.trusted_server_ref.reset()
+            # Note the trusted_server_ref is set inside apply_blackholes_from_avoid_list
+            self.trusted_server_ref = None
 
         return traceback_outcomes

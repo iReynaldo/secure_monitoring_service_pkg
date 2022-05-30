@@ -1,6 +1,8 @@
 from collections import defaultdict
 from typing import Dict, Set, List, Tuple
 
+# from memory_profiler import profile
+
 from lib_bgp_simulator import Announcement as Ann
 
 from lib_secure_monitoring_service import mvdp
@@ -58,3 +60,8 @@ class TrustedServer:
         for ann in self._raw_data[prefix]:
             path_list.append(ann.as_path)
         return path_list
+
+    def reset(self):
+        self._raw_data: Dict[str, List[Ann]] = \
+            defaultdict(list)
+        self._recommendations: Dict[str, Set[int]] = defaultdict(set)
