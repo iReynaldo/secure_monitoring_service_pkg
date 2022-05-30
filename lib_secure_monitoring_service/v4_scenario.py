@@ -15,13 +15,18 @@ class V4Scenario(Scenario):
         for subg_name, subgraph_asns in subgraphs.items():
             for asn in subgraph_asns:
                 as_obj = self.engine.as_dict[asn]
-                # TODO: try isInstance
                 if hasattr(as_obj, "trusted_server"):
                     # Create the avoid list if it hasn't been
                     # created yet
                     if not avoid_list_created_flag:
                         self.trusted_server_ref = as_obj.trusted_server
-                        as_obj.trusted_server.create_recs()
+                        # print("Making recs")
+                        # as_obj.trusted_server.create_recs()
+                        # for prefix in as_obj.trusted_server._raw_data:
+                        #     for report in as_obj.trusted_server._raw_data[prefix]:
+                        #         print(report)
+                        avoid_list_created_flag = True
+
                     as_obj._force_add_blackholes_from_avoid_list(self.engine_input)
 
 
