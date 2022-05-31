@@ -16,12 +16,10 @@ class V4Scenario(Scenario):
             for asn in subgraph_asns:
                 as_obj = self.engine.as_dict[asn]
                 if hasattr(as_obj, "trusted_server"):
-                    # Create the avoid list if it hasn't been
-                    # created yet
+                    # Create the avoid list if it hasn't been created yet
                     if not avoid_list_created_flag:
                         self.trusted_server_ref = as_obj.trusted_server
-                        # print("Making recs")
-                        # as_obj.trusted_server.create_recs()
+                        as_obj.trusted_server.create_recs()
                         # for prefix in as_obj.trusted_server._raw_data:
                         #     for report in as_obj.trusted_server._raw_data[prefix]:
                         #         print(report)
