@@ -1,6 +1,7 @@
-from typing import NamedTuple
+from dataclasses import dataclass
 
-class Report(NamedTuple):
+@dataclass
+class Report:
     reporting_asn: int
     prefix: str
     as_path: list

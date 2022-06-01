@@ -13,6 +13,25 @@ from lib_secure_monitoring_service import mvdp
 
 # Credits to Python Tutorial
 # https://www.pythontutorial.net/advanced-python/python-context-managers/#:~:text=Python%20context%20managers%20work%20based%20on%20the%20context,a%20class%20that%20supports%20the%20context%20manager%20protocol.
+class simple_timer:
+    """
+    Time whatever is in the context
+    This seems to add 1 second to the time
+    """
+    def __init__(self, label):
+        self.label = label
+        self.elapsed_time = None
+
+    def __enter__(self):
+        self.start = perf_counter()
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.end = perf_counter()
+        self.elapsed_time = self.end - self.start
+        print('{} : {}'.format(self.label, self.elapsed_time))
+        return False
+
 class timer:
     """
     Time whatever is in the context
@@ -34,7 +53,7 @@ class timer:
         print('Expected Time: {}'.format(self.expected_time))
         # Calculating Faster than
         # https://math.stackexchange.com/questions/1227389/what-is-the-difference-between-faster-by-factor-and-faster-by-percent
-        faster_than = (self.expected_time - self.elapsed_time) / self.expected_time
+        faster_than = ((self.expected_time - self.elapsed_time) / self.expected_time) * 100
         print('This Run was {}% faster than Expected: '.format(faster_than))
         return False
 
@@ -103,8 +122,8 @@ def internet_scale_path_list_4():
         avoid_list = mvdp.get_avoid_list(reports_path_list, 1)
 
 
-
-internet_scale_path_list_1()
-internet_scale_path_list_2()
-internet_scale_path_list_3()
-internet_scale_path_list_4()
+if __name__ == '__main__':
+    internet_scale_path_list_1()
+    internet_scale_path_list_2()
+    internet_scale_path_list_3()
+    internet_scale_path_list_4()

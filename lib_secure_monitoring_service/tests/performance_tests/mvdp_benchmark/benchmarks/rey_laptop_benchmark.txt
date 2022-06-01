@@ -1,0 +1,38 @@
+Path List 1 : 9.311003507005807
+Expected Time: 124
+This Run was 0.9249112620402757% faster than Expected: 
+Filename: benchmark_mvdp.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    59    175.0 MiB    175.0 MiB           1   @profile
+    60                                         def internet_scale_path_list_1():
+    61                                             """
+    62                                             k = 1
+    63                                             :return:
+    64                                             """
+    65    176.2 MiB      1.2 MiB           1       from lib_secure_monitoring_service.tests.performance_tests.mvdp_benchmark.report_path_lists.path_list_1 import expected_time, reports_path_list
+    66                                             # flow_value = mvdp.get_mvdp_with_subgraph_pictures(reports_path_list, 1)
+    67    176.3 MiB      0.1 MiB           1       with timer("Path List 1", expected_time) as _:
+    68    396.3 MiB    220.0 MiB           1           avoid_list = mvdp.get_avoid_list(reports_path_list, 1)
+
+
+Path List 3 : 0.009566585002175998
+Expected Time: 0.009
+This Run was -0.06295388913066652% faster than Expected: 
+Filename: benchmark_mvdp.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    82    396.3 MiB    396.3 MiB           1   @profile
+    83                                         def internet_scale_path_list_3():
+    84                                             """
+    85                                             k = 1
+    86                                             :return:
+    87                                             """
+    88    396.3 MiB      0.0 MiB           1       from lib_secure_monitoring_service.tests.performance_tests.mvdp_benchmark.report_path_lists.path_list_3 import expected_time, reports_path_list
+    89                                             # flow_value = mvdp.get_mvdp_with_subgraph_pictures(reports_path_list, 1)
+    90    396.3 MiB      0.0 MiB           1       with timer("Path List 3", expected_time) as _:
+    91    396.3 MiB      0.0 MiB           1           avoid_list = mvdp.get_avoid_list(reports_path_list, 1)
+
+

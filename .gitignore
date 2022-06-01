@@ -138,3 +138,5 @@ tags
 
 # Log files
 *.log.*
+
+lib_secure_monitoring_service/tests/performance_tests/mvdp_benchmark/converted/
