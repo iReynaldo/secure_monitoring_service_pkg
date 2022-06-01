@@ -1,2 +1,4 @@
 snakeviz
 igraph
+cairocffi
+numpy
