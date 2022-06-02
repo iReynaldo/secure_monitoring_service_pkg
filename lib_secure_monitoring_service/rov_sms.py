@@ -9,7 +9,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
     name="ROV V4"
 
     __slots__ = tuple()
-
+    _max_num_dishonest_nodes = 0
     trusted_server = TrustedServer(0)
 
     def __init__(self, *args, reset_trusted_server=True, **kwargs):
@@ -26,8 +26,11 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
         logger.debug(f"ASN {self.asn} inside receive_ann")
         if ann.invalid_by_roa:
             logger.debug(f"ASN {self.asn} sending report about {ann.prefix}")
-            adjusted_as_path = (self.asn,) + ann.as_path
-            report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=adjusted_as_path)
+            if self._max_num_dishonest_nodes > 0:
+                adjusted_as_path = (self.asn,) + ann.as_path
+                report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=adjusted_as_path)
+            else:
+                report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=ann.as_path)
             self.trusted_server.recieve_report(report)
         return super(ROVSMS, self).receive_ann(ann, *args, **kwargs)
 
@@ -73,6 +76,7 @@ class ROVSMSK1(ROVSMS):
 
     __slots__ = tuple()
 
+    _max_num_dishonest_nodes = 1
     trusted_server = TrustedServer(max_num_dishonest_nodes=1)
 
     def __init__(self, *args, **kwargs):
@@ -84,6 +88,7 @@ class ROVSMSK2(ROVSMS):
 
     __slots__ = tuple()
 
+    _max_num_dishonest_nodes = 2
     trusted_server = TrustedServer(max_num_dishonest_nodes=2)
 
     def __init__(self, *args, **kwargs):
@@ -95,6 +100,7 @@ class ROVSMSK3(ROVSMS):
 
     __slots__ = tuple()
 
+    _max_num_dishonest_nodes = 3
     trusted_server = TrustedServer(max_num_dishonest_nodes=3)
 
     def __init__(self, *args, **kwargs):

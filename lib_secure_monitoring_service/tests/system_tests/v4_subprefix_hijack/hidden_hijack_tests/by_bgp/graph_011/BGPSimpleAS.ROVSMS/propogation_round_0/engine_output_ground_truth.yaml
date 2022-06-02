@@ -267,8 +267,8 @@
   peers: !!python/tuple []
   propagation_rank: 1
   providers: !!python/tuple
-  - 1
   - 4
+  - 1
   - 15
 6: !yamlable/ROVSMS
   _local_rib: !yamlable/LocalRIB
