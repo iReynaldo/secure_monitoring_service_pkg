@@ -3,7 +3,7 @@ from lib_bgp_simulator import Simulator, BGPAS, Graph, MPMethod
 from lib_rovpp import ROVPPV1SimpleAS
 
 from lib_secure_monitoring_service.engine_inputs import V4SubprefixHijack
-from lib_secure_monitoring_service.rov_sms import ROVSMS, ROVSMSK1, ROVSMSK2, ROVSMSK3
+from lib_secure_monitoring_service.rov_sms import ROVSMS, ROVSMSK1, ROVSMSK2, ROVSMSK3, ROVSMSK4, ROVSMSK5, ROVSMSK6, ROVSMSK7, ROVSMSK10
 from lib_secure_monitoring_service.v4_graph import V4Graph
 
 

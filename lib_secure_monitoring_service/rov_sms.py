@@ -105,3 +105,63 @@ class ROVSMSK3(ROVSMS):
 
     def __init__(self, *args, **kwargs):
         super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK4(ROVSMS):
+    name = "ROV V4 K4"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 4
+    trusted_server = TrustedServer(max_num_dishonest_nodes=4)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK5(ROVSMS):
+    name = "ROV V4 K5"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 5
+    trusted_server = TrustedServer(max_num_dishonest_nodes=5)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK6(ROVSMS):
+    name = "ROV V4 K6"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 6
+    trusted_server = TrustedServer(max_num_dishonest_nodes=6)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK7(ROVSMS):
+    name = "ROV V4 K7"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 7
+    trusted_server = TrustedServer(max_num_dishonest_nodes=7)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK10(ROVSMS):
+    name = "ROV V4 K10"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 10
+    trusted_server = TrustedServer(max_num_dishonest_nodes=10)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
