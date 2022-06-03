@@ -1,4 +1,5 @@
 import copy
+from collections import Counter
 
 import igraph as ig
 from igraph import plot
@@ -26,6 +27,26 @@ def asn_set_from_path_list(path_list):
     asn_set = set()
     for path in path_list:
         asn_set.update(path)
+    return asn_set
+
+def target_asn_set_from_path_list(path_list, max_number_of_dishonest_nodes):
+    """
+    Returns a reduced list of target asns based on whether or not they
+    mininumally show up in 'max_number_of_dishonest_nodes' paths in
+    :param path_list:
+    :param max_number_of_dishonest_nodes:
+    :return:
+    """
+    asn_set = set()
+    asn_counter = Counter()
+    for path in path_list:
+        for asn in path:
+            # TODO: if there's a case where an ASN is added to the same path multiple times,
+            # this doesn't account fo that. It assumes this kind of manipulation is not part of our
+            # simulations. Adding it is simple, but want to keep this as lean as possible.
+            asn_counter[asn] += 1
+            if asn_counter[asn] > max_number_of_dishonest_nodes:
+                asn_set.add(asn)
     return asn_set
 
 
@@ -241,11 +262,10 @@ def get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_asn, t
 
 # @profile
 def get_avoid_list(reports_path_list, max_num_dishonest_nodes):
-    # TODO: only check non leaf ASes of the report graph
-    asn_set = asn_set_from_path_list(reports_path_list)
+    target_asn_set = target_asn_set_from_path_list(reports_path_list, max_num_dishonest_nodes)
     avoid_list = list()
     (report_graph, seq_asn_map, asn_seq_map, artificial_source_asn, nparray_of_leaf_vector_ids) = create_report_graph(reports_path_list)
-    for target_asn in asn_set:
+    for target_asn in target_asn_set:
         # Optimization: Calculate mvdp only if it's not a leaf
         if asn_seq_map[target_asn] not in nparray_of_leaf_vector_ids:
             max_num_vdp = get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_asn, target_asn)
