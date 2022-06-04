@@ -165,3 +165,15 @@ class ROVSMSK10(ROVSMS):
 
     def __init__(self, *args, **kwargs):
         super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK20(ROVSMS):
+    name = "ROV V4 K20"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 20
+    trusted_server = TrustedServer(max_num_dishonest_nodes=20)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
