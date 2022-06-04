@@ -177,3 +177,87 @@ class ROVSMSK20(ROVSMS):
 
     def __init__(self, *args, **kwargs):
         super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK30(ROVSMS):
+    name = "ROV V4 K30"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 30
+    trusted_server = TrustedServer(max_num_dishonest_nodes=30)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK50(ROVSMS):
+    name = "ROV V4 K50"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 50
+    trusted_server = TrustedServer(max_num_dishonest_nodes=50)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK70(ROVSMS):
+    name = "ROV V4 K50"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 70
+    trusted_server = TrustedServer(max_num_dishonest_nodes=70)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK100(ROVSMS):
+    name = "ROV V4 K100"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 100
+    trusted_server = TrustedServer(max_num_dishonest_nodes=100)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK150(ROVSMS):
+    name = "ROV V4 K150"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 150
+    trusted_server = TrustedServer(max_num_dishonest_nodes=150)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK200(ROVSMS):
+    name = "ROV V4 K200"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 200
+    trusted_server = TrustedServer(max_num_dishonest_nodes=200)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK300(ROVSMS):
+    name = "ROV V4 K300"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 300
+    trusted_server = TrustedServer(max_num_dishonest_nodes=300)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
