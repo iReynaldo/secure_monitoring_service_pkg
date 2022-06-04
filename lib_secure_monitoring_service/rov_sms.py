@@ -204,7 +204,7 @@ class ROVSMSK50(ROVSMS):
 
 
 class ROVSMSK70(ROVSMS):
-    name = "ROV V4 K50"
+    name = "ROV V4 K70"
 
     __slots__ = tuple()
 
