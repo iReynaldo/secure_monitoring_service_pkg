@@ -261,3 +261,52 @@ class ROVSMSK300(ROVSMS):
 
     def __init__(self, *args, **kwargs):
         super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK500(ROVSMS):
+    name = "ROV V4 K500"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 500
+    trusted_server = TrustedServer(max_num_dishonest_nodes=500)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK1000(ROVSMS):
+    name = "ROV V4 K1000"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 1000
+    trusted_server = TrustedServer(max_num_dishonest_nodes=1000)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+
+class ROVSMSK2000(ROVSMS):
+    name = "ROV V4 K2000"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 2000
+    trusted_server = TrustedServer(max_num_dishonest_nodes=2000)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
+
+
+class ROVSMSK5000(ROVSMS):
+    name = "ROV V4 K5000"
+
+    __slots__ = tuple()
+
+    _max_num_dishonest_nodes = 5000
+    trusted_server = TrustedServer(max_num_dishonest_nodes=5000)
+
+    def __init__(self, *args, **kwargs):
+        super(ROVSMS, self).__init__(*args, **kwargs)
