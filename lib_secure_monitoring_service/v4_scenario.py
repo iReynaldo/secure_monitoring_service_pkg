@@ -10,6 +10,12 @@ class V4Scenario(Scenario):
 
     def apply_blackholes_from_avoid_list(self, subgraphs):
         logger.debug(f"Inside apply_blackholes_from_avoid_list")
+        # TODO: Delete the following lines onces collected reports
+        # -------------------------------------------------------------
+        print("attacker_asn=", self.engine_input.attacker_asn)
+        print("victim_asn=", self.engine_input.victim_asn)
+        print("adopting_asns=", self.engine_input.adopting_asns)
+        # -------------------------------------------------------------
         # Create a flag to check if avoid_list has been created
         avoid_list_created_flag = False
         for subg_name, subgraph_asns in subgraphs.items():
@@ -20,10 +26,19 @@ class V4Scenario(Scenario):
                     if not avoid_list_created_flag:
                         self.trusted_server_ref = as_obj.trusted_server
                         as_obj.trusted_server.create_recs()
-                        # for prefix in as_obj.trusted_server._raw_data:
-                        #     for report in as_obj.trusted_server._raw_data[prefix]:
-                        #         print(report)
                         avoid_list_created_flag = True
+                        # TODO: Delete the following lines onces collected reports
+                        # -------------------------------------------------------------
+                        reports_path_list= list()
+                        num_reports=0
+                        for prefix in as_obj.trusted_server._raw_data:
+                            for report in as_obj.trusted_server._raw_data[prefix]:
+                                reports_path_list.append(list(report.as_path))
+                                num_reports += 1
+                        print("reports_path_list=", reports_path_list)
+                        print("num_reports=", num_reports)
+                        # -------------------------------------------------------------
+
 
                     as_obj._force_add_blackholes_from_avoid_list(self.engine_input)
 

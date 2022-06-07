@@ -22,8 +22,13 @@ class V4Graph(Graph):
                                                   engine,
                                                   percent_adopt)
             for ASCls in self.adopt_as_classes:
-                print(f"{percent_adopt}% {ASCls.name}, #{trial}",
-                end = "                             " + "\r")
+                # print(f"{percent_adopt}% {ASCls.name}, #{trial}",  # TODO: Uncomment after collecting reports
+                # end = "                             " + "\r")      # TODO: Uncomment after collecting reports
+                # TODO: Delete following after collecting reports
+                # --------------------------------------------------
+                print("percent_adoption=", percent_adopt)
+                print("trial=", trial)
+                # --------------------------------------------------
                 # Deepcopy input to make sure input is fresh
                 engine_input = deepcopy(og_engine_input)
                 # Change AS Classes, seed announcements before propagation
