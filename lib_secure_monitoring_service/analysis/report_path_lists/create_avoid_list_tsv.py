@@ -28,7 +28,7 @@ with open('avoid_list.tsv', 'w') as csvfile:
     ]
     writer = csv.DictWriter(csvfile, delimiter='\t', fieldnames=fieldnames)
     writer.writeheader()
-    for i in range(80):
+    for i in range(num_modules):
         # Get the module (e.g. x001, x002, ... x010)
         module_name = "x{0:{fill}{align}3}".format(i, fill='0', align='>')
         path_list_module = importlib.import_module(module_name)
