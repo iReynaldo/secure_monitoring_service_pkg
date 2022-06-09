@@ -1,0 +1,8 @@
+Splitting reports into python modules
+Num Modules: 80
+Running AvoidList and TSV creator
+Start Time:  2022-06-08T18:43:00.704234
+End Time:  2022-06-08T19:19:08.399079
+Elapsed Time:  2167.695142744109
+Removing split report modules
+
