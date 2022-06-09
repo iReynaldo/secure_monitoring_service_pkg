@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Splitting reports into python modules"
-split -e -l 7 -a 3 -d --additional-suffix=".py" ${1}
+split -e -l 8 -a 3 -d --additional-suffix=".py" ${1}
 # compute number of files
 num_modules=$(ls | grep -E "^x[0-9]*" | wc -l)
 adjusted_num_modules=$(($num_modules - 1))

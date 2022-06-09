@@ -23,8 +23,8 @@ print("Start Time: ", timestamp)
 with open('avoid_list.tsv', 'w') as csvfile:
     fieldnames = [
         'percentAdoption', 'k', 'trial', 'computeTime', 'attackerASN', 'victimASN',
-        'numAdopting', 'numReports', 'attackerInAvoidList', 'avoidListSize', 'avoidList',
-        'adoptingASNs', 'machineName','timestamp'
+        'numAdopting', 'numReports', 'attackerInAvoidList', 'attackerProviders', 'attackerProviderInAvoidList',
+        'avoidListSize', 'avoidList', 'adoptingASNs', 'machineName','timestamp'
     ]
     writer = csv.DictWriter(csvfile, delimiter='\t', fieldnames=fieldnames)
     writer.writeheader()
@@ -39,6 +39,7 @@ with open('avoid_list.tsv', 'w') as csvfile:
             compute_time = time.perf_counter() - start_time
             avoid_list_size = len(avoid_list)
             attackerInAvoidList = path_list_module.attacker_asn in avoid_list
+            attackerProviderInAvoidList = any(x in path_list_module.attacker_providers for x in avoid_list)
             num_adopting = len(path_list_module.adopting_asns)
             # Create row to write to tsv
             row = {
@@ -51,6 +52,8 @@ with open('avoid_list.tsv', 'w') as csvfile:
                 'numAdopting': num_adopting,
                 'numReports': path_list_module.num_reports,
                 'attackerInAvoidList': attackerInAvoidList,
+                'attackerProviders': path_list_module.attacker_providers,
+                'attackerProviderInAvoidList': attackerProviderInAvoidList,
                 'avoidListSize': avoid_list_size,
                 'avoidList': avoid_list,
                 'adoptingASNs': path_list_module.adopting_asns,
