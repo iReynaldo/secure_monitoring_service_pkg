@@ -10,7 +10,7 @@ class V4Scenario(Scenario):
 
     def apply_blackholes_from_avoid_list(self, subgraphs):
         logger.debug(f"Inside apply_blackholes_from_avoid_list")
-        # TODO: Delete the following lines onces collected reports
+        # TODO: Delete the following lines once reports collected
         # -------------------------------------------------------------
         print("attacker_asn=", self.engine_input.attacker_asn)
         print("victim_asn=", self.engine_input.victim_asn)
@@ -21,13 +21,18 @@ class V4Scenario(Scenario):
         for subg_name, subgraph_asns in subgraphs.items():
             for asn in subgraph_asns:
                 as_obj = self.engine.as_dict[asn]
+                # TODO: Delete the following lines once reports collected
+                # -------------------------------------------------------------
+                if as_obj.asn == self.engine_input.attacker_asn:
+                    print("attacker_providers=", [aAs.asn for aAs in as_obj.providers])
+                # -------------------------------------------------------------
                 if hasattr(as_obj, "trusted_server"):
                     # Create the avoid list if it hasn't been created yet
                     if not avoid_list_created_flag:
                         self.trusted_server_ref = as_obj.trusted_server
                         as_obj.trusted_server.create_recs()
                         avoid_list_created_flag = True
-                        # TODO: Delete the following lines onces collected reports
+                        # TODO: Delete the following lines once reports collected
                         # -------------------------------------------------------------
                         reports_path_list= list()
                         num_reports=0
