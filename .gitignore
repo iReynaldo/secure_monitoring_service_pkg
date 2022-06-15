@@ -140,3 +140,6 @@ tags
 *.log.*
 
 lib_secure_monitoring_service/tests/performance_tests/mvdp_benchmark/converted/
+.Rproj.user
+
+lib_secure_monitoring_service/analysis/\.Rhistory

@@ -5,6 +5,7 @@ from lib_bgp_simulator.simulator.graph.graph import Graph
 from lib_bgp_simulator.simulator.data_point import DataPoint
 
 from lib_secure_monitoring_service.v4_scenario import V4Scenario
+from lib_secure_monitoring_service import metadata_collector
 
 class V4Graph(Graph):
 
@@ -28,6 +29,8 @@ class V4Graph(Graph):
                 # --------------------------------------------------
                 print("percent_adoption=", percent_adopt)
                 print("trial=", trial)
+                metadata_collector.cur_percent_adoption = percent_adopt
+                metadata_collector.cur_trial = trial
                 # --------------------------------------------------
                 # Deepcopy input to make sure input is fresh
                 engine_input = deepcopy(og_engine_input)
