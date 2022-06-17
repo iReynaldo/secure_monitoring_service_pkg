@@ -245,8 +245,8 @@
   asn: 44
   customer_cone_size: 7
   customers: !!python/tuple
-  - 96
   - 33
+  - 96
   - 666
   - 55
   input_clique: false
