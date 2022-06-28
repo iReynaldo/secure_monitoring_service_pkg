@@ -1,5 +1,7 @@
 from time import perf_counter, localtime
 import csv
+import random
+import os
 
 from lib_bgp_simulator import Simulator, BGPAS, Graph, MPMethod
 
@@ -9,6 +11,12 @@ from lib_secure_monitoring_service.engine_inputs import V4SubprefixHijack
 from lib_secure_monitoring_service.rov_sms import ROVSMS, ROVSMSK1, ROVSMSK2, ROVSMSK3, ROVSMSK4, ROVSMSK5, ROVSMSK6, ROVSMSK7, ROVSMSK10, ROVSMSK20
 from lib_secure_monitoring_service.rov_sms import ROVSMSK10, ROVSMSK20, ROVSMSK50, ROVSMSK100, ROVSMSK300, ROVSMSK500
 from lib_secure_monitoring_service.v4_graph import V4Graph
+
+
+# Set Random Seed to determinitic runs
+os.environ['PYTHONHASHSEED'] = '0'
+random.seed(0)
+
 
 def main():
     Simulator().run(graphs=[V4Graph(percent_adoptions=[0,5,10,20,40,60,80,100],
@@ -23,7 +31,7 @@ def main():
 if __name__ == "__main__":
     try:
         start_time = perf_counter()
-        with open('as_metadata.tsv', 'a') as csvfile:  # TODO: Remove this context once done collecting AS metadata
+        with open('as_metadata.tsv', 'w') as csvfile:  # TODO: Remove this context once done collecting AS metadata
             fieldnames = [
                 'percentAdoption', 'trial', 'asn', 'adopting', 'legitPrefixASPath', 'rank',
                 'numPeers', 'numProviders', 'numCustomers', 'degree', 'subgraph'
