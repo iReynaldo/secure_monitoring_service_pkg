@@ -14,7 +14,7 @@ class V4YamlSystemTestRunner(YamlSystemTestRunner):
         if not preloaded:
             engine.setup(engine_input, BaseASCls, None)
 
-        scenario = V4Scenario(engine=engine, engine_input=engine_input)
+        scenario = V4Scenario(engine=engine, engine_input=engine_input, verify_avoid_list=True)
         subgraphs = {"all_ases": set([x.asn for x in engine])}
 
         # 0 for the propagation round. Change this later
