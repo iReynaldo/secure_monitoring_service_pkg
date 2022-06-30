@@ -1,8 +1,10 @@
 from pathlib import Path
 
 from lib_bgp_simulator.tests.utils.base_graph_system_tester import BaseGraphSystemTester
+from lib_bgp_simulator import enums
 
-from lib_secure_monitoring_service.v4_scenario import V4Scenario
+from lib_secure_monitoring_service import v4_scenario
+from lib_secure_monitoring_service.rov_sms import ROVSMS
 from lib_secure_monitoring_service.tests.system_tests.v4_yaml_system_test_runner import V4YamlSystemTestRunner
 
 class V4BaseGraphSystemTester(BaseGraphSystemTester):
@@ -61,15 +63,15 @@ class V4BaseGraphSystemTester(BaseGraphSystemTester):
 
         return preloaded_engine, preloaded_engine_input, traceback_guess
 
-
     def test_stable(self):
         (preloaded_engine,
          preloaded_engine_input,
          preloaded_traceback_guess) = self.test_graph()
         preloaded_engine_copy, _, __ = self.test_graph()
         print("Inside test_stable of V4BaseGraphSystemTester")
-        scenario = V4Scenario(engine=preloaded_engine_copy,
-                              engine_input=preloaded_engine_input)
+        scenario = v4_scenario.V4Scenario(engine=preloaded_engine_copy,
+                                          engine_input=preloaded_engine_input,
+                                          verify_avoid_list=True)
         subgraphs = {"all_ases": set([x.asn for x in preloaded_engine])}
 
         traceback_guess = scenario.run(subgraphs, 1)

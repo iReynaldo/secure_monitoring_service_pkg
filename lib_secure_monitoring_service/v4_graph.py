@@ -9,6 +9,9 @@ from lib_secure_monitoring_service import metadata_collector
 
 class V4Graph(Graph):
 
+    def __init__(self, *args, verify_avoid_list=False, **kwargs):
+        super(V4Graph, self).__init__(*args, **kwargs)
+        self.verify_avoid_list_flag = verify_avoid_list
 
     def _run_chunk(self, percent_adopt_trials):
         # Engine is not picklable or dillable AT ALL, so do it here
@@ -42,7 +45,8 @@ class V4Graph(Graph):
                     scenario = V4Scenario(trial=trial,
                                           engine=engine,
                                           engine_input=engine_input,
-                                          profiler=self.profiler)
+                                          profiler=self.profiler,
+                                          verify_avoid_list=self.verify_avoid_list_flag)
                     # Run test, remove reference to engine and return it
                     scenario.run(self.subgraphs, propagation_round)
                     # Get data point - just a frozen data class

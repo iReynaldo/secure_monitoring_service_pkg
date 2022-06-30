@@ -51,8 +51,8 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                         if rib_entry.prefix == subprefix:
                             logger.debug(f"Found subprefix in RIB of {self.asn}")
                             does_not_have_subprefix = False
-                            assert(rib_entry.blackhole, "The found subprefix does not have blackhole set to true")
-                            assert(rib_entry.traceback_end, "The found subprefix does not have traceback_end set to true")
+                            assert rib_entry.blackhole == True, "The found subprefix does not have blackhole set to true"
+                            assert rib_entry.traceback_end == True, "The found subprefix does not have traceback_end set to true"
 
                     if does_not_have_subprefix:
                         # We need to create our own subprefix ann

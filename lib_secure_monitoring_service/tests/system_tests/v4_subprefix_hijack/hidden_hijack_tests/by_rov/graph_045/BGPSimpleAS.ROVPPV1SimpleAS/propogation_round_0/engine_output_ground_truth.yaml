@@ -1,12 +1,120 @@
 !yamlable/SimulatorEngine
-11: !yamlable/BGPSimpleAS
+1: !yamlable/BGPSimpleAS
   _local_rib: !yamlable/LocalRIB
     1.2.0.0/16: !yamlable/ROVPPAnn
       as_path: !!python/tuple
-      - 11
-      - 77
-      - 44
-      - 96
+      - 1
+      - 777
+      attacker_on_route: false
+      blackhole: false
+      communities: !!python/tuple []
+      holes: !!python/tuple []
+      prefix: 1.2.0.0/16
+      preventive: false
+      recv_relationship: !simulator_codec/Relationships
+        name: CUSTOMERS
+        value: 3
+      roa_origin: 777
+      roa_valid_length: true
+      seed_asn: null
+      timestamp: 0
+      traceback_end: false
+      withdraw: false
+    1.2.3.0/24: !yamlable/ROVPPAnn
+      as_path: !!python/tuple
+      - 1
+      - 2
+      - 666
+      attacker_on_route: false
+      blackhole: false
+      communities: !!python/tuple []
+      holes: !!python/tuple []
+      prefix: 1.2.3.0/24
+      preventive: false
+      recv_relationship: !simulator_codec/Relationships
+        name: PROVIDERS
+        value: 1
+      roa_origin: 777
+      roa_valid_length: false
+      seed_asn: null
+      timestamp: 1
+      traceback_end: false
+      withdraw: false
+  _recv_q: !yamlable/RecvQueue {}
+  asn: 1
+  customer_cone_size: 1
+  customers: !!python/tuple
+  - 777
+  input_clique: false
+  ixp: false
+  peers: !!python/tuple []
+  propagation_rank: 1
+  providers: !!python/tuple
+  - 2
+2: !yamlable/BGPSimpleAS
+  _local_rib: !yamlable/LocalRIB
+    1.2.0.0/16: !yamlable/ROVPPAnn
+      as_path: !!python/tuple
+      - 2
+      - 1
+      - 777
+      attacker_on_route: false
+      blackhole: false
+      communities: !!python/tuple []
+      holes: !!python/tuple []
+      prefix: 1.2.0.0/16
+      preventive: false
+      recv_relationship: !simulator_codec/Relationships
+        name: CUSTOMERS
+        value: 3
+      roa_origin: 777
+      roa_valid_length: true
+      seed_asn: null
+      timestamp: 0
+      traceback_end: false
+      withdraw: false
+    1.2.3.0/24: !yamlable/ROVPPAnn
+      as_path: !!python/tuple
+      - 2
+      - 666
+      attacker_on_route: false
+      blackhole: false
+      communities: !!python/tuple []
+      holes: !!python/tuple []
+      prefix: 1.2.3.0/24
+      preventive: false
+      recv_relationship: !simulator_codec/Relationships
+        name: CUSTOMERS
+        value: 3
+      roa_origin: 777
+      roa_valid_length: false
+      seed_asn: null
+      timestamp: 1
+      traceback_end: false
+      withdraw: false
+  _recv_q: !yamlable/RecvQueue {}
+  asn: 2
+  customer_cone_size: 8
+  customers: !!python/tuple
+  - 4
+  - 10
+  - 1
+  - 11
+  - 666
+  input_clique: false
+  ixp: false
+  peers: !!python/tuple []
+  propagation_rank: 2
+  providers: !!python/tuple
+  - 7
+3: !yamlable/ROVPPV1SimpleAS
+  _local_rib: !yamlable/LocalRIB
+    1.2.0.0/16: !yamlable/ROVPPAnn
+      as_path: !!python/tuple
+      - 3
+      - 7
+      - 2
+      - 1
       - 777
       attacker_on_route: false
       blackhole: false
@@ -24,125 +132,30 @@
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
-  asn: 11
+  asn: 3
   customer_cone_size: 11
   customers: !!python/tuple
-  - 32
-  - 77
+  - 7
+  - 5
   input_clique: false
   ixp: false
   peers: !!python/tuple []
-  propagation_rank: 5
+  propagation_rank: 4
   providers: !!python/tuple []
-12: !yamlable/BGPSimpleAS
+4: !yamlable/ROVPPV1SimpleAS
   _local_rib: !yamlable/LocalRIB
     1.2.0.0/16: !yamlable/ROVPPAnn
       as_path: !!python/tuple
-      - 12
-      - 32
-      - 11
-      - 77
-      - 44
-      - 96
-      - 777
-      attacker_on_route: false
-      blackhole: false
-      communities: !!python/tuple []
-      holes: !!python/tuple []
-      prefix: 1.2.0.0/16
-      preventive: false
-      recv_relationship: !simulator_codec/Relationships
-        name: PROVIDERS
-        value: 1
-      roa_origin: 777
-      roa_valid_length: true
-      seed_asn: null
-      timestamp: 0
-      traceback_end: false
-      withdraw: false
-  _recv_q: !yamlable/RecvQueue {}
-  asn: 12
-  customer_cone_size: 0
-  customers: !!python/tuple []
-  input_clique: false
-  ixp: false
-  peers: !!python/tuple []
-  propagation_rank: 0
-  providers: !!python/tuple
-  - 32
-32: !yamlable/ROVSMS
-  _local_rib: !yamlable/LocalRIB
-    1.2.0.0/16: !yamlable/ROVPPAnn
-      as_path: !!python/tuple
-      - 32
-      - 11
-      - 77
-      - 44
-      - 96
-      - 777
-      attacker_on_route: false
-      blackhole: false
-      communities: !!python/tuple []
-      holes: !!python/tuple []
-      prefix: 1.2.0.0/16
-      preventive: false
-      recv_relationship: !simulator_codec/Relationships
-        name: PROVIDERS
-        value: 1
-      roa_origin: 777
-      roa_valid_length: true
-      seed_asn: null
-      timestamp: 0
-      traceback_end: false
-      withdraw: false
-    1.2.3.0/24: !yamlable/ROVPPAnn
-      as_path: !!python/tuple
-      - 32
-      - 11
-      - 77
-      - 44
-      - 96
-      - 777
-      attacker_on_route: false
-      blackhole: true
-      communities: !!python/tuple []
-      holes: !!python/tuple []
-      prefix: 1.2.3.0/24
-      preventive: false
-      recv_relationship: !simulator_codec/Relationships
-        name: PROVIDERS
-        value: 1
-      roa_origin: 777
-      roa_valid_length: false
-      seed_asn: null
-      timestamp: 0
-      traceback_end: true
-      withdraw: false
-  _recv_q: !yamlable/RecvQueue {}
-  asn: 32
-  customer_cone_size: 1
-  customers: !!python/tuple
-  - 12
-  input_clique: false
-  ixp: false
-  peers: !!python/tuple []
-  propagation_rank: 1
-  providers: !!python/tuple
-  - 11
-33: !yamlable/ROVSMS
-  _local_rib: !yamlable/LocalRIB
-    1.2.0.0/16: !yamlable/ROVPPAnn
-      as_path: !!python/tuple
-      - 33
-      - 44
-      - 96
+      - 4
+      - 2
+      - 1
       - 777
       attacker_on_route: false
       blackhole: false
       communities: !!python/tuple []
       holes: !!python/tuple
       - as_path: !!python/tuple
-        - 44
+        - 2
         - 666
         attacker_on_route: false
         blackhole: false
@@ -172,8 +185,8 @@
       withdraw: false
     1.2.3.0/24: !yamlable/ROVPPAnn
       as_path: !!python/tuple
-      - 33
-      - 44
+      - 4
+      - 2
       - 666
       attacker_on_route: false
       blackhole: true
@@ -191,7 +204,7 @@
       traceback_end: true
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
-  asn: 33
+  asn: 4
   customer_cone_size: 0
   customers: !!python/tuple []
   input_clique: false
@@ -199,13 +212,50 @@
   peers: !!python/tuple []
   propagation_rank: 0
   providers: !!python/tuple
-  - 44
-44: !yamlable/BGPSimpleAS
+  - 2
+5: !yamlable/BGPSimpleAS
   _local_rib: !yamlable/LocalRIB
     1.2.0.0/16: !yamlable/ROVPPAnn
       as_path: !!python/tuple
-      - 44
-      - 96
+      - 5
+      - 3
+      - 7
+      - 2
+      - 1
+      - 777
+      attacker_on_route: false
+      blackhole: false
+      communities: !!python/tuple []
+      holes: !!python/tuple []
+      prefix: 1.2.0.0/16
+      preventive: false
+      recv_relationship: !simulator_codec/Relationships
+        name: PROVIDERS
+        value: 1
+      roa_origin: 777
+      roa_valid_length: true
+      seed_asn: null
+      timestamp: 0
+      traceback_end: false
+      withdraw: false
+  _recv_q: !yamlable/RecvQueue {}
+  asn: 5
+  customer_cone_size: 0
+  customers: !!python/tuple []
+  input_clique: false
+  ixp: false
+  peers: !!python/tuple []
+  propagation_rank: 0
+  providers: !!python/tuple
+  - 3
+6: !yamlable/BGPSimpleAS
+  _local_rib: !yamlable/LocalRIB
+    1.2.0.0/16: !yamlable/ROVPPAnn
+      as_path: !!python/tuple
+      - 6
+      - 7
+      - 2
+      - 1
       - 777
       attacker_on_route: false
       blackhole: false
@@ -222,46 +272,61 @@
       timestamp: 0
       traceback_end: false
       withdraw: false
-    1.2.3.0/24: !yamlable/ROVPPAnn
+  _recv_q: !yamlable/RecvQueue {}
+  asn: 6
+  customer_cone_size: 12
+  customers: !!python/tuple
+  - 7
+  - 8
+  input_clique: false
+  ixp: false
+  peers: !!python/tuple []
+  propagation_rank: 4
+  providers: !!python/tuple []
+7: !yamlable/ROVSimpleAS
+  _local_rib: !yamlable/LocalRIB
+    1.2.0.0/16: !yamlable/ROVPPAnn
       as_path: !!python/tuple
-      - 44
-      - 666
+      - 7
+      - 2
+      - 1
+      - 777
       attacker_on_route: false
       blackhole: false
       communities: !!python/tuple []
       holes: !!python/tuple []
-      prefix: 1.2.3.0/24
+      prefix: 1.2.0.0/16
       preventive: false
       recv_relationship: !simulator_codec/Relationships
         name: CUSTOMERS
         value: 3
       roa_origin: 777
-      roa_valid_length: false
+      roa_valid_length: true
       seed_asn: null
-      timestamp: 1
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
-  asn: 44
-  customer_cone_size: 7
+  asn: 7
+  customer_cone_size: 9
   customers: !!python/tuple
-  - 33
-  - 96
-  - 666
-  - 55
+  - 2
   input_clique: false
   ixp: false
   peers: !!python/tuple []
   propagation_rank: 3
   providers: !!python/tuple
-  - 77
-55: !yamlable/BGPSimpleAS
+  - 6
+  - 3
+8: !yamlable/ROVPPV1SimpleAS
   _local_rib: !yamlable/LocalRIB
     1.2.0.0/16: !yamlable/ROVPPAnn
       as_path: !!python/tuple
-      - 55
-      - 44
-      - 96
+      - 8
+      - 6
+      - 7
+      - 2
+      - 1
       - 777
       attacker_on_route: false
       blackhole: false
@@ -278,145 +343,195 @@
       timestamp: 0
       traceback_end: false
       withdraw: false
-    1.2.3.0/24: !yamlable/ROVPPAnn
-      as_path: !!python/tuple
-      - 55
-      - 44
-      - 666
-      attacker_on_route: false
-      blackhole: false
-      communities: !!python/tuple []
-      holes: !!python/tuple []
-      prefix: 1.2.3.0/24
-      preventive: false
-      recv_relationship: !simulator_codec/Relationships
-        name: PROVIDERS
-        value: 1
-      roa_origin: 777
-      roa_valid_length: false
-      seed_asn: null
-      timestamp: 1
-      traceback_end: false
-      withdraw: false
   _recv_q: !yamlable/RecvQueue {}
-  asn: 55
-  customer_cone_size: 2
-  customers: !!python/tuple
-  - 88
-  input_clique: false
-  ixp: false
-  peers: !!python/tuple []
-  propagation_rank: 2
-  providers: !!python/tuple
-  - 44
-77: !yamlable/ROVSimpleAS
-  _local_rib: !yamlable/LocalRIB
-    1.2.0.0/16: !yamlable/ROVPPAnn
-      as_path: !!python/tuple
-      - 77
-      - 44
-      - 96
-      - 777
-      attacker_on_route: false
-      blackhole: false
-      communities: !!python/tuple []
-      holes: !!python/tuple []
-      prefix: 1.2.0.0/16
-      preventive: false
-      recv_relationship: !simulator_codec/Relationships
-        name: CUSTOMERS
-        value: 3
-      roa_origin: 777
-      roa_valid_length: true
-      seed_asn: null
-      timestamp: 0
-      traceback_end: false
-      withdraw: false
-  _recv_q: !yamlable/RecvQueue {}
-  asn: 77
-  customer_cone_size: 8
-  customers: !!python/tuple
-  - 44
-  input_clique: false
-  ixp: false
-  peers: !!python/tuple []
-  propagation_rank: 4
-  providers: !!python/tuple
-  - 11
-88: !yamlable/BGPSimpleAS
-  _local_rib: !yamlable/LocalRIB
-    1.2.0.0/16: !yamlable/ROVPPAnn
-      as_path: !!python/tuple
-      - 88
-      - 55
-      - 44
-      - 96
-      - 777
-      attacker_on_route: false
-      blackhole: false
-      communities: !!python/tuple []
-      holes: !!python/tuple []
-      prefix: 1.2.0.0/16
-      preventive: false
-      recv_relationship: !simulator_codec/Relationships
-        name: PROVIDERS
-        value: 1
-      roa_origin: 777
-      roa_valid_length: true
-      seed_asn: null
-      timestamp: 0
-      traceback_end: false
-      withdraw: false
-    1.2.3.0/24: !yamlable/ROVPPAnn
-      as_path: !!python/tuple
-      - 88
-      - 55
-      - 44
-      - 666
-      attacker_on_route: false
-      blackhole: false
-      communities: !!python/tuple []
-      holes: !!python/tuple []
-      prefix: 1.2.3.0/24
-      preventive: false
-      recv_relationship: !simulator_codec/Relationships
-        name: PROVIDERS
-        value: 1
-      roa_origin: 777
-      roa_valid_length: false
-      seed_asn: null
-      timestamp: 1
-      traceback_end: false
-      withdraw: false
-  _recv_q: !yamlable/RecvQueue {}
-  asn: 88
+  asn: 8
   customer_cone_size: 1
   customers: !!python/tuple
-  - 89
+  - 9
   input_clique: false
   ixp: false
   peers: !!python/tuple []
   propagation_rank: 1
   providers: !!python/tuple
-  - 55
-89: !yamlable/ROVSMS
+  - 6
+9: !yamlable/BGPSimpleAS
   _local_rib: !yamlable/LocalRIB
     1.2.0.0/16: !yamlable/ROVPPAnn
       as_path: !!python/tuple
-      - 89
-      - 88
-      - 55
-      - 44
-      - 96
+      - 9
+      - 8
+      - 6
+      - 7
+      - 2
+      - 1
+      - 777
+      attacker_on_route: false
+      blackhole: false
+      communities: !!python/tuple []
+      holes: !!python/tuple []
+      prefix: 1.2.0.0/16
+      preventive: false
+      recv_relationship: !simulator_codec/Relationships
+        name: PROVIDERS
+        value: 1
+      roa_origin: 777
+      roa_valid_length: true
+      seed_asn: null
+      timestamp: 0
+      traceback_end: false
+      withdraw: false
+  _recv_q: !yamlable/RecvQueue {}
+  asn: 9
+  customer_cone_size: 0
+  customers: !!python/tuple []
+  input_clique: false
+  ixp: false
+  peers: !!python/tuple []
+  propagation_rank: 0
+  providers: !!python/tuple
+  - 8
+10: !yamlable/ROVPPV1SimpleAS
+  _local_rib: !yamlable/LocalRIB
+    1.2.0.0/16: !yamlable/ROVPPAnn
+      as_path: !!python/tuple
+      - 10
+      - 2
+      - 1
       - 777
       attacker_on_route: false
       blackhole: false
       communities: !!python/tuple []
       holes: !!python/tuple
       - as_path: !!python/tuple
-        - 88
-        - 55
-        - 44
+        - 2
+        - 666
+        attacker_on_route: false
+        blackhole: false
+        communities: !!python/tuple []
+        holes: !!python/tuple []
+        prefix: 1.2.3.0/24
+        preventive: false
+        recv_relationship: !simulator_codec/Relationships
+          name: CUSTOMERS
+          value: 3
+        roa_origin: 777
+        roa_valid_length: false
+        seed_asn: null
+        timestamp: 1
+        traceback_end: false
+        withdraw: false
+      prefix: 1.2.0.0/16
+      preventive: false
+      recv_relationship: !simulator_codec/Relationships
+        name: PROVIDERS
+        value: 1
+      roa_origin: 777
+      roa_valid_length: true
+      seed_asn: null
+      timestamp: 0
+      traceback_end: false
+      withdraw: false
+    1.2.3.0/24: !yamlable/ROVPPAnn
+      as_path: !!python/tuple
+      - 10
+      - 2
+      - 666
+      attacker_on_route: false
+      blackhole: true
+      communities: !!python/tuple []
+      holes: !!python/tuple []
+      prefix: 1.2.3.0/24
+      preventive: false
+      recv_relationship: !simulator_codec/Relationships
+        name: PROVIDERS
+        value: 1
+      roa_origin: 777
+      roa_valid_length: false
+      seed_asn: null
+      timestamp: 1
+      traceback_end: true
+      withdraw: false
+  _recv_q: !yamlable/RecvQueue {}
+  asn: 10
+  customer_cone_size: 0
+  customers: !!python/tuple []
+  input_clique: false
+  ixp: false
+  peers: !!python/tuple []
+  propagation_rank: 0
+  providers: !!python/tuple
+  - 2
+11: !yamlable/BGPSimpleAS
+  _local_rib: !yamlable/LocalRIB
+    1.2.0.0/16: !yamlable/ROVPPAnn
+      as_path: !!python/tuple
+      - 11
+      - 2
+      - 1
+      - 777
+      attacker_on_route: false
+      blackhole: false
+      communities: !!python/tuple []
+      holes: !!python/tuple []
+      prefix: 1.2.0.0/16
+      preventive: false
+      recv_relationship: !simulator_codec/Relationships
+        name: PROVIDERS
+        value: 1
+      roa_origin: 777
+      roa_valid_length: true
+      seed_asn: null
+      timestamp: 0
+      traceback_end: false
+      withdraw: false
+    1.2.3.0/24: !yamlable/ROVPPAnn
+      as_path: !!python/tuple
+      - 11
+      - 2
+      - 666
+      attacker_on_route: false
+      blackhole: false
+      communities: !!python/tuple []
+      holes: !!python/tuple []
+      prefix: 1.2.3.0/24
+      preventive: false
+      recv_relationship: !simulator_codec/Relationships
+        name: PROVIDERS
+        value: 1
+      roa_origin: 777
+      roa_valid_length: false
+      seed_asn: null
+      timestamp: 1
+      traceback_end: false
+      withdraw: false
+  _recv_q: !yamlable/RecvQueue {}
+  asn: 11
+  customer_cone_size: 2
+  customers: !!python/tuple
+  - 12
+  - 13
+  input_clique: false
+  ixp: false
+  peers: !!python/tuple []
+  propagation_rank: 1
+  providers: !!python/tuple
+  - 2
+12: !yamlable/ROVPPV1SimpleAS
+  _local_rib: !yamlable/LocalRIB
+    1.2.0.0/16: !yamlable/ROVPPAnn
+      as_path: !!python/tuple
+      - 12
+      - 11
+      - 2
+      - 1
+      - 777
+      attacker_on_route: false
+      blackhole: false
+      communities: !!python/tuple []
+      holes: !!python/tuple
+      - as_path: !!python/tuple
+        - 11
+        - 2
         - 666
         attacker_on_route: false
         blackhole: false
@@ -446,10 +561,9 @@
       withdraw: false
     1.2.3.0/24: !yamlable/ROVPPAnn
       as_path: !!python/tuple
-      - 89
-      - 88
-      - 55
-      - 44
+      - 12
+      - 11
+      - 2
       - 666
       attacker_on_route: false
       blackhole: true
@@ -467,7 +581,7 @@
       traceback_end: true
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
-  asn: 89
+  asn: 12
   customer_cone_size: 0
   customers: !!python/tuple []
   input_clique: false
@@ -475,12 +589,15 @@
   peers: !!python/tuple []
   propagation_rank: 0
   providers: !!python/tuple
-  - 88
-96: !yamlable/BGPSimpleAS
+  - 11
+13: !yamlable/BGPSimpleAS
   _local_rib: !yamlable/LocalRIB
     1.2.0.0/16: !yamlable/ROVPPAnn
       as_path: !!python/tuple
-      - 96
+      - 13
+      - 11
+      - 2
+      - 1
       - 777
       attacker_on_route: false
       blackhole: false
@@ -489,8 +606,8 @@
       prefix: 1.2.0.0/16
       preventive: false
       recv_relationship: !simulator_codec/Relationships
-        name: CUSTOMERS
-        value: 3
+        name: PROVIDERS
+        value: 1
       roa_origin: 777
       roa_valid_length: true
       seed_asn: null
@@ -499,8 +616,9 @@
       withdraw: false
     1.2.3.0/24: !yamlable/ROVPPAnn
       as_path: !!python/tuple
-      - 96
-      - 44
+      - 13
+      - 11
+      - 2
       - 666
       attacker_on_route: false
       blackhole: false
@@ -518,23 +636,22 @@
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
-  asn: 96
-  customer_cone_size: 1
-  customers: !!python/tuple
-  - 777
+  asn: 13
+  customer_cone_size: 0
+  customers: !!python/tuple []
   input_clique: false
   ixp: false
   peers: !!python/tuple []
-  propagation_rank: 1
+  propagation_rank: 0
   providers: !!python/tuple
-  - 44
+  - 11
 666: !yamlable/BGPSimpleAS
   _local_rib: !yamlable/LocalRIB
     1.2.0.0/16: !yamlable/ROVPPAnn
       as_path: !!python/tuple
       - 666
-      - 44
-      - 96
+      - 2
+      - 1
       - 777
       attacker_on_route: false
       blackhole: false
@@ -578,7 +695,7 @@
   peers: !!python/tuple []
   propagation_rank: 0
   providers: !!python/tuple
-  - 44
+  - 2
 777: !yamlable/BGPSimpleAS
   _local_rib: !yamlable/LocalRIB
     1.2.0.0/16: !yamlable/ROVPPAnn
@@ -602,8 +719,8 @@
     1.2.3.0/24: !yamlable/ROVPPAnn
       as_path: !!python/tuple
       - 777
-      - 96
-      - 44
+      - 1
+      - 2
       - 666
       attacker_on_route: false
       blackhole: false
@@ -629,4 +746,4 @@
   peers: !!python/tuple []
   propagation_rank: 0
   providers: !!python/tuple
-  - 96
+  - 1
