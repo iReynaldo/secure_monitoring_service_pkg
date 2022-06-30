@@ -1,4 +1,5 @@
 import random
+import os
 
 from lib_bgp_simulator import Simulator, BGPAS, Graph, MPMethod
 
@@ -12,7 +13,7 @@ from lib_secure_monitoring_service.v4_graph import V4Graph
 
 
 # Set Random Seed to determinitic runs
-# Note: The PYTHONHASHSEED also needs to set in the shell environment!!!!!!!!!
+os.environ['PYTHONHASHSEED'] = '0'
 random.seed(0)
 
 def main():
@@ -20,7 +21,8 @@ def main():
                                     adopt_as_classes=[ROVPPV1LiteSimpleAS, ROVSMS, ROVSMSK1, ROVSMSK10],
                                     EngineInputCls=V4SubprefixHijack,
                                     num_trials=10,
-                                    BaseASCls=BGPAS)],
+                                    BaseASCls=BGPAS,
+                                    verify_avoid_list=True)],
                     mp_method = MPMethod.MP
                     )
 
