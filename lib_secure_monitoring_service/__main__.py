@@ -51,7 +51,7 @@ def main():
                 percent_adoptions=[0, 5, 10, 20, 40, 60, 80, 100],
                 adopt_as_classes=[ROVPPV1LiteSimpleAS, ROVSMS],
                 EngineInputCls=V4SubprefixHijack,
-                num_trials=1,
+                num_trials=1000,
                 BaseASCls=BGPAS,
                 verify_avoid_list=True,
             )
