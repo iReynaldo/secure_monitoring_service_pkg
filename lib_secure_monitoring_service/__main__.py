@@ -49,7 +49,7 @@ def main():
         graphs=[
             V4Graph(
                 percent_adoptions=[0, 5, 10, 20, 40, 60, 80, 100],
-                adopt_as_classes=[ROVPPV1LiteSimpleAS, ROVSMS],
+                adopt_as_classes=[ROVSMSK1, ROVSMSK2],
                 EngineInputCls=V4SubprefixHijack,
                 num_trials=1000,
                 BaseASCls=BGPAS,
@@ -62,10 +62,10 @@ def main():
 
 if __name__ == "__main__":
     try:
-        print("Start Time", time.localtime())
+        print("Start Time", time.ctime())
         start_time = time.perf_counter()
         main()
     finally:
         end_time = time.perf_counter()
-        print("End Time", time.localtime())
+        print("End Time", time.ctime())
         print("Elasped Time: ", end_time - start_time)
