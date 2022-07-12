@@ -1,3 +1,5 @@
+from lib_bgp_simulator.enums import Outcomes, Relationships
+
 from lib_rovpp import ROVPPSubprefixHijack
 
 from lib_secure_monitoring_service.sim_logger import sim_logger as logger
@@ -27,3 +29,25 @@ class V4SubprefixHijack(ROVPPSubprefixHijack):
         #     from lib_secure_monitoring_service.mvdp import get_avoid_list
         #     print("Path List: ", trust_server_reference.reports_to_path_list("1.2.3.0/24"))
         #     print("Avoid List: ", trust_server_reference._recommendations)
+
+    def determine_outcome(self, as_obj, ann):
+        """This assumes that the as_obj is the last in the path"""
+
+        if self.attacker_asn == as_obj.asn:
+            return Outcomes.ATTACKER_SUCCESS, as_obj.asn
+        elif self.victim_asn == as_obj.asn:
+            return Outcomes.VICTIM_SUCCESS, as_obj.asn
+        # End of traceback. Didn't reach atk/vic so it's disconnected
+        # Note that there is no good way to end, which is why we have
+        # The traceback_end just in case
+        # Since paths could be lies, and for things like blackholes
+        # The recv relationship must not be the origin
+        elif (ann is None or
+              len(ann.as_path) == 1
+              or ann.recv_relationship == Relationships.ORIGIN
+              or ann.traceback_end):
+
+            return Outcomes.DISCONNECTED, as_obj.asn
+        # Keep going
+        else:
+            return None, as_obj.asn

@@ -2,6 +2,7 @@ from time import perf_counter, localtime
 import csv
 import random
 import os
+import sys
 
 from lib_bgp_simulator import Simulator, BGPAS, Graph, MPMethod
 
@@ -14,8 +15,9 @@ from lib_secure_monitoring_service.v4_graph import V4Graph
 
 
 # Set Random Seed to determinitic runs
-os.environ['PYTHONHASHSEED'] = '0'
-random.seed(0)
+seed = sys.argv[1]
+os.environ['PYTHONHASHSEED'] = seed
+random.seed(int(seed))
 
 
 def main():
