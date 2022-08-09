@@ -1,13 +1,19 @@
+import gc
+
 from lib_bgp_simulator.simulator.scenario import Scenario
 from lib_bgp_simulator import enums
+from lib_bgp_simulator import BGPAS
+from lib_bgp_simulator import Outcomes
 
+from lib_rovpp import ROVPPV1SimpleAS, ROVPPV1LiteSimpleAS
 from lib_secure_monitoring_service.rov_sms import ROVSMS
 from lib_secure_monitoring_service.sim_logger import sim_logger as logger
 
-class V4Scenario(Scenario):
 
+class V4Scenario(Scenario):
     trusted_server_ref = None
     avoid_lists = None  # Used for verifying avoid list in pytest system tests
+    traceback_outcome_asn = dict()
 
     def __init__(self, *args, verify_avoid_list=False, **kwargs):
         super(V4Scenario, self).__init__(*args, **kwargs)
@@ -31,7 +37,6 @@ class V4Scenario(Scenario):
                         self.has_rovsms_ases = True
 
                     as_obj._force_add_blackholes_from_avoid_list(self.engine_input)
-
 
     def run(self, subgraphs, propagation_round: int):
         # Run engine
@@ -61,9 +66,63 @@ class V4Scenario(Scenario):
             self.trusted_server_ref.reset()
             # Note the trusted_server_ref is set inside apply_blackholes_from_avoid_list
             self.trusted_server_ref = None
+        # Clear the outcomes dict
+        del V4Scenario.traceback_outcome_asn
+        V4Scenario.traceback_outcome_asn = dict()
+        # Delete saved avoid list
+        self.avoid_lists = None
+        # Force garbage collection
+        gc.collect()
 
         return traceback_outcomes
 
+    def _get_outcomes(self, policies, countable_asns, cache):
+        outcomes = {x: {y: 0 for y in policies}
+                    for x in list(Outcomes)}
+        # Most specific to least specific
+        ordered_prefixes = self._get_ordered_prefixes()
+
+        for asn in countable_asns:
+            as_obj = self.engine.as_dict[asn]
+            # Get the attack outcome
+            outcome, traceback_asn = self._get_atk_outcome(as_obj, ordered_prefixes, 0, cache)
+            # Incriment the outcome and policy by 1
+            outcomes[outcome][as_obj.name] += 1
+        return outcomes
+
+    def _get_atk_outcome(self, as_obj, ordered_prefixes, path_len, cache):
+        assert path_len < 128, "Path is too long, probably looping"
+
+        if as_obj.asn in cache:
+            return cache[as_obj.asn], self.traceback_outcome_asn[as_obj.asn]
+
+        # Get most specific announcement, or empty RIB
+        most_specific_ann = self._get_most_specific_ann(as_obj,
+                                                        ordered_prefixes)
+        # Determine the outcome of the attack
+        attack_outcome, traceback_asn = self.engine_input.determine_outcome(as_obj,
+                                                                            most_specific_ann)
+        if not attack_outcome:
+            # Continue tracing back by getting the last AS
+            new_as_obj = self.engine.as_dict[most_specific_ann.as_path[1]]
+            if not isinstance(as_obj, BGPAS):
+                msg = ("Path manipulation not allowed for BGPSimpleAS. "
+                       "Consider inheriting from BGPAS instead")
+                assert new_as_obj in as_obj.neighbors, msg
+            attack_outcome, traceback_asn = self._get_atk_outcome(new_as_obj,
+                                                                  ordered_prefixes,
+                                                                  path_len + 1,
+                                                                  cache)
+            msg = "Path manipulation attack with no traceback end?"
+            assert (attack_outcome is not None
+                    or new_as_obj in as_obj.neighbors)
+
+        assert attack_outcome is not None, "Attack should be disconnected?"
+
+        cache[as_obj.asn] = attack_outcome
+        self.traceback_outcome_asn[as_obj.asn] = traceback_asn
+
+        return attack_outcome, traceback_asn
 
     def verify_avoid_list(self, trackback_outcomes):
         """
@@ -88,3 +147,10 @@ class V4Scenario(Scenario):
                 if asn in trackback_outcomes:
                     assert trackback_outcomes[asn] != enums.Outcomes.VICTIM_SUCCESS, \
                         f"ASN: {asn} in avoid list leads to victim"
+                    # Check if the disconnected case is not caused by a blackhole
+                    as_obj = self.engine.as_dict[self.traceback_outcome_asn[asn]]
+                    # TODO: the following check wouldn't work for v2, v2a, and v3
+                    if trackback_outcomes[asn] == enums.Outcomes.DISCONNECTED \
+                            and not (isinstance(as_obj, ROVPPV1SimpleAS)
+                                     or isinstance(as_obj, ROVPPV1LiteSimpleAS)):
+                        assert f"ASN: {asn} in avoid list was disconnected, but not by a blackhole."

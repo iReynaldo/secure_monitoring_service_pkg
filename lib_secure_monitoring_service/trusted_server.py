@@ -62,6 +62,8 @@ class TrustedServer:
         return path_list
 
     def reset(self):
+        del self._raw_data
         self._raw_data: Dict[str, List[Ann]] = \
             defaultdict(list)
+        del self._recommendations
         self._recommendations: Dict[str, Set[int]] = defaultdict(set)

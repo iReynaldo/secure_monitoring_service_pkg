@@ -26,12 +26,8 @@ class V4Graph(Graph):
                                                   engine,
                                                   percent_adopt)
             for ASCls in self.adopt_as_classes:
-                # print(f"{percent_adopt}% {ASCls.name}, #{trial}",  # TODO: Uncomment after collecting reports
-                # end = "                             " + "\r")      # TODO: Uncomment after collecting reports
-                # TODO: Delete following after collecting reports
-                # --------------------------------------------------
-                print("percent_adoption=", percent_adopt)
-                print("trial=", trial)
+                print(f"{percent_adopt}% {ASCls.name}, #{trial}",
+                      end = "                             " + "\r")
                 metadata_collector.cur_percent_adoption = percent_adopt
                 metadata_collector.cur_trial = trial
                 # --------------------------------------------------
