@@ -139,7 +139,7 @@ tags
 # Log files
 *.log.*
 
-lib_secure_monitoring_service/tests/performance_tests/mvdp_benchmark/converted/
+secure_monitoring_service_pkg/tests/performance_tests/mvdp_benchmark/converted/
 
 # History files
 .Rhistory

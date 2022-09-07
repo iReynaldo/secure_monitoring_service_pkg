@@ -6,11 +6,11 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 # https://stackoverflow.com/a/58534041/8903959
 setup(
-    name='lib_secure_monitoring_service',
+    name='secure_monitoring_service_pkg',
     author="Reynaldo Morillo",
     author_email="reynaldo.morillo@uconn.edu",
     version="0.0.1",
-    url='https://github.com/iReynaldo/lib_secure_monitoring_service.git',
+    url='https://github.com/iReynaldo/secure_monitoring_service_pkg.git',
     license="BSD",
     description="ROV++ extension",
     long_description=long_description,
@@ -29,8 +29,8 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3'],
     entry_points={
-        'console_scripts': ('lib_secure_monitoring_service = '
-                            'lib_secure_monitoring_service.__main__:main')
+        'console_scripts': ('secure_monitoring_service_pkg = '
+                            'secure_monitoring_service_pkg.__main__:main')
     },
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
