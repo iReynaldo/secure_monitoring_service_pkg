@@ -1,7 +1,7 @@
-from lib_rovpp import ROVPPV1SimpleAS, ROVPPV1LiteSimpleAS
+from lib_rovpp import ROVPPV1LiteSimpleAS
 
 from .trusted_server import TrustedServer
-from secure_monitoring_service_pkg.sim_logger import sim_logger as logger
+from secure_monitoring_service_pkg.simulation_framework.sim_logger import sim_logger as logger
 from secure_monitoring_service_pkg.report import Report
 
 class ROVSMS(ROVPPV1LiteSimpleAS):

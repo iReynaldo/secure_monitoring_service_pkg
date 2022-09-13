@@ -2,11 +2,9 @@ import random
 import os
 from lib_bgp_simulator import Simulator, BGPAS, Graph, MPMethod
 
-from lib_rovpp import ROVPPV1SimpleAS, ROVPPV1LiteSimpleAS
-
-from secure_monitoring_service_pkg.engine_inputs import V4SubprefixHijack
+from secure_monitoring_service_pkg.simulation_framework.engine_inputs import V4SubprefixHijack
 from secure_monitoring_service_pkg.rov_sms import ROVSMS, ROVSMSK1
-from secure_monitoring_service_pkg.v4_graph import V4Graph
+from secure_monitoring_service_pkg.simulation_framework.v4_graph import V4Graph
 
 
 # Set Random Seed to determinitic runs

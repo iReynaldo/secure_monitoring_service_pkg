@@ -2,41 +2,15 @@ import random
 import os
 import time
 
-from lib_bgp_simulator import Simulator, BGPAS, Graph, MPMethod
+from lib_bgp_simulator import Simulator, BGPAS, MPMethod
 
-from lib_rovpp import ROVPPV1SimpleAS, ROVPPV1LiteSimpleAS
-
-from secure_monitoring_service_pkg.engine_inputs import V4SubprefixHijack
+from secure_monitoring_service_pkg.simulation_framework.engine_inputs import V4SubprefixHijack
 from secure_monitoring_service_pkg.rov_sms import (
-    ROVSMS,
     ROVSMSK1,
     ROVSMSK2,
-    ROVSMSK3,
-    ROVSMSK4,
-    ROVSMSK5,
-    ROVSMSK6,
-    ROVSMSK7,
-    ROVSMSK10,
 )
-from secure_monitoring_service_pkg.rov_sms import (
-    ROVSMSK20,
-    ROVSMSK30,
-    ROVSMSK50,
-    ROVSMSK70,
-    ROVSMSK100,
-)
-from secure_monitoring_service_pkg.rov_sms import (
-    ROVSMSK150,
-    ROVSMSK200,
-    ROVSMSK300,
-    ROVSMSK500,
-    ROVSMSK1000,
-    ROVSMSK2000,
-    ROVSMSK5000,
-    ROVSMSK20000,
-    ROVSMSK30000,
-)
-from secure_monitoring_service_pkg.v4_graph import V4Graph
+
+from secure_monitoring_service_pkg.simulation_framework.v4_graph import V4Graph
 
 
 # Set Random Seed to determinitic runs

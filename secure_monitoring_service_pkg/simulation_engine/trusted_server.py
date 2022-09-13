@@ -6,7 +6,7 @@ from typing import Dict, Set, List, Tuple
 from lib_bgp_simulator import Announcement as Ann
 
 from secure_monitoring_service_pkg import mvdp
-from secure_monitoring_service_pkg.sim_logger import sim_logger as logger
+from secure_monitoring_service_pkg.simulation_framework.sim_logger import sim_logger as logger
 
 
 class TrustedServer:

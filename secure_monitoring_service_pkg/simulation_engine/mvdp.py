@@ -5,7 +5,7 @@ import igraph as ig
 from igraph import plot
 import numpy as np
 
-from secure_monitoring_service_pkg.sim_logger import test_logger as logger
+from secure_monitoring_service_pkg.simulation_framework.sim_logger import test_logger as logger
 
 
 

@@ -2,11 +2,12 @@ from lib_bgp_simulator import Outcomes, Relationships
 
 from lib_rovpp import ROVPPSubprefixHijack
 
-from secure_monitoring_service_pkg.sim_logger import sim_logger as logger
+from secure_monitoring_service_pkg.simulation_framework.sim_logger import sim_logger as logger
 
 
 class V4SubprefixHijack(ROVPPSubprefixHijack):
 
+    # TODO: Move this into the new Scenario Class
     def determine_outcome(self, as_obj, ann):
         """This assumes that the as_obj is the last in the path"""
 

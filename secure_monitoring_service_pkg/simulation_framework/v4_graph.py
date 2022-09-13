@@ -4,8 +4,9 @@ from copy import deepcopy
 from lib_bgp_simulator.simulator.graph.graph import Graph
 from lib_bgp_simulator.simulator.data_point import DataPoint
 
-from secure_monitoring_service_pkg.v4_scenario import V4Scenario
-from secure_monitoring_service_pkg import metadata_collector
+from secure_monitoring_service_pkg.simulation_framework.v4_subprefix_hijack_scenario import V4SubprefixHijackScenario
+from secure_monitoring_service_pkg.simulation_framework import metadata_collector
+
 
 class V4Graph(Graph):
 
@@ -38,11 +39,11 @@ class V4Graph(Graph):
 
                 for propagation_round in range(self.propagation_rounds):
                     # Generate the test
-                    scenario = V4Scenario(trial=trial,
-                                          engine=engine,
-                                          engine_input=engine_input,
-                                          profiler=self.profiler,
-                                          verify_avoid_list=self.verify_avoid_list_flag)
+                    scenario = V4SubprefixHijackScenario(trial=trial,
+                                                         engine=engine,
+                                                         engine_input=engine_input,
+                                                         profiler=self.profiler,
+                                                         verify_avoid_list=self.verify_avoid_list_flag)
                     # Run test, remove reference to engine and return it
                     scenario.run(self.subgraphs, propagation_round)
                     # Get data point - just a frozen data class

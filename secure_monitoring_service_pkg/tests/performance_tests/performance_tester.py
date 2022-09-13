@@ -1,5 +1,5 @@
 from lib_bgp_simulator import Simulator, BGPAS, Graph
-from secure_monitoring_service_pkg.engine_inputs import V4SubprefixHijack
+from secure_monitoring_service_pkg.simulation_framework.engine_inputs import V4SubprefixHijack
 from secure_monitoring_service_pkg.rov_sms import ROVSMS, ROVSMSK1
 from lib_rovpp import ROVPPV1SimpleAS
 

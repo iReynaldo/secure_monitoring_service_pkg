@@ -1,22 +1,19 @@
 import gc
 
-from lib_bgp_simulator.simulator.scenario import Scenario
-from lib_bgp_simulator import enums
-from lib_bgp_simulator import BGPAS
-from lib_bgp_simulator import Outcomes
+from bgp_simulator_pkg import SubprefixHijack
 
-from lib_rovpp import ROVPPV1SimpleAS, ROVPPV1LiteSimpleAS
-from secure_monitoring_service_pkg.rov_sms import ROVSMS
-from secure_monitoring_service_pkg.sim_logger import sim_logger as logger
+from rovpp_pkg import ROVPPV1SimpleAS, ROVPPV1LiteSimpleAS
+
+from secure_monitoring_service_pkg.simulation_framework.sim_logger import sim_logger as logger
 
 
-class V4Scenario(Scenario):
+class V4SubprefixHijackScenario(SubprefixHijack):
     trusted_server_ref = None
     avoid_lists = None  # Used for verifying avoid list in pytest system tests
     traceback_outcome_asn = dict()
 
     def __init__(self, *args, verify_avoid_list=False, **kwargs):
-        super(V4Scenario, self).__init__(*args, **kwargs)
+        super(V4SubprefixHijackScenario, self).__init__(*args, **kwargs)
         self.verify_avoid_list_flag = verify_avoid_list
         self.has_rovsms_ases = False
 
@@ -67,8 +64,8 @@ class V4Scenario(Scenario):
             # Note the trusted_server_ref is set inside apply_blackholes_from_avoid_list
             self.trusted_server_ref = None
         # Clear the outcomes dict
-        del V4Scenario.traceback_outcome_asn
-        V4Scenario.traceback_outcome_asn = dict()
+        del V4SubprefixHijackScenario.traceback_outcome_asn
+        V4SubprefixHijackScenario.traceback_outcome_asn = dict()
         # Delete saved avoid list
         self.avoid_lists = None
         # Force garbage collection
