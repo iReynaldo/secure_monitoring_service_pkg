@@ -1,1 +1,1 @@
-from secure_monitoring_service_pkg.simulation_framework.engine_inputs import V4SubprefixHijack
+from secure_monitoring_service_pkg.simulation_framework.scenarios.v4_subprefix_hijack_scenario import V4SubprefixHijack

@@ -1,11 +1,9 @@
 from collections import defaultdict
 from typing import Dict, Set, List, Tuple
 
-# from memory_profiler import profile
+from bgp_simulator_pkg import Announcement as Ann
 
-from lib_bgp_simulator import Announcement as Ann
-
-from secure_monitoring_service_pkg import mvdp
+from secure_monitoring_service_pkg.simulation_engine import mvdp
 from secure_monitoring_service_pkg.simulation_framework.sim_logger import sim_logger as logger
 
 
