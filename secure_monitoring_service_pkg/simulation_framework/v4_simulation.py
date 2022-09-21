@@ -1,4 +1,5 @@
-from typing import Tuple, List
+from copy import deepcopy
+from typing import Tuple, List, Dict, Any
 
 from caida_collector_pkg import CaidaCollector
 
@@ -71,3 +72,19 @@ class V4Simulation(Simulation):
             # Reset scenario for next round of trials
             prev_scenario = None
         return subgraphs
+
+    # TODO: Currently has no changes compared to parent
+    def _aggregate_engine_run_data(self,
+                                   subgraphs: Tuple[Subgraph, ...],
+                                   **kwargs):
+        """For each subgraph, aggregate data
+
+        Some data aggregation is shared to speed up runs
+        For example, traceback might be useful across
+        Multiple subgraphs
+        """
+        print("Inside _aggregate_engine_run_data in V4Simulation")
+        shared_data: Dict[Any, Any] = dict()
+        for subgraph in subgraphs:
+            print(subgraph)
+            subgraph.aggregate_engine_run_data(shared_data, **kwargs)

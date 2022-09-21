@@ -16,9 +16,23 @@ from rovpp_pkg import ROVPPV1LiteSimpleAS
 
 class V4Subgraph(Subgraph):
 
+    def __init_subclass__(cls, *args, **kwargs):
+        """This method essentially creates a list of all subclasses
+        This is allows us to know all attackers that have been created
+        """
+
+        super().__init_subclass__(*args, **kwargs)
+        cls.subclasses.append(cls)
+        names = [x.name for x in cls.subclasses if x.name]
+        assert len(set(names)) == len(names), "Duplicate subgraph class names"
+
+    def __init__(self):
+        super(V4Subgraph, self).__init__()
+
     # TODO: Move this percentage and trial capturing somewhere
     # metadata_collector.cur_percent_adoption = percent_adopt
     # metadata_collector.cur_trial = trial
+
 
     # MARK: Needs to be fixed
     # TODO: Update this to support multiple attackers and victims
@@ -137,6 +151,7 @@ class V4Subgraph(Subgraph):
                 ]  # type: ignore
                 outcome, traceback_asn = self._get_as_outcome(next_as,
                                                               outcomes,
+                                                              traceback_asn_outcomes,
                                                               engine,
                                                               scenario)
             assert outcome != Outcomes.UNDETERMINED, "Shouldn't be possible"

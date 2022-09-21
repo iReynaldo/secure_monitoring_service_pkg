@@ -44,7 +44,7 @@ class V4SubprefixHijackScenario(SubprefixHijack):
                     avoid_list_created_flag = True
                     self.has_rovsms_ases = True
 
-                as_obj._force_add_blackholes_from_avoid_list(self.engine_input)
+                as_obj._force_add_blackholes_from_avoid_list(self.ordered_prefix_subprefix_dict)
 
     def pre_aggregation_hook(self, **kwargs):
         """
