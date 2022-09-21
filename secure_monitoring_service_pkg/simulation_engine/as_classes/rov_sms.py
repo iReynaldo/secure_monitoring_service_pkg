@@ -8,7 +8,6 @@ from secure_monitoring_service_pkg.simulation_engine.report import Report
 class ROVSMS(ROVPPV1LiteSimpleAS):
     name = "ROV V4"
 
-    __slots__ = tuple()
     _max_num_dishonest_nodes = 0
     trusted_server = TrustedServer(0)
 
@@ -33,14 +32,15 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
             self.trusted_server.recieve_report(report)
         return super(ROVSMS, self).receive_ann(ann, *args, **kwargs)
 
-    def _force_add_blackholes_from_avoid_list(self, engine_input):
+    # TODO: Fix this use of the engine_input. Possibly needs something else
+    def _force_add_blackholes_from_avoid_list(self, ordered_prefix_subprefix_dict):
         holes = []
 
         logger.debug("Entered _force_add_blackholes_from_avoid_list")
         for _, ann in self._local_rib.prefix_anns():
             ann_holes = []
             # For each hole in ann: (holes are invalid subprefixes)
-            for subprefix in engine_input.prefix_subprefix_dict[ann.prefix]:
+            for subprefix in ordered_prefix_subprefix_dict[ann.prefix]:
                 if self.trusted_server.rec_blackhole(subprefix,
                                                      ann.as_path):
                     does_not_have_subprefix = True
@@ -56,12 +56,11 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                         # We need to create our own subprefix ann
                         # Since we may not have actually received the hijack
                         # Since this policy is for hidden hijacks
-                        blackhole_ann = ann.copy(
-                            prefix=subprefix,
-                            roa_valid_length=False,
-                            roa_origin=engine_input.victim_asn,
-                            blackhole=True,
-                            traceback_end=True)
+                        blackhole_ann = ann.copy()
+                        blackhole_ann.prefix=subprefix,
+                        blackhole_ann.roa_valid_length=False,
+                        blackhole_ann.blackhole=True,
+                        blackhole_ann.traceback_end=True
                         holes.append(blackhole_ann)
 
         for hole in holes:
