@@ -16,15 +16,17 @@ from rovpp_pkg import ROVPPV1LiteSimpleAS
 
 class V4Subgraph(Subgraph):
 
+    v4_subclasses = []
+
     def __init_subclass__(cls, *args, **kwargs):
         """This method essentially creates a list of all subclasses
         This is allows us to know all attackers that have been created
         """
 
         super().__init_subclass__(*args, **kwargs)
-        cls.subclasses.append(cls)
-        names = [x.name for x in cls.subclasses if x.name]
-        assert len(set(names)) == len(names), "Duplicate subgraph class names"
+        cls.v4_subclasses.append(cls)
+        names = [x.name for x in cls.v4_subclasses if x.name]
+        assert len(set(names)) == len(names), f"Duplicate subgraph class names {names}"
 
     def __init__(self):
         super(V4Subgraph, self).__init__()

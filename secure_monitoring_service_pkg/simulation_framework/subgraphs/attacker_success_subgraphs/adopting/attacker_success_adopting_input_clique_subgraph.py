@@ -2,12 +2,12 @@ from bgp_simulator_pkg.enums import ASTypes
 from bgp_simulator_pkg import Outcomes
 from bgp_simulator_pkg import Scenario
 
-from secure_monitoring_service_pkg import AttackerSuccessSubgraph
+from ..attacker_success_subgraph import AttackerSuccessSubgraph
 
 class AttackerSuccessAdoptingInputCliqueSubgraph(AttackerSuccessSubgraph):
     """Graph with attacker success for adopting input clique ASes"""
 
-    name: str = "attacker_success_adopting_input_clique"
+    name: str = "v4_attacker_success_adopting_input_clique"
 
     def _get_subgraph_key(self,
                           scenario: Scenario,

@@ -16,7 +16,7 @@ BASE_PATH = Path("~/Desktop/graphs/").expanduser()
 def get_default_kwargs():
     return {"percent_adoptions": [.5],#[0, .05, .1, .2, .3, .4, .6, .8, 1],
             "num_trials": 1,
-            "subgraphs": [Cls() for Cls in V4Subgraph.subclasses if Cls.name],
+            "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
             "parse_cpus": 1}
 
 
