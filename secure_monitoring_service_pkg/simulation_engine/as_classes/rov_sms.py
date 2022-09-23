@@ -57,10 +57,10 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                         # Since we may not have actually received the hijack
                         # Since this policy is for hidden hijacks
                         blackhole_ann = ann.copy()
-                        blackhole_ann.prefix=subprefix,
-                        blackhole_ann.roa_valid_length=False,
-                        blackhole_ann.blackhole=True,
-                        blackhole_ann.traceback_end=True
+                        blackhole_ann.prefix = subprefix
+                        blackhole_ann.roa_valid_length = False
+                        blackhole_ann.blackhole = True
+                        blackhole_ann.traceback_end = True
                         holes.append(blackhole_ann)
 
         for hole in holes:

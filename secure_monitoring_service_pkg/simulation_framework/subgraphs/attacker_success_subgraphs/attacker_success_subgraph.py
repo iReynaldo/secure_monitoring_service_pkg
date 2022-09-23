@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from secure_monitoring_service_pkg import V4Subgraph
+from ...v4_subgraph import V4Subgraph
 
 
 if TYPE_CHECKING:

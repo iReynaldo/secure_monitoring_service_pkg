@@ -1,4 +1,4 @@
-# from .subgraphs import *
+from .subgraphs import *
 
 from .scenarios import V4SubprefixHijackScenario
 from .v4_simulation import V4Simulation

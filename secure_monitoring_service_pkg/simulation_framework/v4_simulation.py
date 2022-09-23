@@ -83,8 +83,6 @@ class V4Simulation(Simulation):
         For example, traceback might be useful across
         Multiple subgraphs
         """
-        print("Inside _aggregate_engine_run_data in V4Simulation")
         shared_data: Dict[Any, Any] = dict()
         for subgraph in subgraphs:
-            print(subgraph)
             subgraph.aggregate_engine_run_data(shared_data, **kwargs)

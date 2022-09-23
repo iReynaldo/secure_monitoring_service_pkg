@@ -1,5 +1,8 @@
 from datetime import datetime
 from pathlib import Path
+import random
+import os
+import time
 
 from rovpp_pkg import ROVPPAnn
 
@@ -9,14 +12,17 @@ from secure_monitoring_service_pkg import ROVSMS
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 # from secure_monitoring_service_pkg import AttackerSuccessAllSubgraph
 
-
 BASE_PATH = Path("~/Desktop/graphs/").expanduser()
+
+# Set Random Seed to make deterministic runs
+os.environ["PYTHONHASHSEED"] = "0"
+random.seed(0)
 
 
 def get_default_kwargs():
-    return {"percent_adoptions": [.5],#[0, .05, .1, .2, .3, .4, .6, .8, 1],
-            "num_trials": 1,
-            "subgraphs": [Cls() for Cls in V4Subgraph.subclasses if Cls.name],
+    return {"percent_adoptions": [0, .05, 0.1, 0.5, 1],#[0, .05, .1, .2, .3, .4, .6, .8, 1],
+            "num_trials": 3,
+            "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
             "parse_cpus": 1}
 
 
@@ -25,8 +31,6 @@ def get_default_kwargs():
 def main():
 
     # assert isinstance(input("Turn asserts off for speed?"), str)
-    print("Inside Main")
-    print(get_default_kwargs()['subgraphs'])
     sims = [
             V4Simulation(scenarios=[V4SubprefixHijackScenario(AdoptASCls=Cls,
                                                               AnnCls=ROVPPAnn)
@@ -43,6 +47,11 @@ def main():
 
 
 if __name__ == "__main__":
-    start = datetime.now()
-    main()
-    print((datetime.now() - start).total_seconds())
+    try:
+        print("Start Time", time.ctime())
+        start_time = time.perf_counter()
+        main()
+    finally:
+        end_time = time.perf_counter()
+        print("End Time", time.ctime())
+        print("Elasped Time: ", end_time - start_time)
