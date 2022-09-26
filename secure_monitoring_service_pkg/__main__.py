@@ -20,8 +20,8 @@ random.seed(0)
 
 
 def get_default_kwargs():
-    return {"percent_adoptions": [0, .05, 0.1, 0.5, 1],#[0, .05, .1, .2, .3, .4, .6, .8, 1],
-            "num_trials": 3,
+    return {"percent_adoptions": [0, .05, .1, .2, .3, .4, .6, .8, 1],
+            "num_trials": 5,
             "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
             "parse_cpus": 1}
 
@@ -47,9 +47,9 @@ def main():
 
 
 if __name__ == "__main__":
+    print("Start Time", time.ctime())
+    start_time = time.perf_counter()
     try:
-        print("Start Time", time.ctime())
-        start_time = time.perf_counter()
         main()
     finally:
         end_time = time.perf_counter()
