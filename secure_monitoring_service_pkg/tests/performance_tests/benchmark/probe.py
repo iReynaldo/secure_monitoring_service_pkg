@@ -139,7 +139,7 @@ if __name__ == "__main__":
             "percentages"
         ]
         writer = csv.DictWriter(tsvfile, delimiter="\t", fieldnames=fieldnames)
-        writer.writeheader()  # Comment this out if the file already exists
+        # writer.writeheader()  # Comment this out if the file already exists
         # Get the benchmark settings
         runtime_platform = \
             "pypy" if '__pypy__' in sys.builtin_module_names else "python"
