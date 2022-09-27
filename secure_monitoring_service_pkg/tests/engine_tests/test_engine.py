@@ -5,7 +5,11 @@ from bgp_simulator_pkg import EngineTestConfig
 
 from .utils.v4_engine_tester import V4EngineTester
 from .engine_test_configs import Config100
-
+from .engine_test_configs import Config101
+from .engine_test_configs import Config102
+from .engine_test_configs import Config103
+from .engine_test_configs import Config104
+from .engine_test_configs import Config105
 
 @pytest.mark.engine
 class TestEngine:
@@ -16,7 +20,11 @@ class TestEngine:
 
     @pytest.mark.parametrize("conf",
                              [Config100,
-                              ])
+                              Config101,
+                              Config102,
+                              Config103,
+                              Config104,
+                              Config105])
     def test_engine(self, conf: EngineTestConfig, overwrite: bool):
         """Performs a system test on the engine
 
