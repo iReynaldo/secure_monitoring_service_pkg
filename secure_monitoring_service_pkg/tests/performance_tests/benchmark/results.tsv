@@ -1,1 +1,1 @@
-machine_name	timestamp	runtime	tag	cpus	num_trials	hijack_type	policy	platform	platform_version	percentages
+machine_name	timestamp	runtime	max_memory	tag	cpus	num_trials	hijack_type	policy	platform	platform_version	percentages

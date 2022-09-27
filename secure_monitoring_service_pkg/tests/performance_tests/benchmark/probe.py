@@ -7,6 +7,8 @@ from datetime import datetime
 import random
 import argparse
 import platform
+import resource
+
 
 from rovpp_pkg import ROVPPAnn
 from rovpp_pkg import ROVPPV1SimpleAS
@@ -65,12 +67,12 @@ def parse_args():
     parser.add_argument('-p', '--percentages',
                         type=float,
                         nargs='*',
-                        default=[0, .05, .1, .2, .3, .4, .6, .8, 1],
+                        default=[0],
                         help='a list of floats')
     parser.add_argument('-n', '--num_trials',
                         type=int,
                         nargs='?',
-                        default=10,
+                        default=1,
                         help='Number of trials to run')
     parser.add_argument('-c', '--cpus',
                         type=int,
@@ -124,6 +126,7 @@ if __name__ == "__main__":
             "machine_name",
             "timestamp",
             "runtime",
+            "max_memory",
             "tag",
             "cpus",
             "num_trials",
@@ -134,18 +137,22 @@ if __name__ == "__main__":
             "percentages"
         ]
         writer = csv.DictWriter(tsvfile, delimiter="\t", fieldnames=fieldnames)
-        # writer.writeheader()  # Comment this out if the file already exists
+        writer.writeheader()  # Comment this out if the file already exists
         # Get the benchmark settings
-        runtime = "pypy" if '__pypy__' in sys.builtin_module_names else "python"
+        runtime_platform = \
+            "pypy" if '__pypy__' in sys.builtin_module_names else "python"
+        max_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         row = {
             "machine_name": os.uname().nodename,
             "timestamp": timestamp,
             "tag": args.tag,
+            "runtime": runtime,
+            "max_memory": max_memory,
             "cpus": settings["parse_cpus"],
             "num_trials": settings["num_trials"],
             "hijack_type": "V4SubprefixHijackScenario",
             "policy": args.policy,
-            "platform": runtime,
+            "platform": runtime_platform,
             "platform_version": platform.python_version(),
             "percentages": args.percentages
         }
