@@ -124,6 +124,8 @@ if __name__ == "__main__":
     with open("results.tsv", "a") as tsvfile:
         fieldnames = [
             "machine_name",
+            "os",
+            "os_version",
             "timestamp",
             "runtime",
             "max_memory",
@@ -141,9 +143,12 @@ if __name__ == "__main__":
         # Get the benchmark settings
         runtime_platform = \
             "pypy" if '__pypy__' in sys.builtin_module_names else "python"
-        max_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        # peak memory usage (kilobytes on Linux, bytes on OS X)
+        max_memory = resource.getrusage(resource.RUSAGE_BOTH).ru_maxrss
         row = {
             "machine_name": os.uname().nodename,
+            "os": platform.system(),
+            "os_version": platform.release(),
             "timestamp": timestamp,
             "tag": args.tag,
             "runtime": runtime,
