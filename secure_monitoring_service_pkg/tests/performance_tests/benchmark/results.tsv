@@ -1,2 +1,5 @@
 machine_name	os	os_version	timestamp	runtime	max_memory	tag	cpus	num_trials	hijack_type	policy	platform	platform_version	percentages
 AH-Dev	Linux	4.15.0-142-generic	2022-09-27T17:07:53.744795	1145.7753526680171	5296196	standard	12	10	V4SubprefixHijackScenario	v4k1	pypy	3.9.12	[0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1]
+AH-Dev	Linux	4.15.0-142-generic	2022-09-27T18:09:46.693996	1161.8032652549446	5361148	standard	12	10	V4SubprefixHijackScenario	v4k1	pypy	3.9.12	[0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1]
+AH-Dev	Linux	4.15.0-142-generic	2022-09-27T18:45:03.102832	64.99043658748269	1128296	standard	12	10	V4SubprefixHijackScenario	v1	pypy	3.9.12	[0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1]
+AH-Dev	Linux	4.15.0-142-generic	2022-09-27T18:46:16.791270	67.35960152000189	1237604	standard	12	10	V4SubprefixHijackScenario	v4	pypy	3.9.12	[0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1]
