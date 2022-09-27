@@ -15,7 +15,7 @@ from rovpp_pkg import ROVPPV1SimpleAS
 
 from secure_monitoring_service_pkg import V4Subgraph
 from secure_monitoring_service_pkg import V4Simulation
-from secure_monitoring_service_pkg import ROVSMS, ROVSMSK1
+from secure_monitoring_service_pkg import ROVSMS, ROVSMSK1, ROVSMSK5
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 
 
@@ -55,10 +55,12 @@ def process_args(args):
         policy = ROVSMS
     elif policy_str == "v4k1":
         policy = ROVSMSK1
+    elif policy_str == "v4k5":
+        policy = ROVSMSK5
     else:
         raise (ValueError,
                "Unrecognized policy specified. "
-               "Use following options {v1, v4, v4k1}")
+               "Use following options {v1, v4, v4k1, v4k5}")
     return settings, policy, args
 
 
