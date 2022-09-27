@@ -6,7 +6,7 @@ from secure_monitoring_service_pkg.simulation_engine.report import Report
 
 
 class ROVSMS(ROVPPV1LiteSimpleAS):
-    name = "ROV V4"
+    name = "ROV V4 Lite"
 
     _max_num_dishonest_nodes = 0
     trusted_server = TrustedServer(0)
@@ -69,7 +69,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
 
 
 class ROVSMSK1(ROVSMS):
-    name = "ROV V4 K1"
+    name = "ROV V4 Lite K1"
 
     __slots__ = tuple()
 
@@ -81,7 +81,7 @@ class ROVSMSK1(ROVSMS):
 
 
 class ROVSMSK2(ROVSMS):
-    name = "ROV V4 K2"
+    name = "ROV V4 Lite K2"
 
     __slots__ = tuple()
 
@@ -93,7 +93,7 @@ class ROVSMSK2(ROVSMS):
 
 
 class ROVSMSK3(ROVSMS):
-    name = "ROV V4 K3"
+    name = "ROV V4 Lite K3"
 
     __slots__ = tuple()
 
@@ -105,7 +105,7 @@ class ROVSMSK3(ROVSMS):
 
 
 class ROVSMSK4(ROVSMS):
-    name = "ROV V4 K4"
+    name = "ROV V4 Lite K4"
 
     __slots__ = tuple()
 
@@ -117,7 +117,7 @@ class ROVSMSK4(ROVSMS):
 
 
 class ROVSMSK5(ROVSMS):
-    name = "ROV V4 K5"
+    name = "ROV V4 Lite K5"
 
     __slots__ = tuple()
 
@@ -129,7 +129,7 @@ class ROVSMSK5(ROVSMS):
 
 
 class ROVSMSK6(ROVSMS):
-    name = "ROV V4 K6"
+    name = "ROV V4 Lite K6"
 
     __slots__ = tuple()
 
@@ -141,7 +141,7 @@ class ROVSMSK6(ROVSMS):
 
 
 class ROVSMSK7(ROVSMS):
-    name = "ROV V4 K7"
+    name = "ROV V4 Lite K7"
 
     __slots__ = tuple()
 
@@ -153,7 +153,7 @@ class ROVSMSK7(ROVSMS):
 
 
 class ROVSMSK10(ROVSMS):
-    name = "ROV V4 K10"
+    name = "ROV V4 Lite K10"
 
     __slots__ = tuple()
 
@@ -165,7 +165,7 @@ class ROVSMSK10(ROVSMS):
 
 
 class ROVSMSK20(ROVSMS):
-    name = "ROV V4 K20"
+    name = "ROV V4 Lite K20"
 
     __slots__ = tuple()
 
@@ -177,7 +177,7 @@ class ROVSMSK20(ROVSMS):
 
 
 class ROVSMSK30(ROVSMS):
-    name = "ROV V4 K30"
+    name = "ROV V4 Lite K30"
 
     __slots__ = tuple()
 
@@ -189,7 +189,7 @@ class ROVSMSK30(ROVSMS):
 
 
 class ROVSMSK50(ROVSMS):
-    name = "ROV V4 K50"
+    name = "ROV V4 Lite K50"
 
     __slots__ = tuple()
 
@@ -201,7 +201,7 @@ class ROVSMSK50(ROVSMS):
 
 
 class ROVSMSK70(ROVSMS):
-    name = "ROV V4 K70"
+    name = "ROV V4 Lite K70"
 
     __slots__ = tuple()
 
@@ -213,7 +213,7 @@ class ROVSMSK70(ROVSMS):
 
 
 class ROVSMSK100(ROVSMS):
-    name = "ROV V4 K100"
+    name = "ROV V4 Lite K100"
 
     __slots__ = tuple()
 
@@ -225,7 +225,7 @@ class ROVSMSK100(ROVSMS):
 
 
 class ROVSMSK150(ROVSMS):
-    name = "ROV V4 K150"
+    name = "ROV V4 Lite K150"
 
     __slots__ = tuple()
 
@@ -237,7 +237,7 @@ class ROVSMSK150(ROVSMS):
 
 
 class ROVSMSK200(ROVSMS):
-    name = "ROV V4 K200"
+    name = "ROV V4 Lite K200"
 
     __slots__ = tuple()
 
@@ -249,7 +249,7 @@ class ROVSMSK200(ROVSMS):
 
 
 class ROVSMSK300(ROVSMS):
-    name = "ROV V4 K300"
+    name = "ROV V4 Lite K300"
 
     __slots__ = tuple()
 
@@ -261,7 +261,7 @@ class ROVSMSK300(ROVSMS):
 
 
 class ROVSMSK500(ROVSMS):
-    name = "ROV V4 K500"
+    name = "ROV V4 Lite K500"
 
     __slots__ = tuple()
 
@@ -273,7 +273,7 @@ class ROVSMSK500(ROVSMS):
 
 
 class ROVSMSK1000(ROVSMS):
-    name = "ROV V4 K1000"
+    name = "ROV V4 Lite K1000"
 
     __slots__ = tuple()
 
@@ -285,7 +285,7 @@ class ROVSMSK1000(ROVSMS):
 
 
 class ROVSMSK2000(ROVSMS):
-    name = "ROV V4 K2000"
+    name = "ROV V4 Lite K2000"
 
     __slots__ = tuple()
 
@@ -297,7 +297,7 @@ class ROVSMSK2000(ROVSMS):
 
 
 class ROVSMSK5000(ROVSMS):
-    name = "ROV V4 K5000"
+    name = "ROV V4 Lite K5000"
 
     __slots__ = tuple()
 
@@ -309,7 +309,7 @@ class ROVSMSK5000(ROVSMS):
 
 
 class ROVSMSK20000(ROVSMS):
-    name = "ROV V4 K20000"
+    name = "ROV V4 Lite K20000"
 
     __slots__ = tuple()
 
@@ -321,7 +321,7 @@ class ROVSMSK20000(ROVSMS):
 
 
 class ROVSMSK30000(ROVSMS):
-    name = "ROV V4 K30000"
+    name = "ROV V4 Lite K30000"
 
     __slots__ = tuple()
 

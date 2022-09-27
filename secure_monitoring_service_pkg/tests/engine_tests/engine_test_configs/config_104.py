@@ -8,25 +8,23 @@ from bgp_simulator_pkg import BGPSimpleAS
 from bgp_simulator_pkg import ASNs
 
 from rovpp_pkg import ROVPPAnn
-from rovpp_pkg import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
+from secure_monitoring_service_pkg import ROVSMS
 
 
-class Config100(EngineTestConfig):
+class Config104(EngineTestConfig):
     """Contains config options to run a test"""
 
-    name = "100"
-    desc = "Subprefix Hijack with V1 Lite."
+    name = "104"
+    desc = "Subprefix Hijack with V4 Lite."
     scenario = V4SubprefixHijackScenario(attacker_asns={ASNs.ATTACKER.value},
                                          victim_asns={ASNs.VICTIM.value},
-                                         AdoptASCls=ROVPPV1LiteSimpleAS,
+                                         AdoptASCls=ROVSMS,
                                          BaseASCls=BGPSimpleAS,
                                          AnnCls=ROVPPAnn)
-    graph = graphs.Graph011()
-    non_default_as_cls_dict: Dict[int, Type[AS]] = {5: ROVPPV1LiteSimpleAS,
-                                                    6: ROVPPV1LiteSimpleAS,
-                                                    1: ROVPPV1LiteSimpleAS,
-                                                    11: ROVPPV1LiteSimpleAS,
-                                                    12: ROVPPV1LiteSimpleAS}
+    graph = graphs.Graph027()
+    non_default_as_cls_dict: Dict[int, Type[AS]] = {4: ROVSMS,
+                                                    10: ROVSMS,
+                                                    ASNs.VICTIM.value: ROVSMS}
     propagation_rounds = 1
