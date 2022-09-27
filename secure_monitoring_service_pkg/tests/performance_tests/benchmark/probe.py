@@ -139,12 +139,15 @@ if __name__ == "__main__":
             "percentages"
         ]
         writer = csv.DictWriter(tsvfile, delimiter="\t", fieldnames=fieldnames)
-        # writer.writeheader()  # Comment this out if the file already exists
+        writer.writeheader()  # Comment this out if the file already exists
         # Get the benchmark settings
         runtime_platform = \
             "pypy" if '__pypy__' in sys.builtin_module_names else "python"
         # peak memory usage (kilobytes on Linux, bytes on OS X)
-        max_memory = resource.getrusage(resource.RUSAGE_BOTH).ru_maxrss
+        self_max_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        children_max_memory = \
+            resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss
+        total_max_memory = self_max_memory + children_max_memory
         row = {
             "machine_name": os.uname().nodename,
             "os": platform.system(),
@@ -152,7 +155,7 @@ if __name__ == "__main__":
             "timestamp": timestamp,
             "tag": args.tag,
             "runtime": runtime,
-            "max_memory": max_memory,
+            "max_memory": total_max_memory,
             "cpus": settings["parse_cpus"],
             "num_trials": settings["num_trials"],
             "hijack_type": "V4SubprefixHijackScenario",
