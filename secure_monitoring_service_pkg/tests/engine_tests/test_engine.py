@@ -17,6 +17,27 @@ from .engine_test_configs import Config109
 from .engine_test_configs import Config110
 from .engine_test_configs import Config111
 from .engine_test_configs import Config112
+from .engine_test_configs import Config113
+from .engine_test_configs import Config114
+from .engine_test_configs import Config115
+from .engine_test_configs import Config116
+from .engine_test_configs import Config117
+from .engine_test_configs import Config118
+from .engine_test_configs import Config119
+from .engine_test_configs import Config120
+from .engine_test_configs import Config121
+from .engine_test_configs import Config122
+from .engine_test_configs import Config123
+from .engine_test_configs import Config124
+from .engine_test_configs import Config125
+from .engine_test_configs import Config126
+from .engine_test_configs import Config127
+from .engine_test_configs import Config128
+from .engine_test_configs import Config129
+from .engine_test_configs import Config130
+from .engine_test_configs import Config131
+from .engine_test_configs import Config132
+
 
 @pytest.mark.engine
 class TestEngine:
@@ -38,7 +59,28 @@ class TestEngine:
                               Config109,
                               Config110,
                               Config111,
-                              Config112])
+                              Config112,
+                              Config113,
+                              Config114,
+                              Config115,
+                              Config116,
+                              Config117,
+                              Config118,
+                              Config119,
+                              Config120,
+                              Config121,
+                              Config122,
+                              Config123,
+                              Config124,
+                              Config125,
+                              Config126,
+                              Config127,
+                              Config128,
+                              Config129,
+                              Config130,
+                              Config131,
+                              Config132
+                              ])
     def test_engine(self, conf: EngineTestConfig, overwrite: bool):
         """Performs a system test on the engine
 
