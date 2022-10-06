@@ -9,5 +9,10 @@ __all__ = [
     "ROVSMSK5",
     "ROVSMSK6",
     "ROVSMSK7",
-    "ROVSMSK10"
+    "ROVSMSK10",
+    "ROVSMSK50",
+    "ROVSMSK100",
+    "ROVSMSK500",
+    "ROVSMSK1000",
+    "ROVSMSK1500"
 ]
