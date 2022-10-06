@@ -37,6 +37,7 @@ from .engine_test_configs import Config129
 from .engine_test_configs import Config130
 from .engine_test_configs import Config131
 from .engine_test_configs import Config132
+from .engine_test_configs import Config133
 
 
 @pytest.mark.engine
@@ -79,7 +80,8 @@ class TestEngine:
                               Config129,
                               Config130,
                               Config131,
-                              Config132
+                              Config132,
+                              Config133
                               ])
     def test_engine(self, conf: EngineTestConfig, overwrite: bool):
         """Performs a system test on the engine

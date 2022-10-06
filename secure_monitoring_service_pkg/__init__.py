@@ -1,9 +1,10 @@
 from .simulation_framework import *
 from .simulation_engine import *
 
-
 __all__ = [
+    "V4Scenario",
     "V4SubprefixHijackScenario",
+    "SubprefixAutoImmuneAttack",
     "V4Simulation",
     "V4Subgraph",
     "TrustedServer",
