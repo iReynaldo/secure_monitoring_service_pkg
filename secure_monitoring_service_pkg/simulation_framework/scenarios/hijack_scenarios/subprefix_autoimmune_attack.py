@@ -4,26 +4,19 @@ from bgp_simulator_pkg import Announcement
 from bgp_simulator_pkg import Prefixes
 from bgp_simulator_pkg import Relationships
 from bgp_simulator_pkg import Timestamps
-from bgp_simulator_pkg import Scenario
 
-# from ..v4_scenario import V4Scenario
+from ..v4_scenario import V4Scenario
 
 
-class SubprefixAutoImmuneScenario(Scenario):
+class SubprefixAutoImmuneScenario(V4Scenario):
 
     __slots__ = ()
 
     def __init__(self, *args, **kwargs):
         super(SubprefixAutoImmuneScenario, self).__init__(*args, **kwargs)
-        # victim_proivders = self.non_default_as_cls_dict
+        self.subprefixes = dict()
 
-    # def do_something(self):
-    #     pass
-    #
-    # def _get_announcements(self):
-    #     pass
-
-    def _get_announcements(self) -> Tuple["Announcement", ...]:
+    def _get_announcements(self, *args, **kwargs) -> Tuple["Announcement", ...]:
         """Returns victim and attacker anns for autoimmune attack
 
         """
@@ -44,8 +37,10 @@ class SubprefixAutoImmuneScenario(Scenario):
 
         roa_origin: int = next(iter(self.victim_asns))
 
-        victim_proivders = self.non_default_as_cls_dict
-        victim_providers = self.non_default_as_cls_dict[self.victim_asns[0]].providers
+        print("Printing Kwargs")
+        print(kwargs)
+        engine = kwargs["engine"]
+        victim_providers = engine.as_dict[next(iter(self.victim_asns))].providers
         for i, provider in enumerate(victim_providers):
             subprefix = f"1.2.3.{i}/24"
             self.subprefixes[provider.asn] = subprefix
