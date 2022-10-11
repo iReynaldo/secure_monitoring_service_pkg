@@ -1,22 +1,27 @@
-from typing import Tuple, TYPE_CHECKING
+from typing import Tuple
 
 from bgp_simulator_pkg import Announcement
 from bgp_simulator_pkg import Prefixes
 from bgp_simulator_pkg import Relationships
 from bgp_simulator_pkg import Timestamps
+from bgp_simulator_pkg import Scenario
 
-from ..v4_scenario import V4Scenario
-
-if TYPE_CHECKING:
-    from ....simulation_engine import Announcement
+# from ..v4_scenario import V4Scenario
 
 
-class SubprefixAutoImmuneAttack(V4Scenario):
+class SubprefixAutoImmuneScenario(Scenario):
+
+    __slots__ = ()
 
     def __init__(self, *args, **kwargs):
-        super(SubprefixAutoImmuneAttack, self).__init__(*args, **kwargs)
-        self.subprefixes = dict()
+        super(SubprefixAutoImmuneScenario, self).__init__(*args, **kwargs)
+        # victim_proivders = self.non_default_as_cls_dict
 
+    # def do_something(self):
+    #     pass
+    #
+    # def _get_announcements(self):
+    #     pass
 
     def _get_announcements(self) -> Tuple["Announcement", ...]:
         """Returns victim and attacker anns for autoimmune attack
@@ -39,8 +44,7 @@ class SubprefixAutoImmuneAttack(V4Scenario):
 
         roa_origin: int = next(iter(self.victim_asns))
 
-        print(dir(self))
-        exit(1)
+        victim_proivders = self.non_default_as_cls_dict
         victim_providers = self.non_default_as_cls_dict[self.victim_asns[0]].providers
         for i, provider in enumerate(victim_providers):
             subprefix = f"1.2.3.{i}/24"

@@ -4,7 +4,7 @@ from .simulation_engine import *
 __all__ = [
     "V4Scenario",
     "V4SubprefixHijackScenario",
-    "SubprefixAutoImmuneAttack",
+    "SubprefixAutoImmuneScenario",
     "V4Simulation",
     "V4Subgraph",
     "TrustedServer",
