@@ -37,12 +37,10 @@ class SubprefixAutoImmuneScenario(V4Scenario):
 
         roa_origin: int = next(iter(self.victim_asns))
 
-        print("Printing Kwargs")
-        print(kwargs)
         engine = kwargs["engine"]
         victim_providers = engine.as_dict[next(iter(self.victim_asns))].providers
         for i, provider in enumerate(victim_providers):
-            subprefix = f"1.2.3.{i}/24"
+            subprefix = f"1.2.{i}.0/24"
             self.subprefixes[provider.asn] = subprefix
             for attacker_asn in self.attacker_asns:
                 anns.append(self.AnnCls(prefix=subprefix,
@@ -52,8 +50,5 @@ class SubprefixAutoImmuneScenario(V4Scenario):
                                         roa_valid_length=False,
                                         roa_origin=roa_origin,
                                         recv_relationship=Relationships.ORIGIN))
-
-        for ann in anns:
-            print(anns)
 
         return tuple(anns)

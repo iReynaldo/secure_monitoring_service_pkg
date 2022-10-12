@@ -15,6 +15,7 @@ LOG_FILE = "v4_simulation.log"
 LOG_LEVEL = logging.NOTSET
 TEST_LOGGER = "rovpp_v4_test_logger"
 SIM_LOGGER = "rovpp_v4_sim_logger"
+CONDUCTING_SYSTEM_TEST = False
 
 
 def get_console_handler():

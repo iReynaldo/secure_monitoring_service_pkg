@@ -24,6 +24,25 @@ def test_essentials_6_nodes():
     assert flow_value == 1
 
 
+def test_essentials_7_nodes_k1():
+    """
+    Interestingly there was an error with the following report path list,
+    where the artificial source was equal to one of the nodes in the path list
+    (i.e. 14). This caused a problem in how I mapped the artificial sourced.
+    It caused the avoid list to include 14 and 2, instead of just 2.
+    :return:
+    """
+    reports_path_list = [
+        [4, 2, 666, 14],
+        [10, 2, 666, 14],
+        [12, 11, 2, 666, 14]
+    ]
+    # flow_value = mvdp.get_mvdp_with_subgraph_pictures(reports_path_list, 1)
+    avoid_list = mvdp.get_avoid_list(reports_path_list, 1)
+    expected_avoid_set = {2}
+    assert set(avoid_list) == expected_avoid_set
+
+
 def test_essentials_9_nodes_k1():
     """
     k = 1
@@ -83,6 +102,7 @@ def test_k1_with_adopters_in_report_paths():
 if __name__ == "__main__":
     test_essentials_3_nodes()
     test_essentials_6_nodes()
+    test_essentials_7_nodes_k1()
     test_essentials_9_nodes_k1()
     test_essentials_9_nodes_k2()
     test_k1_with_adopters_in_report_paths()

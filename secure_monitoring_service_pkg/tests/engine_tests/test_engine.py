@@ -3,6 +3,8 @@ import pytest
 
 from bgp_simulator_pkg import EngineTestConfig
 
+from secure_monitoring_service_pkg.simulation_framework import sim_logger
+
 from .utils.v4_engine_tester import V4EngineTester
 from .engine_test_configs import Config100
 from .engine_test_configs import Config101
@@ -38,6 +40,7 @@ from .engine_test_configs import Config130
 from .engine_test_configs import Config131
 from .engine_test_configs import Config132
 from .engine_test_configs import Config133
+from .engine_test_configs import Config134
 
 
 @pytest.mark.engine
@@ -81,13 +84,15 @@ class TestEngine:
                               Config130,
                               Config131,
                               Config132,
-                              Config133
+                              Config133,
+                              Config134
                               ])
     def test_engine(self, conf: EngineTestConfig, overwrite: bool):
         """Performs a system test on the engine
 
         See README for in depth details
         """
+        sim_logger.CONDUCTING_SYSTEM_TEST = True
 
         V4EngineTester(base_dir=self.base_dir,
                        conf=conf,

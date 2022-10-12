@@ -92,10 +92,10 @@
   asn: 2
   customer_cone_size: 5
   customers: !!python/tuple
-  - 4
-  - 10
   - 1
   - 666
+  - 10
+  - 4
   input_clique: false
   ixp: false
   peers: !!python/tuple []
@@ -129,8 +129,8 @@
   asn: 3
   customer_cone_size: 8
   customers: !!python/tuple
-  - 7
   - 5
+  - 7
   input_clique: false
   ixp: false
   peers: !!python/tuple []
@@ -244,8 +244,8 @@
       prefix: 1.2.3.0/24
       preventive: false
       recv_relationship: !simulator_codec/Relationships
-        name: PROVIDERS
-        value: 1
+        name: CUSTOMERS
+        value: 3
       roa_origin: 777
       roa_valid_length: false
       seed_asn: null
@@ -323,8 +323,8 @@
   asn: 6
   customer_cone_size: 9
   customers: !!python/tuple
-  - 7
   - 8
+  - 7
   input_clique: false
   ixp: false
   peers: !!python/tuple []
@@ -362,8 +362,8 @@
   peers: !!python/tuple []
   propagation_rank: 3
   providers: !!python/tuple
-  - 6
   - 3
+  - 6
 8: !yamlable/ROVPPV1SimpleAS
   _local_rib: !yamlable/LocalRIB
     1.2.0.0/16: !yamlable/ROVPPAnn
@@ -542,8 +542,8 @@
       prefix: 1.2.3.0/24
       preventive: false
       recv_relationship: !simulator_codec/Relationships
-        name: PROVIDERS
-        value: 1
+        name: CUSTOMERS
+        value: 3
       roa_origin: 777
       roa_valid_length: false
       seed_asn: null
