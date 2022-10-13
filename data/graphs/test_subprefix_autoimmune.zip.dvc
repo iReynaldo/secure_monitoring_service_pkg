@@ -1,0 +1,4 @@
+outs:
+- md5: 16a701186b380bdce242fff4259c9ddf
+  size: 515557
+  path: test_subprefix_autoimmune.zip
