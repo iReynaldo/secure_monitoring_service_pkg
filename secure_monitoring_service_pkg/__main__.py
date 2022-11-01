@@ -10,7 +10,8 @@ from secure_monitoring_service_pkg import V4Subgraph
 from secure_monitoring_service_pkg import V4Simulation
 from secure_monitoring_service_pkg import ROVSMS
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
-# from secure_monitoring_service_pkg import AttackerSuccessAllSubgraph
+from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
+
 
 BASE_PATH = Path("~/Desktop/graphs/").expanduser()
 
@@ -32,8 +33,8 @@ def main():
 
     # assert isinstance(input("Turn asserts off for speed?"), str)
     sims = [
-            V4Simulation(scenarios=[V4SubprefixHijackScenario(AdoptASCls=Cls,
-                                                              AnnCls=ROVPPAnn)
+            V4Simulation(scenarios=[SubprefixAutoImmuneScenario(AdoptASCls=Cls,
+                                                                AnnCls=ROVPPAnn)
                                     for Cls in [ROVSMS]
                                     ],
                          output_path=BASE_PATH / "subprefix",
