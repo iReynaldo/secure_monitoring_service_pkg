@@ -17,6 +17,7 @@ from secure_monitoring_service_pkg import V4Subgraph
 from secure_monitoring_service_pkg import V4Simulation
 from secure_monitoring_service_pkg import ROVSMS, ROVSMSK1, ROVSMSK5
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
+from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
 
 
 BASE_PATH = Path("~/Desktop/graphs/").expanduser()
@@ -26,17 +27,37 @@ os.environ["PYTHONHASHSEED"] = "0"
 random.seed(0)
 
 
-def main(settings, policy):
+def main(settings, policy, scenario):
+    scenarios = list()
+    if scenario == "V4SubprefixHijackScenario":
+        scenarios = v4_subprefix_hijack_scenario(policy)
+    elif scenario == "SubprefixAutoImmuneScenario":
+        scenarios = subprefix_auto_immune_scenario(policy)
+    else:
+        raise f"Scenario: '{scenario}' is not recognized"
 
-    # assert isinstance(input("Turn asserts off for speed?"), str)
-    sims = V4Simulation(scenarios=[V4SubprefixHijackScenario(AdoptASCls=Cls,
-                                                             AnnCls=ROVPPAnn)
-                                   for Cls in [policy]
-                                   ],
-                        output_path=BASE_PATH / "subprefix",
+    sims = V4Simulation(scenarios=scenarios,
+                        output_path=BASE_PATH / f"{scenario}_benchmark",
                         **settings),
+
     for sim in sims:
         sim.run()
+
+
+def v4_subprefix_hijack_scenario(policy):
+    return [
+            V4SubprefixHijackScenario(AdoptASCls=Cls,
+                                      AnnCls=ROVPPAnn)
+            for Cls in [policy]
+    ]
+
+
+def subprefix_auto_immune_scenario(policy):
+    return [
+        SubprefixAutoImmuneScenario(AdoptASCls=Cls,
+                                    AnnCls=ROVPPAnn)
+        for Cls in [policy]
+    ]
 
 
 def process_args(args):
@@ -69,12 +90,12 @@ def parse_args():
     parser.add_argument('-p', '--percentages',
                         type=float,
                         nargs='*',
-                        default=[0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1],
+                        default=[0], #[0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1],
                         help='a list of floats')
     parser.add_argument('-n', '--num_trials',
                         type=int,
                         nargs='?',
-                        default=10,
+                        default=1, #10,
                         help='Number of trials to run')
     parser.add_argument('-c', '--cpus',
                         type=int,
@@ -91,12 +112,11 @@ def parse_args():
                         nargs='?',
                         default="standard",
                         help='Tag to put label in benchmark table')
-    # Future feature: specify scenairo
-    # parser.add_argument('scenario', '-s', '--scenario',
-    #                     type=str,
-    #                     nargs=1,
-    #                     default="V4SubprefixHijackScenario",
-    #                     help='Attack Scenario')
+    parser.add_argument('-s', '--scenario',
+                        type=str,
+                        nargs='?',
+                        default="V4SubprefixHijackScenario",
+                        help='Attack Scenario')
     return process_args(parser.parse_args())
 
 
@@ -113,7 +133,7 @@ if __name__ == "__main__":
 
     # Running Main
     # -----------------------------------------------------------
-    main(settings, policy)
+    main(settings, policy, args.scenario)
     # -----------------------------------------------------------
 
     # Capture runtime and share with stdout
@@ -160,7 +180,7 @@ if __name__ == "__main__":
             "max_memory": total_max_memory,
             "cpus": settings["parse_cpus"],
             "num_trials": settings["num_trials"],
-            "hijack_type": "V4SubprefixHijackScenario",
+            "hijack_type": args.scenario,
             "policy": args.policy,
             "platform": runtime_platform,
             "platform_version": platform.python_version(),
