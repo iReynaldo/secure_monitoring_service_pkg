@@ -8,6 +8,14 @@ import numpy as np
 from secure_monitoring_service_pkg.simulation_framework.sim_logger import test_logger as logger
 from secure_monitoring_service_pkg.simulation_framework import sim_logger
 
+################################
+# Artifical Aource
+################################
+
+# Sequence Number key to get Artificial Source
+# ASN from the seq_asn_map
+ARTIFICIAL_SOURCE_ASN = 0
+
 
 ################################
 # Functions
@@ -28,6 +36,7 @@ def asn_set_from_path_list(path_list):
     for path in path_list:
         asn_set.update(path)
     return asn_set
+
 
 def target_asn_set_from_path_list(path_list, max_number_of_dishonest_nodes):
     """
@@ -156,12 +165,12 @@ def get_mvdp_with_subgraph_pictures(path_list, target_asn):
     logger.debug("Remapped Converted target asn path list: {0}".format(converted_target_asn_path_list))
 
     # Create artificial source edges
-    artificial_source_asn = max(seq_asn_map) + 1
-    seq_asn_map[artificial_source_asn] = artificial_source_asn
-    asn_seq_map[artificial_source_asn] = artificial_source_asn
+    artificial_source_seq_num = max(seq_asn_map) + 1
+    seq_asn_map[artificial_source_seq_num] = ARTIFICIAL_SOURCE_ASN
+    asn_seq_map[ARTIFICIAL_SOURCE_ASN] = artificial_source_seq_num
     source_edge_set = set()
     for path in converted_target_asn_path_list:
-        source_edge_set.add((artificial_source_asn, path[0]))
+        source_edge_set.add((artificial_source_seq_num, path[0]))
     source_edge_list = list(source_edge_set)
 
     # Create graph edge list
@@ -173,9 +182,9 @@ def get_mvdp_with_subgraph_pictures(path_list, target_asn):
 
     # Run the max flow
     adjusted_target = asn_seq_map[target_asn]
-    logger.debug("Artificial Source: {0}".format(artificial_source_asn))
+    logger.debug("Artificial Source: {0}".format(artificial_source_seq_num))
     logger.debug("Adjusted Target: {0}".format(adjusted_target))
-    flow = report_graph.maxflow(source=artificial_source_asn,
+    flow = report_graph.maxflow(source=artificial_source_seq_num,
                                 target=adjusted_target,
                                 capacity=report_graph.es["capacity"]
                                 )
@@ -220,12 +229,12 @@ def create_report_graph(path_list):
     del prelim_report_graph
 
     # Create artificial source edges
-    artificial_source_asn = max(seq_asn_map) + 1
-    seq_asn_map[artificial_source_asn] = 0
-    asn_seq_map[0] = artificial_source_asn
+    artificial_source_seq_num = max(seq_asn_map) + 1
+    seq_asn_map[artificial_source_seq_num] = ARTIFICIAL_SOURCE_ASN
+    asn_seq_map[ARTIFICIAL_SOURCE_ASN] = artificial_source_seq_num
     source_edge_set = set()
     for leaf in nparray_of_leaf_vector_ids:
-        source_edge_set.add((artificial_source_asn, leaf))
+        source_edge_set.add((artificial_source_seq_num, leaf))
     source_edge_list = list(source_edge_set)
 
     # TODO: Recreate graph with artificial source added  / Add artificial source to existing graph
@@ -237,15 +246,16 @@ def create_report_graph(path_list):
     logger.debug("Added Artificial Source to Graph Edge List")
     report_graph = create_report_graph_object_with_capacities(graph_edge_list)
 
-    return report_graph, seq_asn_map, asn_seq_map, artificial_source_asn, nparray_of_leaf_vector_ids
+    return report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_num, nparray_of_leaf_vector_ids
 
 
-def get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_asn, target_asn, plot_graph=False):
+def get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_num, target_asn, plot_graph=False):
     # Run the max flow
     adjusted_target = asn_seq_map[target_asn]
-    logger.debug("Artificial Source: {0}".format(artificial_source_asn))
+    logger.debug("Artificial Source: {0}".format(artificial_source_seq_num))
+    logger.debug("Raw Target: {0}".format(target_asn))
     logger.debug("Adjusted Target: {0}".format(adjusted_target))
-    flow = report_graph.maxflow(source=artificial_source_asn,
+    flow = report_graph.maxflow(source=artificial_source_seq_num,
                                 target=adjusted_target,
                                 capacity=report_graph.es["capacity"]
                                 )
@@ -254,6 +264,7 @@ def get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_asn, t
         logger.debug("Capacities: {0}".format(report_graph.es["capacity"]))
         logger.debug("Max flow: {0}".format(flow.value))
         logger.debug("Edge assignments: {0}".format(flow.flow))
+        logger.debug("Seq to ASN Map: {0}".format(seq_asn_map))
         for v in report_graph.vs:
             v["label"] = seq_asn_map[v.index]
         layout = report_graph.layout("kk")
@@ -261,20 +272,20 @@ def get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_asn, t
 
     return flow.value
 
+
 # @profile
 def get_avoid_list(reports_path_list, max_num_dishonest_nodes):
     logger.debug("Reports Path List: {0}".format(reports_path_list))
     target_asn_set = target_asn_set_from_path_list(reports_path_list, max_num_dishonest_nodes)
     avoid_list = list()
-    (report_graph, seq_asn_map, asn_seq_map, artificial_source_asn, nparray_of_leaf_vector_ids) = create_report_graph(reports_path_list)
+    (report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_num, nparray_of_leaf_vector_ids) = create_report_graph(
+        reports_path_list)
     for target_asn in target_asn_set:
         # Optimization: Calculate mvdp only if it's not a leaf
         if asn_seq_map[target_asn] not in nparray_of_leaf_vector_ids:
-            max_num_vdp = get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_asn, target_asn, sim_logger.CONDUCTING_SYSTEM_TEST)
+            max_num_vdp = get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_num, target_asn,
+                                      sim_logger.CONDUCTING_SYSTEM_TEST)
             if max_num_vdp > max_num_dishonest_nodes:
                 avoid_list.append(target_asn)
     logger.debug("Avoid List: {0}".format(avoid_list))
     return avoid_list
-
-
-
