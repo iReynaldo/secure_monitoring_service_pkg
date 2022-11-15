@@ -7,6 +7,8 @@
 *engine_output_guess.yaml
 *engine_traceback_guess.yaml
 *engine_guess.yaml
+*_guess.yaml
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
