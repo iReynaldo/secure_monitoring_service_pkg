@@ -191,3 +191,5 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+secure_monitoring_service_pkg/tests/engine_tests/engine_test_outputs/137/outcomes_guess.yaml
