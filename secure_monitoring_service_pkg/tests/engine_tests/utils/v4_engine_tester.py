@@ -1,14 +1,5 @@
 from copy import deepcopy
-# from pathlib import Path
-# from typing import List
-#
-# from PIL import Image
-
-# from .diagram import Diagram
-# from .engine_test_config import EngineTestConfig
-# from .simulator_codec import SimulatorCodec
-# from ....simulation_engine import SimulationEngine
-# from ....simulation_framework import Subgraph
+from typing import Dict, Any
 
 from bgp_simulator_pkg import EngineTester
 from bgp_simulator_pkg import Subgraph
@@ -48,9 +39,15 @@ class V4EngineTester(EngineTester):
         # Get traceback results {AS: Outcome}
         outcomes, traceback_asn_outcomes = V4Subgraph()._get_engine_outcomes(engine, scenario)
         # Convert this to just be {ASN: Outcome} (Not the AS object)
-        outcomes = {as_obj.asn: result for as_obj, result in outcomes.items()}
+        outcomes_yaml = {as_obj.asn: result for as_obj, result in outcomes.items()}
+        # Get shared_data
+        shared_data: Dict[Any, Any] = dict()
+        V4Subgraph()._add_traceback_to_shared_data(shared_data,
+                                                   engine,
+                                                   scenario,
+                                                   outcomes)
         # Store engine and traceback YAML
-        self._store_yaml(engine, outcomes)
+        self._store_yaml(engine, outcomes_yaml, shared_data)
         # Create diagrams before the test can fail
         self._generate_diagrams()
         # Compare the YAML's together
