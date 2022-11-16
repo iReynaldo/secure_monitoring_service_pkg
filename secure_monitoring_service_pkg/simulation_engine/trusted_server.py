@@ -35,10 +35,15 @@ class TrustedServer:
             unprocessed_invalid_ann)
 
     def create_recs(self):
+        # TODO: Double check optimization is correct (Config137 seems like counter example)
+        # TODO: Optimization to make
+        # TODO: If this is an AutoImmune Attack, no need to compute
+        # TODO: per prefix, as the result will be the same for each prefix.
+        logger.debug("Inside create_recs")
         for prefix in self._raw_data:
             self.update_recs(prefix)
-        logger.debug(f"Path List: {self.reports_to_path_list('1.2.3.0/24')}")
-        logger.debug("Avoid List: ", self._recommendations)
+            logger.debug(f"Path List for {prefix}: {self.reports_to_path_list(prefix)}")
+            logger.debug(f"Avoid List for {prefix}:  {self._recommendations[prefix]}")
 
     def update_recs(self, prefix):
         """Updates recommendations"""

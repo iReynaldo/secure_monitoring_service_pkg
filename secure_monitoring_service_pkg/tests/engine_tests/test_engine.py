@@ -1,5 +1,6 @@
 from pathlib import Path
 import pytest
+import random
 
 from bgp_simulator_pkg import EngineTestConfig
 
@@ -45,6 +46,20 @@ from .engine_test_configs import Config135
 from .engine_test_configs import Config136
 from .engine_test_configs import Config137
 
+
+######################################
+# Make tests deterministic
+######################################
+
+# IMPORTANT NOTE: PYTHONHASHSEED needs to be set in environment
+# prior to running system tests!!!!!!!!!!!!
+# Set random module's seed
+random.seed(0)
+
+
+######################################
+# Test Engine
+######################################
 
 @pytest.mark.engine
 class TestEngine:

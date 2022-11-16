@@ -72,17 +72,3 @@ class V4Simulation(Simulation):
             # Reset scenario for next round of trials
             prev_scenario = None
         return subgraphs
-
-    # TODO: Currently has no changes compared to parent
-    def _aggregate_engine_run_data(self,
-                                   subgraphs: Tuple[Subgraph, ...],
-                                   **kwargs):
-        """For each subgraph, aggregate data
-
-        Some data aggregation is shared to speed up runs
-        For example, traceback might be useful across
-        Multiple subgraphs
-        """
-        shared_data: Dict[Any, Any] = dict()
-        for subgraph in subgraphs:
-            subgraph.aggregate_engine_run_data(shared_data, **kwargs)
