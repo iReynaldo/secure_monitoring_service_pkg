@@ -6,7 +6,7 @@ from bgp_simulator_pkg import Outcomes
 class DisconnectedNonAdoptingEtcSubgraph(DisconnectedSubgraph):
     """A graph for attacker success for etc ASes that don't adopt"""
 
-    name: str = "disconnected_non_adopting_etc"
+    name: str = "v4_disconnected_non_adopting_etc"
 
     def _get_subgraph_key(self, scenario, *args) -> str:  # type: ignore
         """Returns the key to be used in shared_data on the subgraph"""

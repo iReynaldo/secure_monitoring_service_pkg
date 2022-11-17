@@ -4,8 +4,8 @@ from .adopting import DisconnectedAdoptingStubsAndMHSubgraph
 from .non_adopting import DisconnectedNonAdoptingEtcSubgraph
 from .non_adopting import DisconnectedNonAdoptingInputCliqueSubgraph
 from .non_adopting import DisconnectedNonAdoptingStubsAndMHSubgraph
-from .disconnected_subgraph import DisconnectedSubgraph
 
+from .disconnected_subgraph import DisconnectedSubgraph
 from .disconnected_all_subgraph import DisconnectedAllSubgraph
 
 

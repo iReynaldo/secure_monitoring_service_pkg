@@ -6,7 +6,7 @@ from bgp_simulator_pkg import Scenario
 class DisconnectedAdoptingEtcSubgraph(DisconnectedSubgraph):
     """A graph for attacker success for etc ASes that adopt"""
 
-    name: str = "disconnected_adopting_etc"
+    name: str = "v4_disconnected_adopting_etc"
 
     def _get_subgraph_key(self,
                           scenario: Scenario,

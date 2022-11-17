@@ -6,7 +6,7 @@ from bgp_simulator_pkg import Scenario
 class VictimSuccessAllSubgraph(VictimSuccessSubgraph):
     """A graph for attacker success for etc ASes that adopt"""
 
-    name: str = "victim_success_all"
+    name: str = "v4_victim_success_all"
 
     def _get_subgraph_key(self,
                           scenario: Scenario,

@@ -7,7 +7,7 @@ from bgp_simulator_pkg import Scenario
 class DisconnectedAdoptingInputCliqueSubgraph(DisconnectedSubgraph):
     """Graph with attacker success for adopting input clique ASes"""
 
-    name: str = "disconnected_adopting_input_clique"
+    name: str = "v4_disconnected_adopting_input_clique"
 
     def _get_subgraph_key(self,
                           scenario: Scenario,

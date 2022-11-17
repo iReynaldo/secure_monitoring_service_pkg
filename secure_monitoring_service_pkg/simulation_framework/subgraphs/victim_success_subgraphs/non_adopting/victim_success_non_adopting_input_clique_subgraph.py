@@ -6,7 +6,7 @@ from bgp_simulator_pkg import Outcomes
 class VictimSuccessNonAdoptingInputCliqueSubgraph(VictimSuccessSubgraph):
     """Graph with attacker success for non adopting input clique ASes"""
 
-    name: str = "victim_success_non_adopting_input_clique_subgraph"
+    name: str = "v4_victim_success_non_adopting_input_clique_subgraph"
 
     def _get_subgraph_key(self, scenario, *args) -> str:  # type: ignore
         """Returns the key to be used in shared_data on the subgraph"""

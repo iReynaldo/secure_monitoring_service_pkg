@@ -6,7 +6,7 @@ from bgp_simulator_pkg import Outcomes
 class VictimSuccessAdoptingStubsAndMHSubgraph(VictimSuccessSubgraph):
     """Graph for attacker success with adopting stubs or multihomed ASes"""
 
-    name: str = "victim_success_adopting_stubs_and_multihomed"
+    name: str = "v4_victim_success_adopting_stubs_and_multihomed"
 
     def _get_subgraph_key(self, scenario, *args) -> str:  # type: ignore
         """Returns the key to be used in shared_data on the subgraph"""
