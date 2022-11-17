@@ -36,26 +36,23 @@ class V4EngineTester(EngineTester):
                       "propagation_round": propagation_round}
             scenario.pre_aggregation_hook(**kwargs)
 
-            # Create Shared data
-            shared_data: Dict[Any, Any] = dict()
-            # Add additional things to shared_data for system test checking
-            if scenario.avoid_lists:
-                for prefix in scenario.avoid_lists:
-                    shared_data[f"avoid_list_for_{prefix}"] = sorted(scenario.avoid_lists[prefix])
-
-            # By default, this is a no op
-            scenario.post_propagation_hook(**kwargs)
-
         # Get traceback results {AS: Outcome}
         outcomes, traceback_asn_outcomes = V4Subgraph()._get_engine_outcomes(engine, scenario)
         # Convert this to just be {ASN: Outcome} (Not the AS object)
         outcomes_yaml = {as_obj.asn: result for as_obj, result in outcomes.items()}
-        # Get shared_data
+        # Create Shared data
+        shared_data: Dict[Any, Any] = dict()
+        # Add additional things to shared_data for system test checking
+        if scenario.avoid_lists:
+            for prefix in scenario.avoid_lists:
+                shared_data[f"avoid_list_for_{prefix}"] = sorted(scenario.avoid_lists[prefix])
         V4Subgraph()._add_traceback_to_shared_data(shared_data,
                                                    engine,
                                                    scenario,
                                                    outcomes)
 
+        # By default, this is a no op
+        scenario.post_propagation_hook(**kwargs)  # Clears scenario data
 
         # Store engine and traceback YAML
         self._store_yaml(engine, outcomes_yaml, shared_data)

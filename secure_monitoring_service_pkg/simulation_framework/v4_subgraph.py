@@ -10,6 +10,9 @@ from bgp_simulator_pkg import Outcomes
 from rovpp_pkg import ROVPPV1SimpleAS
 from rovpp_pkg import ROVPPV1LiteSimpleAS
 
+from .scenarios import SubprefixAutoImmuneScenario
+from .scenarios import V4SubprefixHijackScenario
+
 # TODO: Re-introduce metadata_collector
 # from secure_monitoring_service_pkg.simulation_framework import metadata_collector
 
@@ -36,13 +39,18 @@ class V4Subgraph(Subgraph):
     # metadata_collector.cur_trial = trial
 
 
-    # MARK: Needs to be fixed
-    # TODO: Update this to support multiple attackers and victims
-    def verify_avoid_list(self, engine, scenario, outcomes, traceback_asn_outcomes):
+    # TODO (Needs Testing): Update this to support multiple attackers and victims
+    def verify_avoid_list(self,
+                          engine,
+                          scenario,
+                          outcomes,
+                          shared_data,
+                          traceback_asn_outcomes,
+                          trigger_assert=True):
         """
         Makes sure that all the members of the avoid list 'don't lead to victim'
         (This satisfies the check that all members of the avoid list 'lead to
-        the attacker'; which may not necessariy always happen if disconnecitions
+        the attacker'; which may not necessarily always happen if disconnections
         are created due to V4 or other reasons).
         :param engine:
         :param scenario:
@@ -51,28 +59,42 @@ class V4Subgraph(Subgraph):
         :return:
         """
 
+        # Counters
+        num_ases_should_not_be_on_avoid_list = 0
+        num_victim_providers_on_avoid_list = 0
+
         # Check that the avoid list ASes always lead to attacker
         # print(outcomes)
         for prefix in scenario.avoid_lists:
             for asn in scenario.avoid_lists[prefix]:
-                # TODO: Figure out why using the enum doesn't work
-                # TODO: For some reason it literally prints "ASNs.Attacker"
-                # print(f"Attacker: {enums.ASNs.ATTACKER}")
-                # print(f"Victim: {enums.ASNs.VICTIM}")
-                # TODO: The following commented out conditional doesn't work because above TODO
-                # if asn != enums.ASNs.ATTACKER and asn != enums.ASNs.VICTIM:
-                if asn != 666 and asn != 777:
-                    # print(asn)  # TODO: you can also see that 666 slips through
+                # Check if asn is a victim's provider
+                # Note: the keys of 'subprefixes' are the provider ASNs of victim
+                if asn in scenario.subprefixes:
+                    num_victim_providers_on_avoid_list += 1
+                # TODO: Test if the following condition actually works
+                if asn not in scenario.attacker_asns and asn not in scenario.victim_asns:
+                    assert asn not in scenario.attacker_asns, f"Attacker ASN {asn} shouldn't be checked in verify_avoid_list"
+                    assert asn not in scenario.victim_asns, f"Attacker ASN {asn} shouldn't be checked in verify_avoid_list"
                     if asn in outcomes:
-                        assert outcomes[asn] != Outcomes.VICTIM_SUCCESS, \
-                            f"ASN: {asn} in avoid list leads to victim"
+                        # Check if ASN leads to Victim
+                        if outcomes[asn] != Outcomes.VICTIM_SUCCESS:
+                            num_ases_should_not_be_on_avoid_list += 1
+                            assert trigger_assert, \
+                                f"ASN: {asn} in avoid list leads to victim"
+
                         # Check if the disconnected case is not caused by a blackhole
                         as_obj = engine.as_dict[traceback_asn_outcomes[asn]]
+                        # TODO: Does this check need to be counted and/or checked for AutoImmune Attack?
                         # TODO: the following check wouldn't work for v2, v2a, and v3
                         if outcomes[asn] == Outcomes.DISCONNECTED \
                                 and not (isinstance(as_obj, ROVPPV1SimpleAS)
                                          or isinstance(as_obj, ROVPPV1LiteSimpleAS)):
                             assert f"ASN: {asn} in avoid list was disconnected, but not by a blackhole."
+        # Update shared_data
+        shared_data["num_ases_should_not_be_on_avoid_list"] = num_ases_should_not_be_on_avoid_list
+        shared_data["num_victim_providers_on_avoid_list"] = num_victim_providers_on_avoid_list
+        shared_data["num_of_victim_providers"] = len(scenario.subprefixes)
+        shared_data["size_of_avoid_list"] = len(scenario.avoid_lists)
 
     # MARK: New
     def aggregate_engine_run_data(self,
@@ -113,7 +135,20 @@ class V4Subgraph(Subgraph):
             outcomes, traceback_asn_outcomes = \
                 self._get_engine_outcomes(engine, scenario)
             if scenario.has_rovsms_ases:
-                self.verify_avoid_list(engine, scenario, outcomes, traceback_asn_outcomes)
+                # Verify avoid list according to the scenario
+                if isinstance(scenario, SubprefixAutoImmuneScenario):
+                    self.verify_avoid_list(engine,
+                                           scenario,
+                                           outcomes,
+                                           shared_data,
+                                           traceback_asn_outcomes,
+                                           trigger_assert=False)
+                elif isinstance(scenario, V4SubprefixHijackScenario):
+                    self.verify_avoid_list(engine,
+                                           scenario,
+                                           outcomes,
+                                           shared_data,
+                                           traceback_asn_outcomes)
             self._add_traceback_to_shared_data(shared_data,
                                                engine,
                                                scenario,

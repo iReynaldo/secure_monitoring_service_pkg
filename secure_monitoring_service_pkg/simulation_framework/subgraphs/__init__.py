@@ -48,6 +48,9 @@ from .victim_success_subgraphs import\
 from .victim_success_subgraphs import VictimSuccessAllSubgraph
 
 
+from .avoid_list_accuracy import AvoidListAccuracySubgraph
+from .avoid_list_accuracy import VictimProvidersOnAvoidList
+
 __all__ = ["AttackerSuccessAdoptingEtcSubgraph",
            "AttackerSuccessAdoptingInputCliqueSubgraph",
            "AttackerSuccessAdoptingStubsAndMHSubgraph",
@@ -71,4 +74,6 @@ __all__ = ["AttackerSuccessAdoptingEtcSubgraph",
            "VictimSuccessNonAdoptingInputCliqueSubgraph",
            "VictimSuccessNonAdoptingStubsAndMHSubgraph",
            "VictimSuccessSubgraph",
-           "VictimSuccessAllSubgraph"]
+           "VictimSuccessAllSubgraph",
+           "AvoidListAccuracySubgraph",
+           "VictimProvidersOnAvoidList"]
