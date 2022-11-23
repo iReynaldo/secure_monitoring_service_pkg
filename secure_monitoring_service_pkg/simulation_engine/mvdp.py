@@ -274,10 +274,13 @@ def get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_nu
 
 
 # @profile
-def get_avoid_list(reports_path_list, max_num_dishonest_nodes):
+def get_avoid_list(reports_path_list, max_num_dishonest_nodes, specific_target_asn_set=None):
     logger.debug("Inside the get_avoid_list method")
     logger.debug("Reports Path List: {0}".format(reports_path_list))
-    target_asn_set = target_asn_set_from_path_list(reports_path_list, max_num_dishonest_nodes)
+    if not specific_target_asn_set:
+        target_asn_set = target_asn_set_from_path_list(reports_path_list, max_num_dishonest_nodes)
+    else:
+        target_asn_set = specific_target_asn_set
     avoid_list = list()
     (report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_num, nparray_of_leaf_vector_ids) = create_report_graph(
         reports_path_list)

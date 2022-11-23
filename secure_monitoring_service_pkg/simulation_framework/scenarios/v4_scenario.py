@@ -18,7 +18,7 @@ class V4Scenario(Scenario):
         self.has_rovsms_ases = False
         self.trusted_server_ref = None
         self.avoid_lists = None  # Used for verifying avoid list
-        # in pytest system tests
+        self.name = "V4Scenario"
 
     def apply_blackholes_from_avoid_list(self, engine):
         logger.debug(f"Inside apply_blackholes_from_avoid_list")
@@ -36,6 +36,9 @@ class V4Scenario(Scenario):
                 # Create avoid list if it hasn't been created yet
                 if not avoid_list_created_flag:
                     self.trusted_server_ref = as_obj.trusted_server
+                    # Let Trusted Server know the current scenario information
+                    self.trusted_server_ref.scenario_name = self.name
+                    # Compute the avoid list
                     as_obj.trusted_server.create_recs()
                     self.avoid_lists = self.trusted_server_ref._recommendations
                     avoid_list_created_flag = True
