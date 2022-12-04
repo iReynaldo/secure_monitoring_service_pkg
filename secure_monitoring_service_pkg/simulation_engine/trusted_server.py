@@ -76,7 +76,8 @@ class TrustedServer:
                 target_asn = self.prefix_provider_mapping[prefix]
 
                 self._recommendations[prefix] = copy.copy(self._recommendations[previous_prefix])
-                self._recommendations[prefix].remove(previous_target_asn)
+                if previous_target_asn in self._recommendations[prefix]:
+                    self._recommendations[prefix].remove(previous_target_asn)
 
                 self._recommendations[prefix].extend(
                     mvdp.get_avoid_list(
