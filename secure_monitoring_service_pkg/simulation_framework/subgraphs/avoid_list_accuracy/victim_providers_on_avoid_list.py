@@ -16,7 +16,6 @@ class VictimProvidersOnAvoidList(V4Subgraph):
                                       outcomes):
         """Adds traceback info to shared data"""
 
-        # TODO: Replace with your own calculation of avoid list accuracy
         # ------------------------------------------------------------------
         shared["victim_providers_on_avoid_list"] = shared["num_victim_providers_on_avoid_list"] / shared["num_of_victim_providers"]
         # ------------------------------------------------------------------

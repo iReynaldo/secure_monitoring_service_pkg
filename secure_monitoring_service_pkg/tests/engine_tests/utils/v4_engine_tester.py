@@ -46,6 +46,13 @@ class V4EngineTester(EngineTester):
         if scenario.avoid_lists:
             for prefix in scenario.avoid_lists:
                 shared_data[f"avoid_list_for_{prefix}"] = sorted(scenario.avoid_lists[prefix])
+        V4Subgraph().verify_avoid_list(engine,
+                                       scenario,
+                                       outcomes,
+                                       shared_data,
+                                       traceback_asn_outcomes,
+                                       trigger_assert=False)
+        # TODO: How to make system tests that use the appropriate subgraph?
         V4Subgraph()._add_traceback_to_shared_data(shared_data,
                                                    engine,
                                                    scenario,
