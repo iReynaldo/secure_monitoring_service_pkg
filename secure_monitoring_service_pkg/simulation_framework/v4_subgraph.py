@@ -90,11 +90,13 @@ class V4Subgraph(Subgraph):
                                 and not (isinstance(as_obj, ROVPPV1SimpleAS)
                                          or isinstance(as_obj, ROVPPV1LiteSimpleAS)):
                             assert f"ASN: {asn} in avoid list was disconnected, but not by a blackhole."
-        # Update shared_data
-        shared_data["num_ases_should_not_be_on_avoid_list"] = num_ases_should_not_be_on_avoid_list
-        shared_data["num_victim_providers_on_avoid_list"] = num_victim_providers_on_avoid_list
-        shared_data["num_of_victim_providers"] = len(scenario.subprefixes)
-        shared_data["size_of_avoid_list"] = len(scenario.avoid_lists)
+                            
+        if isinstance(scenario, SubprefixAutoImmuneScenario):
+            # Update shared_data
+            shared_data["num_ases_should_not_be_on_avoid_list"] = num_ases_should_not_be_on_avoid_list
+            shared_data["num_victim_providers_on_avoid_list"] = num_victim_providers_on_avoid_list
+            shared_data["num_of_victim_providers"] = len(scenario.subprefixes)
+            shared_data["size_of_avoid_list"] = len(scenario.avoid_lists)
 
     # MARK: New
     def aggregate_engine_run_data(self,
