@@ -44,7 +44,7 @@ class SubprefixAutoImmuneScenario(V4Scenario):
         engine = kwargs["engine"]
         victim_providers = engine.as_dict[next(iter(self.victim_asns))].providers
         for i, provider in enumerate(victim_providers):
-            subprefix = f"1.2.{i}.0/24"
+            subprefix = f"1.2.{i+1}.0/24"
             self.subprefixes[provider.asn] = subprefix
             self.providers[subprefix] = provider.asn
             for attacker_asn in self.attacker_asns:

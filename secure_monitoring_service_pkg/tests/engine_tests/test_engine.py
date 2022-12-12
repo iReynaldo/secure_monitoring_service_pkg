@@ -45,6 +45,14 @@ from .engine_test_configs import Config134
 from .engine_test_configs import Config135
 from .engine_test_configs import Config136
 from .engine_test_configs import Config137
+from .engine_test_configs import Config138
+from .engine_test_configs import Config139
+from .engine_test_configs import Config140
+from .engine_test_configs import Config141
+# from .engine_test_configs import Config142
+# from .engine_test_configs import Config143
+# from .engine_test_configs import Config144
+# from .engine_test_configs import Config145
 
 
 ######################################
@@ -106,7 +114,15 @@ class TestEngine:
                               Config134,
                               Config135,
                               Config136,
-                              Config137
+                              Config137,
+                              Config138,
+                              Config139,
+                              Config140,
+                              Config141,
+                              # Config142,
+                              # Config143,
+                              # Config144,
+                              # Config145
                               ])
     def test_engine(self, conf: EngineTestConfig, overwrite: bool):
         """Performs a system test on the engine
