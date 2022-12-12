@@ -1,3 +1,5 @@
+import ipaddress
+
 from bgp_simulator_pkg import Diagram
 
 class V4Diagram(Diagram):
@@ -67,3 +69,52 @@ class V4Diagram(Diagram):
 
         kwargs = {"color": "black", "style": "filled", "fillcolor": "white"}
         self.dot.node("Avoid List", avoid_list_tbl_html, shape="plaintext", **kwargs)
+
+    def _get_html(self, as_obj, engine, scenario):
+        asn_str = str(as_obj.asn)
+        if as_obj.asn in scenario.victim_asns:
+            asn_str = "&#128519;" + asn_str + "&#128519;"
+        elif as_obj.asn in scenario.attacker_asns:
+            asn_str = "&#128520;" + asn_str + "&#128520;"
+
+        html = f"""<
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+            <TR>
+            <TD COLSPAN="4" BORDER="0">{asn_str}</TD>
+            </TR>
+            <TR>
+            <TD COLSPAN="4" BORDER="0">({as_obj.name})</TD>
+            </TR>"""
+        local_rib_anns = tuple(list(as_obj._local_rib._info.values()))
+        local_rib_anns = tuple(
+            sorted(local_rib_anns,
+                   key=lambda x: ipaddress.ip_network(x.prefix).num_addresses,
+                   reverse=True))
+        if len(local_rib_anns) > 0:
+            html += """<TR>
+                        <TD COLSPAN="4">Local RIB</TD>
+                      </TR>"""
+
+            for ann in local_rib_anns:
+                mask = str(ann.prefix)
+                path = ", ".join(str(x) for x in
+                                 ann.as_path)
+                ann_help = ""
+                if getattr(ann, "blackhole", False):
+                    ann_help = "&#10041;"
+                elif getattr(ann, "preventive", False):
+                    ann_help = "&#128737;"
+                elif any(x in ann.as_path for x in scenario.attacker_asns):
+                    ann_help = "&#128520;"
+                elif any(x == ann.origin for x in scenario.victim_asns):
+                    ann_help = "&#128519;"
+                else:
+                    raise Exception("Not valid ann for rib?")
+
+                html += f"""<TR>
+                            <TD>{mask}</TD>
+                            <TD>{path}</TD>
+                            <TD>{ann_help}</TD>
+                          </TR>"""
+        html += "</TABLE>>"
+        return html
