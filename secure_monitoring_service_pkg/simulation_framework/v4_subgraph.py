@@ -1,4 +1,5 @@
-from typing import Dict, Any, Type, Tuple
+from typing import Dict, Any, Type, Tuple, List, Optional
+import ipaddress
 
 from caida_collector_pkg import AS
 
@@ -6,6 +7,7 @@ from bgp_simulator_pkg import SimulationEngine
 from bgp_simulator_pkg import Scenario
 from bgp_simulator_pkg import Subgraph
 from bgp_simulator_pkg import Outcomes
+from bgp_simulator_pkg import Announcement as Ann
 
 from rovpp_pkg import ROVPPV1SimpleAS
 from rovpp_pkg import ROVPPV1LiteSimpleAS
@@ -67,10 +69,11 @@ class V4Subgraph(Subgraph):
         # print(outcomes)
         for prefix in scenario.avoid_lists:
             for asn in scenario.avoid_lists[prefix]:
-                # Check if asn is a victim's provider
-                # Note: the keys of 'subprefixes' are the provider ASNs of victim
-                if asn in scenario.subprefixes:
-                    num_victim_providers_on_avoid_list += 1
+                if isinstance(scenario, SubprefixAutoImmuneScenario):
+                    # Check if asn is a victim's provider
+                    # Note: the keys of 'subprefixes' are the provider ASNs of victim
+                    if asn in scenario.subprefixes:
+                        num_victim_providers_on_avoid_list += 1
                 # TODO: Test if the following condition actually works
                 if asn not in scenario.attacker_asns and asn not in scenario.victim_asns:
                     assert asn not in scenario.attacker_asns, f"Attacker ASN {asn} shouldn't be checked in verify_avoid_list"
@@ -132,29 +135,35 @@ class V4Subgraph(Subgraph):
         {scenario_label: {percent_adopt: [percents]}}
         """
 
-        if not shared_data.get("set"):
-            # {as_obj: outcome}
-            outcomes, traceback_asn_outcomes = \
-                self._get_engine_outcomes(engine, scenario)
-            if scenario.has_rovsms_ases:
-                # Verify avoid list according to the scenario
-                if isinstance(scenario, SubprefixAutoImmuneScenario):
-                    self.verify_avoid_list(engine,
-                                           scenario,
-                                           outcomes,
-                                           shared_data,
-                                           traceback_asn_outcomes,
-                                           trigger_assert=False)
-                elif isinstance(scenario, V4SubprefixHijackScenario):
-                    self.verify_avoid_list(engine,
-                                           scenario,
-                                           outcomes,
-                                           shared_data,
-                                           traceback_asn_outcomes)
-            self._add_traceback_to_shared_data(shared_data,
-                                               engine,
+        prefix_outcomes: Dict[str, Dict[AS, Outcomes]] = dict()
+        for attacker_ann in scenario.get_attacker_announcements():
+            if not shared_data.get("set"):  # this gets set in __add_traceback_to_shared_data
+                # {as_obj: outcome}
+                outcomes, traceback_asn_outcomes = \
+                    self._get_engine_outcomes(engine, scenario, attacker_ann)
+                prefix_outcomes[attacker_ann.prefix] = outcomes
+
+                # Verify the Avoid List
+                if scenario.has_rovsms_ases:
+                    # Verify avoid list according to the scenario
+                    if isinstance(scenario, SubprefixAutoImmuneScenario):
+                        self.verify_avoid_list(engine,
                                                scenario,
-                                               outcomes)
+                                               outcomes,
+                                               shared_data,
+                                               traceback_asn_outcomes,
+                                               trigger_assert=False)
+                    elif isinstance(scenario, V4SubprefixHijackScenario):
+                        self.verify_avoid_list(engine,
+                                               scenario,
+                                               outcomes,
+                                               shared_data,
+                                               traceback_asn_outcomes)
+        # Aggregate Outcomes
+        self._add_traceback_to_shared_data(shared_data,
+                                           engine,
+                                           scenario,
+                                           prefix_outcomes)
         key = self._get_subgraph_key(scenario)
         self.data[propagation_round][scenario.graph_label][percent_adopt
             ].append(shared_data.get(key, 0))  # noqa
@@ -165,7 +174,8 @@ class V4Subgraph(Subgraph):
                         outcomes: Dict[AS, Outcomes],
                         traceback_asn_outcomes: Dict[int, int],
                         engine: SimulationEngine,
-                        scenario: Scenario
+                        scenario: Scenario,
+                        attacker_ann: Ann
                         ) -> Tuple[Type[Outcomes], Type[int]]:
         """Recursively returns the as outcome"""
 
@@ -174,7 +184,7 @@ class V4Subgraph(Subgraph):
         else:
             # Get the most specific announcement in the rib
             most_specific_ann = self._get_most_specific_ann(
-                as_obj, scenario.ordered_prefix_subprefix_dict)
+                as_obj, scenario.ordered_prefix_subprefix_dict, attacker_ann)
             # This has to be done in the scenario
             # Because only the scenario knows attacker/victim
             # And it's possible for scenario's to have multiple attackers
@@ -192,17 +202,39 @@ class V4Subgraph(Subgraph):
                                                               outcomes,
                                                               traceback_asn_outcomes,
                                                               engine,
-                                                              scenario)
+                                                              scenario,
+                                                              attacker_ann)
             assert outcome != Outcomes.UNDETERMINED, "Shouldn't be possible"
 
             outcomes[as_obj] = outcome
             traceback_asn_outcomes[as_obj.asn] = traceback_asn
             return outcome, traceback_asn
 
+    def _get_most_specific_ann(self,
+                               as_obj: AS,
+                               ordered_prefixes: Dict[str, List[str]],
+                               attacker_ann: Ann
+                               ) -> Optional[Ann]:
+        """Returns the most specific announcement that exists in a rib
+
+        as_obj is the as
+        ordered prefixes are prefixes ordered from most specific to least
+        """
+
+        attacker_ann_prefix = ipaddress.ip_network(attacker_ann.prefix)
+        for prefix in ordered_prefixes:
+            if attacker_ann_prefix.subnet_of(ipaddress.ip_network(prefix)):
+                most_specific_ann = as_obj._local_rib.get_ann(prefix)
+                if most_specific_ann:
+                    # Mypy doesn't recognize that this is always an annoucnement
+                    return most_specific_ann  # type: ignore
+        return None
+
     # MARK: New
     def _get_engine_outcomes(self,
                              engine: SimulationEngine,
-                             scenario: Scenario
+                             scenario: Scenario,
+                             attacker_ann: Ann,
                              ) -> Tuple[Dict[AS, Outcomes], Dict[int, int]]:
         """Gets the outcomes of all ASes"""
 
@@ -215,5 +247,96 @@ class V4Subgraph(Subgraph):
                                  outcomes,
                                  traceback_asn_outcomes,
                                  engine,
-                                 scenario)
+                                 scenario,
+                                 attacker_ann)
         return outcomes, traceback_asn_outcomes
+
+    def _add_traceback_to_shared_data(self,
+                                      shared: Dict[Any, Any],
+                                      engine: SimulationEngine,
+                                      scenario: Scenario,
+                                      prefix_outcomes: Dict[str, Dict[AS, Outcomes]]):
+        """Adds traceback info to shared data"""
+
+        counted_group_size = False  # Flag to not recalculate AS-group (i.e. etc, input clique, edge) size
+        # TODO: The following changes to use the prefix are breaking changes in the plotting
+        # TODO: Need to fix Subgraphs and System test diagram creation
+        for prefix, outcomes in prefix_outcomes.items():
+            for as_obj, outcome in outcomes.items():
+                as_type = self._get_as_type(as_obj)
+
+                # TODO: refactor this ridiculousness into a class
+                # Add to the AS type and policy, as well as the outcome
+                # THESE ARE JUST KEYS, JUST GETTING KEYS/Strings HERE
+                ##################################################################
+                as_type_pol_k = self._get_as_type_pol_k(as_type, as_obj.__class__)
+                as_type_pol_prefix_outcome_k = self._get_as_type_pol_prefix_outcome_k(
+                    as_type, as_obj.__class__, prefix, outcome,
+                )
+                ##################################################################
+
+                # Add to the totals:
+                for k in [as_type_pol_k, as_type_pol_prefix_outcome_k]:
+                    if k == as_type_pol_k:
+                        if not counted_group_size:
+                            shared[k] = shared.get(k, 0) + 1
+                    else:
+                        shared[k] = shared.get(k, 0) + 1
+
+                ############################
+                # Track stats for all ASes #
+                ############################
+
+                # Keep track of totals for all ASes
+                name = outcome.name
+                total = shared.get(f"all_{prefix}_{name}", 0) + 1
+                shared[f"all_{prefix}_{name}"] = total
+
+            # Set group size as calculated, so it doesn't continue to increase with next prefix
+            counted_group_size = True
+
+        # Must calculate percentages at the end
+        # NOTE: this double for loop should realy be avoided
+        # Only O(2n) but bad for runtime
+        for prefix, outcomes in prefix_outcomes.items():
+            for as_obj, outcome in outcomes.items():
+                as_type = self._get_as_type(as_obj)
+                as_type_pol_k = self._get_as_type_pol_k(as_type, as_obj.__class__)
+                as_type_pol_prefix_outcome_k = self._get_as_type_pol_prefix_outcome_k(
+                    as_type, as_obj.__class__, prefix, outcome,
+                )
+                # as type + policy + outcome as a percentage
+                as_type_pol_prefix_outcome_perc_k = self._get_as_type_pol_prefix_outcome_perc_k(
+                    as_type, as_obj.__class__, prefix, outcome
+                )
+                # Set the new percent
+                if shared.get(as_type_pol_prefix_outcome_k) is not None:
+                    shared[as_type_pol_prefix_outcome_perc_k] = (
+                            shared[as_type_pol_prefix_outcome_k] *
+                            100 / shared[as_type_pol_k]
+                    )
+                name = outcome.name
+                total = shared[f"all_{prefix}_{name}"]
+                # Keep track of percentages for all ASes
+                shared[f"all_{prefix}_{name}_perc"] = total * 100 / len(outcomes)
+
+        shared["set"] = True
+
+    def _get_as_type_pol_prefix_outcome_k(self,
+                                          as_type: Any,
+                                          ASCls: Type[AS],
+                                          prefix: str,
+                                          outcome: Outcomes) -> str:
+        """returns as type+policy+outcome key"""
+
+        return f"{self._get_as_type_pol_k(as_type, ASCls)}_{prefix}_{outcome.name}"
+
+    def _get_as_type_pol_prefix_outcome_perc_k(self,
+                                               as_type: Any,
+                                               ASCls: Type[AS],
+                                               prefix: str,
+                                               outcome: Outcomes) -> str:
+        """returns as type+policy+outcome key as a percent"""
+
+        x = self._get_as_type_pol_prefix_outcome_k(as_type, ASCls, prefix, outcome)
+        return f"{x}_percent"

@@ -1,0 +1,21 @@
+all_1.2.3.0/24_ATTACKER_SUCCESS: 13
+all_1.2.3.0/24_ATTACKER_SUCCESS_perc: 81.25
+all_1.2.3.0/24_VICTIM_SUCCESS: 3
+all_1.2.3.0/24_VICTIM_SUCCESS_perc: 18.75
+etc_BGP Simple: 9
+etc_BGP Simple_1.2.3.0/24_ATTACKER_SUCCESS: 9
+etc_BGP Simple_1.2.3.0/24_ATTACKER_SUCCESS_percent: 100.0
+etc_ROV++V1 Lite Simple: 4
+etc_ROV++V1 Lite Simple_1.2.3.0/24_ATTACKER_SUCCESS: 2
+etc_ROV++V1 Lite Simple_1.2.3.0/24_ATTACKER_SUCCESS_percent: 50.0
+etc_ROV++V1 Lite Simple_1.2.3.0/24_VICTIM_SUCCESS: 2
+etc_ROV++V1 Lite Simple_1.2.3.0/24_VICTIM_SUCCESS_percent: 50.0
+set: true
+stubs_or_mh_BGP Simple: 2
+stubs_or_mh_BGP Simple_1.2.3.0/24_ATTACKER_SUCCESS: 1
+stubs_or_mh_BGP Simple_1.2.3.0/24_ATTACKER_SUCCESS_percent: 50.0
+stubs_or_mh_BGP Simple_1.2.3.0/24_VICTIM_SUCCESS: 1
+stubs_or_mh_BGP Simple_1.2.3.0/24_VICTIM_SUCCESS_percent: 50.0
+stubs_or_mh_ROV++V1 Lite Simple: 1
+stubs_or_mh_ROV++V1 Lite Simple_1.2.3.0/24_ATTACKER_SUCCESS: 1
+stubs_or_mh_ROV++V1 Lite Simple_1.2.3.0/24_ATTACKER_SUCCESS_percent: 100.0

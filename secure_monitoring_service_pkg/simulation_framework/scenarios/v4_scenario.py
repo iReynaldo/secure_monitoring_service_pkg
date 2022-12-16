@@ -93,3 +93,11 @@ class V4Scenario(Scenario):
             return Outcomes.DISCONNECTED, as_obj.asn
         else:
             return Outcomes.UNDETERMINED, as_obj.asn
+
+    def get_attacker_announcements(self):
+        attacker_announcements = set()
+        for ann in self.announcements:
+            for attacker_asn in self.attacker_asns:
+                if attacker_asn in ann.as_path:
+                    attacker_announcements.add(ann)
+        return attacker_announcements
