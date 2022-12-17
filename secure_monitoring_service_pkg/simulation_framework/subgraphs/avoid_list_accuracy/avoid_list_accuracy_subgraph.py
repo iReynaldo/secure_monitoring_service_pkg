@@ -18,7 +18,10 @@ class AvoidListAccuracySubgraph(V4Subgraph):
         """Adds traceback info to shared data"""
 
         # ------------------------------------------------------------------
-        shared["avoid_list_accuracy"] = (shared["num_ases_should_not_be_on_avoid_list"] - shared["size_of_avoid_list"]) / shared["size_of_avoid_list"]
+        if shared["size_of_avoid_list"] == 0:
+            shared["avoid_list_accuracy"] = 1
+        else:
+            shared["avoid_list_accuracy"] = (shared["num_ases_should_not_be_on_avoid_list"] - shared["size_of_avoid_list"]) / shared["size_of_avoid_list"]
         # ------------------------------------------------------------------
         return super()._add_traceback_to_shared_data(
             shared, engine, scenario, outcomes)

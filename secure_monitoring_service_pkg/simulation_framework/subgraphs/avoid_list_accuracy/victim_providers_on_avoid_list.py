@@ -17,7 +17,10 @@ class VictimProvidersOnAvoidList(V4Subgraph):
         """Adds traceback info to shared data"""
 
         # ------------------------------------------------------------------
-        shared["victim_providers_on_avoid_list"] = shared["num_victim_providers_on_avoid_list"] / shared["num_of_victim_providers"]
+        if shared["num_of_victim_providers"] == 0:
+            shared["victim_providers_on_avoid_list"] = 0
+        else:
+            shared["victim_providers_on_avoid_list"] = shared["num_victim_providers_on_avoid_list"] / shared["num_of_victim_providers"]
         # ------------------------------------------------------------------
         return super()._add_traceback_to_shared_data(
             shared, engine, scenario, outcomes)
