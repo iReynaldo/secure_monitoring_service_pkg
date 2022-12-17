@@ -21,7 +21,7 @@ random.seed(0)
 
 
 def get_default_kwargs():
-    return {"percent_adoptions": [0, .05, .1, .2, .3, .4, .6, .8, 1],
+    return {"percent_adoptions": [0.01, .05, .1, .2, .3, .4, .6, .8, 0.99],
             "num_trials": 5,
             "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
             "parse_cpus": 1}
@@ -37,7 +37,7 @@ def main():
                                                                 AnnCls=ROVPPAnn)
                                     for Cls in [ROVSMS]
                                     ],
-                         output_path=BASE_PATH / "subprefix",
+                         output_path=BASE_PATH / "autoimmune",
                          **get_default_kwargs()),
            ]
 

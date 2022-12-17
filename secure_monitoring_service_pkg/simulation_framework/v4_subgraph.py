@@ -1,5 +1,6 @@
 from typing import Dict, Any, Type, Tuple, List, Optional
 import ipaddress
+import sys
 
 from caida_collector_pkg import AS
 
@@ -164,9 +165,25 @@ class V4Subgraph(Subgraph):
                                            engine,
                                            scenario,
                                            prefix_outcomes)
+
+        prefix_with_minimum_successful_connections = self.get_prefix_with_minimum_successful_connections(scenario,
+                                                                                                         shared_data)
         key = self._get_subgraph_key(scenario)
+        shared_data[key] = shared_data.get(key + f"_{prefix_with_minimum_successful_connections}", 0)
         self.data[propagation_round][scenario.graph_label][percent_adopt
             ].append(shared_data.get(key, 0))  # noqa
+
+    # TODO: Implement
+    def get_prefix_with_minimum_successful_connections(self, scenario, shared_data):
+        min_prefix = ""
+        min_percentage = sys.maxsize
+        for attacker_ann in scenario.get_attacker_announcements():
+            # This string must match up to "_perc_" with the one in victim_success_all_subgraph.py
+            subgraph_key = f"all_{Outcomes.VICTIM_SUCCESS.name}_perc_{attacker_ann.prefix}"
+            if shared_data[subgraph_key] < min_percentage:
+                min_percentage = shared_data[subgraph_key]
+                min_prefix = attacker_ann.prefix
+        return min_prefix
 
     # MARK: New
     def _get_as_outcome(self,
@@ -289,8 +306,8 @@ class V4Subgraph(Subgraph):
 
                 # Keep track of totals for all ASes
                 name = outcome.name
-                total = shared.get(f"all_{prefix}_{name}", 0) + 1
-                shared[f"all_{prefix}_{name}"] = total
+                total = shared.get(f"all_{name}_{prefix}", 0) + 1
+                shared[f"all_{name}_{prefix}"] = total
 
             # Set group size as calculated, so it doesn't continue to increase with next prefix
             counted_group_size = True
@@ -316,9 +333,9 @@ class V4Subgraph(Subgraph):
                             100 / shared[as_type_pol_k]
                     )
                 name = outcome.name
-                total = shared[f"all_{prefix}_{name}"]
+                total = shared[f"all_{name}_{prefix}"]
                 # Keep track of percentages for all ASes
-                shared[f"all_{prefix}_{name}_perc"] = total * 100 / len(outcomes)
+                shared[f"all_{name}_perc_{prefix}"] = total * 100 / len(outcomes)
 
         shared["set"] = True
 
@@ -328,8 +345,8 @@ class V4Subgraph(Subgraph):
                                           prefix: str,
                                           outcome: Outcomes) -> str:
         """returns as type+policy+outcome key"""
-
-        return f"{self._get_as_type_pol_k(as_type, ASCls)}_{prefix}_{outcome.name}"
+        x = self._get_as_type_pol_outcome_k(as_type, ASCls, outcome)
+        return f"{x}_{prefix}"
 
     def _get_as_type_pol_prefix_outcome_perc_k(self,
                                                as_type: Any,
@@ -338,5 +355,5 @@ class V4Subgraph(Subgraph):
                                                outcome: Outcomes) -> str:
         """returns as type+policy+outcome key as a percent"""
 
-        x = self._get_as_type_pol_prefix_outcome_k(as_type, ASCls, prefix, outcome)
-        return f"{x}_percent"
+        x = self._get_as_type_pol_outcome_perc_k(as_type, ASCls, outcome)
+        return f"{x}_{prefix}"
