@@ -47,10 +47,13 @@ def main():
                            **get_default_kwargs())
         sim_list.append(sim)
 
+    sim_number = 0
     for sim in sim_list:
+        print(f"Starting Simulation Number: {sim_number}")
         start = datetime.now()
         sim.run()
         print(f"{sim.output_path} {(datetime.now() - start).total_seconds()}")
+        sim_number += 1
 
 
 if __name__ == "__main__":
