@@ -33,27 +33,20 @@ def get_default_kwargs():
 def main():
 
     # assert isinstance(input("Turn asserts off for speed?"), str)
-    sim_list = list()
-    for num_attackers in [2, 3, 5]:
-        scenario_list = list()
-        for Cls in [ROVSMS, ROVSMSK1, ROVSMSK2, ROVSMSK3, ROVSMSK5, ROVSMSK10]:
-            scenario = SubprefixAutoImmuneScenario(AdoptASCls=Cls,
-                                                   AnnCls=ROVPPAnn,
-                                                   num_attackers=num_attackers)
-            scenario_list.append(scenario)
-        result_file_name = scenario.name + '_num_attackers_' + str(num_attackers)
-        sim = V4Simulation(scenarios=scenario_list,
-                           output_path=BASE_PATH / result_file_name,
-                           **get_default_kwargs())
-        sim_list.append(sim)
+    sims = [
+        V4Simulation(scenarios=[SubprefixAutoImmuneScenario(AdoptASCls=Cls,
+                                                            AnnCls=ROVPPAnn,
+                                                            num_attackers=2)
+                                for Cls in [ROVSMSK1]
+                                ],
+                     output_path=BASE_PATH / "autoimmune",
+                     **get_default_kwargs()),
+    ]
 
-    sim_number = 0
-    for sim in sim_list:
-        print(f"Starting Simulation Number: {sim_number}")
+    for sim in sims:
         start = datetime.now()
         sim.run()
         print(f"{sim.output_path} {(datetime.now() - start).total_seconds()}")
-        sim_number += 1
 
 
 if __name__ == "__main__":
