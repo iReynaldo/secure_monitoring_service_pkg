@@ -47,7 +47,7 @@ from .config_145 import Config145
 from .config_146 import Config146
 from .config_147 import Config147
 from .config_148 import Config148
-# from .config_149 import Config149
+from .config_149 import Config149
 # from .config_150 import Config150
 # from .config_151 import Config151
 # from .config_152 import Config152

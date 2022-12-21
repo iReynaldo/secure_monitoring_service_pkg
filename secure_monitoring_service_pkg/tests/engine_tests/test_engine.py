@@ -49,10 +49,25 @@ from .engine_test_configs import Config138
 from .engine_test_configs import Config139
 from .engine_test_configs import Config140
 from .engine_test_configs import Config141
-# from .engine_test_configs import Config142
-# from .engine_test_configs import Config143
-# from .engine_test_configs import Config144
-# from .engine_test_configs import Config145
+from .engine_test_configs import Config142
+from .engine_test_configs import Config143
+from .engine_test_configs import Config144
+from .engine_test_configs import Config145
+from .engine_test_configs import Config146
+from .engine_test_configs import Config147
+from .engine_test_configs import Config148
+from .engine_test_configs import Config149
+# from .engine_test_configs import Config150
+# from .engine_test_configs import Config151
+# from .engine_test_configs import Config152
+# from .engine_test_configs import Config153
+# from .engine_test_configs import Config154
+# from .engine_test_configs import Config155
+# from .engine_test_configs import Config156
+# from .engine_test_configs import Config157
+# from .engine_test_configs import Config158
+# from .engine_test_configs import Config159
+# from .engine_test_configs import Config160
 
 
 ######################################
@@ -119,10 +134,25 @@ class TestEngine:
                               Config139,
                               Config140,
                               Config141,
-                              # Config142,
-                              # Config143,
-                              # Config144,
-                              # Config145
+                              Config142,
+                              Config143,
+                              Config144,
+                              Config145,
+                              Config146,
+                              Config147,
+                              Config148,
+                              Config149,
+                              # Config150,
+                              # Config151,
+                              # Config152,
+                              # Config153,
+                              # Config154,
+                              # Config155,
+                              # Config156,
+                              # Config157,
+                              # Config158,
+                              # Config159,
+                              # Config160,
                               ])
     def test_engine(self, conf: EngineTestConfig, overwrite: bool):
         """Performs a system test on the engine

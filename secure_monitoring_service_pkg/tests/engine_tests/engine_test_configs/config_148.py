@@ -28,7 +28,8 @@ class Config148(EngineTestConfig):
                                            BaseASCls=BGPSimpleAS,
                                            AnnCls=ROVPPAnn)
 
-    non_default_as_cls_dict: Dict[int, Type[AS]] = {70: ROVSMSK2,
+    non_default_as_cls_dict: Dict[int, Type[AS]] = {4: ROVSimpleAS,
+                                                    70: ROVSMSK2,
                                                     71: ROVSMSK2,
                                                     72: ROVSMSK2}
     propagation_rounds = 1
