@@ -18,7 +18,7 @@ class Config139(EngineTestConfig):
     """Attacker Fail k=1"""
 
     name = "139"
-    desc = "Subprefix Hijack with V4 Lite k=1"
+    desc = "AutoImmune Attack with V4 Lite k=1"
     graph = graphs.Graph056()
     scenario = SubprefixAutoImmuneScenario(num_attackers=1,
                                            attacker_asns=graph.attacker_asn_set,

@@ -17,7 +17,7 @@ class Config136(EngineTestConfig):
     """Contains config options to run a test"""
 
     name = "136"
-    desc = "Subprefix Hijack with V4 Lite k=2"
+    desc = "AutoImmune Attack with V4 Lite k=2"
     scenario = SubprefixAutoImmuneScenario(attacker_asns={ASNs.ATTACKER.value},
                                            victim_asns={ASNs.VICTIM.value},
                                            AdoptASCls=ROVSMSK2,
