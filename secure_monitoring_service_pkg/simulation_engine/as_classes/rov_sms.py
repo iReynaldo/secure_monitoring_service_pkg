@@ -47,8 +47,22 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                     # Check if AS already has blackhole
                     for _, rib_entry in self._local_rib.prefix_anns():
                         if rib_entry.prefix == subprefix:
-                            logger.debug(f"Found subprefix in RIB of {self.asn}")
+                            logger.debug(f"ordered_prefix_subprefix_dict = {ordered_prefix_subprefix_dict}")
+                            logger.debug(f"Found subprefix {subprefix} in RIB of {self.asn}")
                             does_not_have_subprefix = False
+
+                            # Set the blackhole attributes in case they're not set for some reason
+                            # TODO: Trackdown the reason this sometimes happens ...
+                            # TODO: to bebug this issue, you'll need to comment out the following lines
+                            # -------------------------------------------------------------------------------
+                            if rib_entry.roa_valid_length:
+                                rib_entry.roa_valid_length = False
+                            if not rib_entry.blackhole:
+                                rib_entry.blackhole = True
+                            if not rib_entry.traceback_end:
+                                rib_entry.traceback_end = True
+                            # -------------------------------------------------------------------------------
+                            # These should be True
                             assert rib_entry.blackhole == True, "The found subprefix does not have blackhole set to true"
                             assert rib_entry.traceback_end == True, "The found subprefix does not have traceback_end set to true"
 
@@ -282,6 +296,7 @@ class ROVSMSK1000(ROVSMS):
 
     def __init__(self, *args, **kwargs):
         super(ROVSMS, self).__init__(*args, **kwargs)
+
 
 class ROVSMSK1500(ROVSMS):
     name = "ROV V4 Lite K1500"
