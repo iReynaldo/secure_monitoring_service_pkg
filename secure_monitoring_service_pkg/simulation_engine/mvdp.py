@@ -184,10 +184,17 @@ def get_mvdp_with_subgraph_pictures(path_list, target_asn):
     adjusted_target = asn_seq_map[target_asn]
     logger.debug("Artificial Source: {0}".format(artificial_source_seq_num))
     logger.debug("Adjusted Target: {0}".format(adjusted_target))
-    flow = report_graph.maxflow(source=artificial_source_seq_num,
-                                target=adjusted_target,
-                                capacity=report_graph.es["capacity"]
-                                )
+    try:
+        flow = report_graph.maxflow(source=artificial_source_seq_num,
+                                    target=adjusted_target,
+                                    capacity=report_graph.es["capacity"]
+                                    )
+    except BaseException:
+        logger.info("Path List: {0}".format(path_list_copy))
+        logger.info("Artificial Source: {0}".format(artificial_source_seq_num))
+        logger.info("Target ASN: {0}".format(target_asn))
+        logger.info("Adjusted Target: {0}".format(adjusted_target))
+
 
     logger.debug("Capacities: {0}".format(report_graph.es["capacity"]))
     logger.debug("Max flow: {0}".format(flow.value))

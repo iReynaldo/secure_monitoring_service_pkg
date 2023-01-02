@@ -12,7 +12,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 FORMATTER = logging.Formatter("%(process)d - %(asctime)s - %(name)s - %(levelname)s - %(message)s")
 LOG_FILE = "v4_simulation.log"
-LOG_LEVEL = logging.NOTSET
+LOG_LEVEL = logging.INFO
 TEST_LOGGER = "rovpp_v4_test_logger"
 SIM_LOGGER = "rovpp_v4_sim_logger"
 CONDUCTING_SYSTEM_TEST = False
