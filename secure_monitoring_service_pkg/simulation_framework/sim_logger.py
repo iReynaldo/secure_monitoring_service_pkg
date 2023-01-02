@@ -10,7 +10,7 @@ from logging.handlers import TimedRotatingFileHandler
 # Constants
 #########################
 
-FORMATTER = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s — %(message)s")
+FORMATTER = logging.Formatter("%(process)d - %(asctime)s - %(name)s - %(levelname)s - %(message)s")
 LOG_FILE = "v4_simulation.log"
 LOG_LEVEL = logging.NOTSET
 TEST_LOGGER = "rovpp_v4_test_logger"
