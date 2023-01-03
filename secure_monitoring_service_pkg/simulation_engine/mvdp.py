@@ -184,17 +184,10 @@ def get_mvdp_with_subgraph_pictures(path_list, target_asn):
     adjusted_target = asn_seq_map[target_asn]
     logger.debug("Artificial Source: {0}".format(artificial_source_seq_num))
     logger.debug("Adjusted Target: {0}".format(adjusted_target))
-    try:
-        flow = report_graph.maxflow(source=artificial_source_seq_num,
-                                    target=adjusted_target,
-                                    capacity=report_graph.es["capacity"]
-                                    )
-    except BaseException:
-        logger.info("Path List: {0}".format(path_list_copy))
-        logger.info("Artificial Source: {0}".format(artificial_source_seq_num))
-        logger.info("Target ASN: {0}".format(target_asn))
-        logger.info("Adjusted Target: {0}".format(adjusted_target))
-
+    flow = report_graph.maxflow(source=artificial_source_seq_num,
+                                target=adjusted_target,
+                                capacity=report_graph.es["capacity"]
+                                )
 
     logger.debug("Capacities: {0}".format(report_graph.es["capacity"]))
     logger.debug("Max flow: {0}".format(flow.value))
@@ -262,10 +255,15 @@ def get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_nu
     logger.debug("Artificial Source: {0}".format(artificial_source_seq_num))
     logger.debug("Raw Target: {0}".format(target_asn))
     logger.debug("Adjusted Target: {0}".format(adjusted_target))
-    flow = report_graph.maxflow(source=artificial_source_seq_num,
-                                target=adjusted_target,
-                                capacity=report_graph.es["capacity"]
-                                )
+    try:
+        flow = report_graph.maxflow(source=artificial_source_seq_num,
+                                    target=adjusted_target,
+                                    capacity=report_graph.es["capacity"]
+                                    )
+    except BaseException:
+        logger.info("Artificial Source: {0}".format(artificial_source_seq_num))
+        logger.info("Target ASN: {0}".format(target_asn))
+        logger.info("Adjusted Target: {0}".format(adjusted_target))
 
     if plot_graph:
         logger.debug("Capacities: {0}".format(report_graph.es["capacity"]))
@@ -283,7 +281,7 @@ def get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_nu
 # @profile
 def get_avoid_list(reports_path_list, max_num_dishonest_nodes, specific_target_asn_set=None):
     logger.debug("Inside the get_avoid_list method")
-    logger.debug("Reports Path List: {0}".format(reports_path_list))
+    logger.info("Reports Path List: {0}".format(reports_path_list))
     if not specific_target_asn_set:
         target_asn_set = target_asn_set_from_path_list(reports_path_list, max_num_dishonest_nodes)
     else:
