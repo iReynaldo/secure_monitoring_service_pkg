@@ -1,0 +1,54 @@
+all_ATTACKER_SUCCESS_1.2.1.0/24: 4
+all_ATTACKER_SUCCESS_1.2.2.0/24: 5
+all_ATTACKER_SUCCESS_perc_1.2.1.0/24: 25.0
+all_ATTACKER_SUCCESS_perc_1.2.2.0/24: 31.25
+all_DISCONNECTED_1.2.1.0/24: 3
+all_DISCONNECTED_1.2.2.0/24: 3
+all_DISCONNECTED_perc_1.2.1.0/24: 18.75
+all_DISCONNECTED_perc_1.2.2.0/24: 18.75
+all_VICTIM_SUCCESS_1.2.1.0/24: 9
+all_VICTIM_SUCCESS_1.2.2.0/24: 8
+all_VICTIM_SUCCESS_perc_1.2.1.0/24: 56.25
+all_VICTIM_SUCCESS_perc_1.2.2.0/24: 50.0
+avoid_list_for_1.2.1.0/24:
+- 2
+avoid_list_for_1.2.2.0/24:
+- 2
+etc_BGP Simple: 5
+etc_BGP Simple_ATTACKER_SUCCESS_1.2.1.0/24: 2
+etc_BGP Simple_ATTACKER_SUCCESS_1.2.2.0/24: 3
+etc_BGP Simple_ATTACKER_SUCCESS_percent_1.2.1.0/24: 40.0
+etc_BGP Simple_ATTACKER_SUCCESS_percent_1.2.2.0/24: 60.0
+etc_BGP Simple_VICTIM_SUCCESS_1.2.1.0/24: 3
+etc_BGP Simple_VICTIM_SUCCESS_1.2.2.0/24: 2
+etc_BGP Simple_VICTIM_SUCCESS_percent_1.2.1.0/24: 60.0
+etc_BGP Simple_VICTIM_SUCCESS_percent_1.2.2.0/24: 40.0
+etc_ROV V4 Lite K1: 2
+etc_ROV V4 Lite K1_VICTIM_SUCCESS_1.2.1.0/24: 2
+etc_ROV V4 Lite K1_VICTIM_SUCCESS_1.2.2.0/24: 2
+etc_ROV V4 Lite K1_VICTIM_SUCCESS_percent_1.2.1.0/24: 100.0
+etc_ROV V4 Lite K1_VICTIM_SUCCESS_percent_1.2.2.0/24: 100.0
+etc_ROVSimple: 1
+etc_ROVSimple_VICTIM_SUCCESS_1.2.1.0/24: 1
+etc_ROVSimple_VICTIM_SUCCESS_1.2.2.0/24: 1
+etc_ROVSimple_VICTIM_SUCCESS_percent_1.2.1.0/24: 100.0
+etc_ROVSimple_VICTIM_SUCCESS_percent_1.2.2.0/24: 100.0
+num_ases_should_not_be_on_avoid_list: 0
+num_of_victim_providers: 2
+num_victim_providers_on_avoid_list: 0
+set: true
+size_of_avoid_list: 2
+stubs_or_mh_BGP Simple: 5
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_1.2.1.0/24: 2
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_1.2.2.0/24: 2
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_percent_1.2.1.0/24: 40.0
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_percent_1.2.2.0/24: 40.0
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_1.2.1.0/24: 3
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_1.2.2.0/24: 3
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_percent_1.2.1.0/24: 60.0
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_percent_1.2.2.0/24: 60.0
+stubs_or_mh_ROV V4 Lite K1: 3
+stubs_or_mh_ROV V4 Lite K1_DISCONNECTED_1.2.1.0/24: 3
+stubs_or_mh_ROV V4 Lite K1_DISCONNECTED_1.2.2.0/24: 3
+stubs_or_mh_ROV V4 Lite K1_DISCONNECTED_percent_1.2.1.0/24: 100.0
+stubs_or_mh_ROV V4 Lite K1_DISCONNECTED_percent_1.2.2.0/24: 100.0

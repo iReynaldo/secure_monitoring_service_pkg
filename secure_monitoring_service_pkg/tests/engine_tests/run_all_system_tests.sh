@@ -1,5 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
-PYTHONHASHSEED=0
-pytest -v 
+./deterministic_pytest -v
 rm *.png

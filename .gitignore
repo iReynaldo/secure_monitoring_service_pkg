@@ -7,7 +7,8 @@
 *engine_output_guess.yaml
 *engine_traceback_guess.yaml
 *engine_guess.yaml
-*_guess.yaml
+*guess*.yaml
+secure_monitoring_service_pkg/tests/engine_tests/engine_test_outputs/*/*guess*.yaml
 
 
 # Byte-compiled / optimized / DLL files
@@ -194,4 +195,4 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 
-secure_monitoring_service_pkg/tests/engine_tests/engine_test_outputs/137/outcomes_guess.yaml
+

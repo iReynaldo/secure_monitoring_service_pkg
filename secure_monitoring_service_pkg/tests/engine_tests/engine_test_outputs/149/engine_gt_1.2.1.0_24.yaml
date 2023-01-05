@@ -379,11 +379,11 @@
         as_path: !!python/tuple
         - 6
         - 660
-        - 2
+        - 3
         attacker_on_route: false
         blackhole: false
         holes: !!python/tuple []
-        prefix: 1.2.1.0/24
+        prefix: 1.2.2.0/24
         preventive: false
         recv_relationship: !simulator_codec/Relationships
           name: CUSTOMERS
@@ -398,11 +398,11 @@
         as_path: !!python/tuple
         - 6
         - 660
-        - 3
+        - 2
         attacker_on_route: false
         blackhole: false
         holes: !!python/tuple []
-        prefix: 1.2.2.0/24
+        prefix: 1.2.1.0/24
         preventive: false
         recv_relationship: !simulator_codec/Relationships
           name: CUSTOMERS
@@ -497,11 +497,11 @@
           as_path: !!python/tuple
           - 6
           - 660
-          - 2
+          - 3
           attacker_on_route: false
           blackhole: false
           holes: !!python/tuple []
-          prefix: 1.2.1.0/24
+          prefix: 1.2.2.0/24
           preventive: false
           recv_relationship: !simulator_codec/Relationships
             name: CUSTOMERS
@@ -516,11 +516,11 @@
           as_path: !!python/tuple
           - 6
           - 660
-          - 3
+          - 2
           attacker_on_route: false
           blackhole: false
           holes: !!python/tuple []
-          prefix: 1.2.2.0/24
+          prefix: 1.2.1.0/24
           preventive: false
           recv_relationship: !simulator_codec/Relationships
             name: CUSTOMERS
@@ -615,11 +615,11 @@
           as_path: !!python/tuple
           - 6
           - 660
-          - 2
+          - 3
           attacker_on_route: false
           blackhole: false
           holes: !!python/tuple []
-          prefix: 1.2.1.0/24
+          prefix: 1.2.2.0/24
           preventive: false
           recv_relationship: !simulator_codec/Relationships
             name: CUSTOMERS
@@ -634,11 +634,11 @@
           as_path: !!python/tuple
           - 6
           - 660
-          - 3
+          - 2
           attacker_on_route: false
           blackhole: false
           holes: !!python/tuple []
-          prefix: 1.2.2.0/24
+          prefix: 1.2.1.0/24
           preventive: false
           recv_relationship: !simulator_codec/Relationships
             name: CUSTOMERS
@@ -741,11 +741,11 @@
         as_path: !!python/tuple
         - 9
         - 661
-        - 2
+        - 3
         attacker_on_route: false
         blackhole: false
         holes: !!python/tuple []
-        prefix: 1.2.1.0/24
+        prefix: 1.2.2.0/24
         preventive: false
         recv_relationship: !simulator_codec/Relationships
           name: CUSTOMERS
@@ -760,11 +760,11 @@
         as_path: !!python/tuple
         - 9
         - 661
-        - 3
+        - 2
         attacker_on_route: false
         blackhole: false
         holes: !!python/tuple []
-        prefix: 1.2.2.0/24
+        prefix: 1.2.1.0/24
         preventive: false
         recv_relationship: !simulator_codec/Relationships
           name: CUSTOMERS
@@ -861,11 +861,11 @@
           as_path: !!python/tuple
           - 9
           - 661
-          - 2
+          - 3
           attacker_on_route: false
           blackhole: false
           holes: !!python/tuple []
-          prefix: 1.2.1.0/24
+          prefix: 1.2.2.0/24
           preventive: false
           recv_relationship: !simulator_codec/Relationships
             name: CUSTOMERS
@@ -880,11 +880,11 @@
           as_path: !!python/tuple
           - 9
           - 661
-          - 3
+          - 2
           attacker_on_route: false
           blackhole: false
           holes: !!python/tuple []
-          prefix: 1.2.2.0/24
+          prefix: 1.2.1.0/24
           preventive: false
           recv_relationship: !simulator_codec/Relationships
             name: CUSTOMERS
@@ -981,11 +981,11 @@
           as_path: !!python/tuple
           - 9
           - 661
-          - 2
+          - 3
           attacker_on_route: false
           blackhole: false
           holes: !!python/tuple []
-          prefix: 1.2.1.0/24
+          prefix: 1.2.2.0/24
           preventive: false
           recv_relationship: !simulator_codec/Relationships
             name: CUSTOMERS
@@ -1000,11 +1000,11 @@
           as_path: !!python/tuple
           - 9
           - 661
-          - 3
+          - 2
           attacker_on_route: false
           blackhole: false
           holes: !!python/tuple []
-          prefix: 1.2.2.0/24
+          prefix: 1.2.1.0/24
           preventive: false
           recv_relationship: !simulator_codec/Relationships
             name: CUSTOMERS

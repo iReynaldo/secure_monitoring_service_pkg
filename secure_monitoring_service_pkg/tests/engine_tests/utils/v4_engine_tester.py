@@ -1,6 +1,7 @@
 from copy import deepcopy
 from typing import Dict, Any
 from pathlib import Path
+import random
 
 from caida_collector_pkg import AS
 
@@ -26,6 +27,8 @@ class V4EngineTester(EngineTester):
         We then compare the current run's traceback and engine
             to the ground truth
         """
+        # Set Random seed
+        random.seed(0)
 
         # Get a fresh copy of the scenario
         scenario = deepcopy(self.conf.scenario)
