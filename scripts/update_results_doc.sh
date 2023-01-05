@@ -27,6 +27,11 @@ while getopts 'n:u:h' OPTION; do
 done
 shift "$(($OPTIND -1))"
 
+# Pull Latest Changes
+cd ../overleaf_results_doc
+echo "Pulling latest changes from Overleaf"
+git pull origin master
+
 # Unzip results
 unzip $graphs_zip_file
 # Copy over all results files
@@ -36,10 +41,7 @@ mv results.json $output_dir
 # Graphs copied over
 echo "Graphs copied over to overleaf results dir"
 
-# Pull Latest Changes
-cd ../overleaf_results_doc
-echo "Pulling latest changes from Overleaf"
-git pull origin master
+# Check for differences
 git status
 
 
