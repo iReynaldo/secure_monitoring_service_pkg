@@ -24,8 +24,10 @@ class V4Scenario(Scenario):
     @property
     def _default_adopters(self) -> Set[int]:
         """By default, victim always adopts"""
-
-        return self.victim_asns | self.relay_asns
+        if self.relay_asns:
+            return self.victim_asns | self.relay_asns
+        else:
+            return self.victim_asns
 
     def apply_blackholes_from_avoid_list(self, engine):
         logger.debug(f"Inside apply_blackholes_from_avoid_list")
@@ -76,8 +78,6 @@ class V4Scenario(Scenario):
             self.trusted_server_ref = None
         # Delete saved avoid list
         self.avoid_lists = None
-
-
 
     def determine_as_outcome(self,
                              as_obj: AS,

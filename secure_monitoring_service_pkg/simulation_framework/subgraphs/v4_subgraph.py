@@ -16,7 +16,6 @@ from rovpp_pkg import ROVPPV1LiteSimpleAS
 from secure_monitoring_service_pkg.simulation_framework.scenarios import SubprefixAutoImmuneScenario
 from secure_monitoring_service_pkg.simulation_framework.scenarios import V4SubprefixHijackScenario
 
-
 # TODO: Re-introduce metadata_collector
 # from secure_monitoring_service_pkg.simulation_framework import metadata_collector
 
@@ -191,7 +190,8 @@ class V4Subgraph(Subgraph):
         if len(connected_relays) > 0:
             # For each adopting ASN (except relay), check if it's disconnected
             for as_obj in outcomes:
-                if isinstance(as_obj, scenario.AdoptASCls) and \
+                # TODO: Why doesn't issubclass(as_obj, ROVSMS) work here for Config150?
+                if hasattr(as_obj, "trusted_server") and \
                         outcomes[as_obj] == Outcomes.DISCONNECTED:
                     selected_relay_asn = as_obj.use_relay(connected_relays, scenario.relay_prefixes)
                     if selected_relay_asn:
