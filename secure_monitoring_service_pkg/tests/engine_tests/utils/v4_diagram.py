@@ -2,6 +2,8 @@ import ipaddress
 
 from bgp_simulator_pkg import Diagram
 
+from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
+
 class V4Diagram(Diagram):
 
     def generate_as_graph(self,
@@ -108,6 +110,9 @@ class V4Diagram(Diagram):
                     ann_help = "&#128520;"
                 elif any(x == ann.origin for x in scenario.victim_asns):
                     ann_help = "&#128519;"
+                elif isinstance(scenario, SubprefixAutoImmuneScenario) and \
+                        any(x == ann.origin for x in scenario.relay_asns):
+                    ann_help = "&#9937;"
                 else:
                     raise Exception("Not valid ann for rib?")
 

@@ -4,7 +4,7 @@ from bgp_simulator_pkg import Simulator, BGPAS, MPMethod
 
 from secure_monitoring_service_pkg.simulation_framework.scenarios.v4_subprefix_hijack_scenario import V4SubprefixHijack
 from secure_monitoring_service_pkg.rov_sms import ROVSMS, ROVSMSK1
-from secure_monitoring_service_pkg.simulation_framework.v4_subgraph import V4Graph
+from secure_monitoring_service_pkg.simulation_framework.subgraphs.v4_subgraph import V4Graph
 
 
 # Set Random Seed to determinitic runs

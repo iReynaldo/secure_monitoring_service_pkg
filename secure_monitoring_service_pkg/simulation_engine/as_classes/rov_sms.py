@@ -29,7 +29,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                 report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=adjusted_as_path)
             else:
                 report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=ann.as_path)
-            self.trusted_server.recieve_report(report)
+            self.trusted_server.receive_report(report)
         return super(ROVSMS, self).receive_ann(ann, *args, **kwargs)
 
     # TODO: Fix this use of the engine_input. Possibly needs something else
@@ -80,6 +80,16 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
         for hole in holes:
             # Add blackhole ann to localRIB
             self._local_rib.add_ann(hole)
+
+    def use_relay(self, relay_asns, relay_prefix_dict):
+        """return the relay that it would use"""
+        # Note: for now since we're using a single ASN, then we don't need
+        # implement the preference selection.
+        asn = next(iter(relay_asns))
+        if relay_prefix_dict[asn] in self._local_rib._info:
+            return asn
+        # TODO: Relationship preference
+        # TODO: Shortest path
 
 
 class ROVSMSK1(ROVSMS):

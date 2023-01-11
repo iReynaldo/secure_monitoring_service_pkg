@@ -17,9 +17,9 @@ class TrustedServer:
                  "prefix_provider_mapping")
     name = "TrustedServer"
 
-    def __init__(self, max_num_dishonest_nodes=0):
+    def __init__(self, max_num_dishonest_nodes: int = 0):
         # {prefix: ann_Set}
-        self._max_num_dishonest_nodes: Int = max_num_dishonest_nodes
+        self._max_num_dishonest_nodes: int = max_num_dishonest_nodes
         self._raw_data: Dict[str, List[Ann]] = \
             defaultdict(list)
         self._recommendations: Dict[str, Set[int]] = defaultdict(set)
@@ -38,17 +38,13 @@ class TrustedServer:
                 return True
         return False
 
-    def recieve_report(self, unprocessed_invalid_ann):
+    def receive_report(self, unprocessed_invalid_ann):
         """Process report about an invalid ann"""
 
         self._raw_data[unprocessed_invalid_ann.prefix].append(
             unprocessed_invalid_ann)
 
     def create_recs(self):
-        # TODO: Use Config137 seems as a good test
-        # TODO: Optimization to make
-        # TODO: If this is an AutoImmune Attack, no need to compute
-        # TODO: per prefix, as the result will be the same for each prefix.
         logger.debug("Inside create_recs")
         previous_prefix = None
         for prefix in self._raw_data:

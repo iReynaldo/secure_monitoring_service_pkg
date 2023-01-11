@@ -7,6 +7,6 @@ class V4SubprefixHijackScenario(V4Scenario, SubprefixHijack):
 
     __slots__ = ()
 
-    def __init__(self, *args, **kwargs):
-        super(V4SubprefixHijackScenario, self).__init__(*args, **kwargs)
+    def __init__(self, *args, relay_asns=None, **kwargs):
+        super(V4SubprefixHijackScenario, self).__init__(*args, relay_asns=relay_asns, **kwargs)
         self.name = "V4SubprefixHijackScenario"

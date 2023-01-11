@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Type
+from typing import Tuple, Optional, Type, Set
 
 from caida_collector_pkg import AS
 
@@ -13,12 +13,13 @@ from secure_monitoring_service_pkg.simulation_framework.sim_logger \
 
 class V4Scenario(Scenario):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, relay_asns=None, **kwargs):
         super(V4Scenario, self).__init__(*args, **kwargs)
         self.has_rovsms_ases = False
         self.trusted_server_ref = None
         self.avoid_lists = None  # Used for verifying avoid list
         self.name = "V4Scenario"
+        self.relay_asns = relay_asns
 
     def apply_blackholes_from_avoid_list(self, engine):
         logger.debug(f"Inside apply_blackholes_from_avoid_list")
@@ -71,6 +72,7 @@ class V4Scenario(Scenario):
         self.avoid_lists = None
 
 
+
     def determine_as_outcome(self,
                              as_obj: AS,
                              ann: Optional[Announcement]
@@ -101,3 +103,7 @@ class V4Scenario(Scenario):
                 if attacker_asn in ann.as_path:
                     attacker_announcements.add(ann)
         return attacker_announcements
+
+    def get_victim_asn(self, **kwargs):
+        # Note: assumption there is 1 victim
+        return next(iter(self.victim_asns))

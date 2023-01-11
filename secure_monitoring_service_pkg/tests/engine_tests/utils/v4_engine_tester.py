@@ -6,12 +6,11 @@ import random
 from caida_collector_pkg import AS
 
 from bgp_simulator_pkg import EngineTester
-from bgp_simulator_pkg import Subgraph
 from bgp_simulator_pkg import Outcomes
 
 from .v4_diagram import V4Diagram
 
-from secure_monitoring_service_pkg.simulation_framework.v4_subgraph import V4Subgraph
+from secure_monitoring_service_pkg.simulation_framework.subgraphs.v4_subgraph import V4Subgraph
 
 class V4EngineTester(EngineTester):
 
@@ -48,13 +47,21 @@ class V4EngineTester(EngineTester):
         for attacker_ann in scenario.get_attacker_announcements():
             # Get traceback results {AS: Outcome}
             outcomes, traceback_asn_outcomes = V4Subgraph()._get_engine_outcomes(engine, scenario, attacker_ann)
+            # Create Shared data
+            shared_data: Dict[Any, Any] = dict()
+            # Update outcomes if reconnections via relays can be made
+            if scenario.relay_asns:
+                V4Subgraph()._recalculate_outcomes_with_relays(scenario,
+                                                               engine,
+                                                               outcomes,
+                                                               traceback_asn_outcomes,
+                                                               shared_data)
             prefix_outcomes[attacker_ann.prefix] = outcomes
             # Convert this to just be {ASN: Outcome} (Not the AS object)
             outcomes_yaml = {as_obj.asn: result for as_obj, result in outcomes.items()}
             prefix_outcomes_yaml[attacker_ann.prefix] = outcomes_yaml
 
-            # Create Shared data
-            shared_data: Dict[Any, Any] = dict()
+
             # Add additional things to shared_data for system test checking
             if scenario.avoid_lists:
                 for prefix in scenario.avoid_lists:

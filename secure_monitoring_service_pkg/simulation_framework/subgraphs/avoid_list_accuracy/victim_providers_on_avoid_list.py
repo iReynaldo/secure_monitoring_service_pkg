@@ -2,7 +2,7 @@ from bgp_simulator_pkg import Scenario
 from bgp_simulator_pkg import SimulationEngine
 from typing import Any, Dict
 
-from ...v4_subgraph import V4Subgraph
+from secure_monitoring_service_pkg.simulation_framework.subgraphs.v4_subgraph import V4Subgraph
 
 class VictimProvidersOnAvoidList(V4Subgraph):
     """A graph to check the fraction of victim providers on the avoid list"""

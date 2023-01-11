@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Set, Dict
 
 from bgp_simulator_pkg import Announcement
 from bgp_simulator_pkg import Prefixes
@@ -14,18 +14,25 @@ class SubprefixAutoImmuneScenario(V4Scenario):
 
     __slots__ = ()
 
-    def __init__(self, *args, **kwargs):
-        super(SubprefixAutoImmuneScenario, self).__init__(*args, **kwargs)
+    def __init__(self, *args, relay_asns=None, **kwargs):
+        super(SubprefixAutoImmuneScenario, self).__init__(*args, relay_asns=relay_asns, **kwargs)
         self.subprefixes = dict()
         self.providers = dict()
-        self.name = "SubprefixAutoImmuneScenario"
+        self.name: str = "SubprefixAutoImmuneScenario"
+        self.relay_prefixes: Dict[int, str] = dict()
+    @property
+    def _default_adopters(self) -> Set[int]:
+        """By default, victim always adopts"""
+
+        return self.victim_asns | self.relay_asns
 
     def _get_announcements(self, *args, **kwargs) -> Tuple["Announcement", ...]:
-        """Returns victim and attacker anns for autoimmune attack
+        """Returns victim, attacker, and relay anns for autoimmune attack
 
         """
 
         anns = list()
+        # Setup Victim Announcements
         for victim_asn in self.victim_asns:
             anns.append(self.AnnCls(prefix=Prefixes.PREFIX.value,
                                     as_path=(victim_asn,),
@@ -39,8 +46,8 @@ class SubprefixAutoImmuneScenario(V4Scenario):
                    "announcements for multiple victims"
         assert len(self.victim_asns) == 1, err
 
+        # Setup Attacker Announcements
         roa_origin: int = next(iter(self.victim_asns))
-
         engine = kwargs["engine"]
         victim_providers = engine.as_dict[next(iter(self.victim_asns))].providers
         for i, provider in enumerate(victim_providers):
@@ -54,6 +61,19 @@ class SubprefixAutoImmuneScenario(V4Scenario):
                                         seed_asn=attacker_asn,
                                         roa_valid_length=False,
                                         roa_origin=roa_origin,
+                                        recv_relationship=Relationships.ORIGIN))
+
+        # Setup Relay Announcements
+        if self.relay_asns:
+            for i, relay_asn in enumerate(self.relay_asns):
+                relay_prefix = f"{i+1}.{i+1}.{i+1}.0/24"
+                self.relay_prefixes[relay_asn] = relay_prefix
+                anns.append(self.AnnCls(prefix=relay_prefix,
+                                        as_path=(relay_asn,),
+                                        timestamp=2,
+                                        seed_asn=relay_asn,
+                                        roa_valid_length=True,
+                                        roa_origin=relay_asn,
                                         recv_relationship=Relationships.ORIGIN))
 
         return tuple(anns)
