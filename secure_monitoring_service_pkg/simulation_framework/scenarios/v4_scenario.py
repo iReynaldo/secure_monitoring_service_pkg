@@ -21,6 +21,12 @@ class V4Scenario(Scenario):
         self.name = "V4Scenario"
         self.relay_asns = relay_asns
 
+    @property
+    def _default_adopters(self) -> Set[int]:
+        """By default, victim always adopts"""
+
+        return self.victim_asns | self.relay_asns
+
     def apply_blackholes_from_avoid_list(self, engine):
         logger.debug(f"Inside apply_blackholes_from_avoid_list")
         # Create a flag to check if avoid_list has been created
@@ -103,6 +109,22 @@ class V4Scenario(Scenario):
                 if attacker_asn in ann.as_path:
                     attacker_announcements.add(ann)
         return attacker_announcements
+
+    def generate_relay_announcements(self):
+        anns = list()
+        # Setup Relay Announcements
+        if self.relay_asns:
+            for i, relay_asn in enumerate(self.relay_asns):
+                relay_prefix = f"{i + 1}.{i + 1}.{i + 1}.0/24"
+                self.relay_prefixes[relay_asn] = relay_prefix
+                anns.append(self.AnnCls(prefix=relay_prefix,
+                                        as_path=(relay_asn,),
+                                        timestamp=2,
+                                        seed_asn=relay_asn,
+                                        roa_valid_length=True,
+                                        roa_origin=relay_asn,
+                                        recv_relationship=Relationships.ORIGIN))
+        return anns
 
     def get_victim_asn(self, **kwargs):
         # Note: assumption there is 1 victim

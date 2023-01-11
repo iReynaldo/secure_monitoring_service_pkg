@@ -20,11 +20,6 @@ class SubprefixAutoImmuneScenario(V4Scenario):
         self.providers = dict()
         self.name: str = "SubprefixAutoImmuneScenario"
         self.relay_prefixes: Dict[int, str] = dict()
-    @property
-    def _default_adopters(self) -> Set[int]:
-        """By default, victim always adopts"""
-
-        return self.victim_asns | self.relay_asns
 
     def _get_announcements(self, *args, **kwargs) -> Tuple["Announcement", ...]:
         """Returns victim, attacker, and relay anns for autoimmune attack
@@ -64,17 +59,7 @@ class SubprefixAutoImmuneScenario(V4Scenario):
                                         recv_relationship=Relationships.ORIGIN))
 
         # Setup Relay Announcements
-        if self.relay_asns:
-            for i, relay_asn in enumerate(self.relay_asns):
-                relay_prefix = f"{i+1}.{i+1}.{i+1}.0/24"
-                self.relay_prefixes[relay_asn] = relay_prefix
-                anns.append(self.AnnCls(prefix=relay_prefix,
-                                        as_path=(relay_asn,),
-                                        timestamp=2,
-                                        seed_asn=relay_asn,
-                                        roa_valid_length=True,
-                                        roa_origin=relay_asn,
-                                        recv_relationship=Relationships.ORIGIN))
+        anns.extend(self.generate_relay_announcements())
 
         return tuple(anns)
 
