@@ -59,8 +59,8 @@ from .engine_test_configs import Config148
 from .engine_test_configs import Config149
 from .engine_test_configs import Config150
 from .engine_test_configs import Config151
-# from .engine_test_configs import Config152
-# from .engine_test_configs import Config153
+from .engine_test_configs import Config152
+from .engine_test_configs import Config153
 # from .engine_test_configs import Config154
 # from .engine_test_configs import Config155
 # from .engine_test_configs import Config156
@@ -144,8 +144,8 @@ class TestEngine:
                               Config149,
                               Config150,
                               Config151,
-                              # Config152,
-                              # Config153,
+                              Config152,
+                              Config153,
                               # Config154,
                               # Config155,
                               # Config156,

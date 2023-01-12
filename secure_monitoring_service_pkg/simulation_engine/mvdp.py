@@ -51,8 +51,8 @@ def target_asn_set_from_path_list(path_list, max_number_of_dishonest_nodes):
     for path in path_list:
         for asn in path:
             # TODO: if there's a case where an ASN is added to the same path multiple times,
-            # this doesn't account fo that. It assumes this kind of manipulation is not part of our
-            # simulations. Adding it is simple, but want to keep this as lean as possible.
+            #   this doesn't account fo that. It assumes this kind of manipulation is not part of our
+            #   simulations. Adding it is simple, but want to keep this as lean as possible.
             asn_counter[asn] += 1
             if asn_counter[asn] > max_number_of_dishonest_nodes:
                 asn_set.add(asn)
@@ -237,8 +237,6 @@ def create_report_graph(path_list):
         source_edge_set.add((artificial_source_seq_num, leaf))
     source_edge_list = list(source_edge_set)
 
-    # TODO: Recreate graph with artificial source added  / Add artificial source to existing graph
-    # TODO: Which way is faster?
     # Add artificial source edges to graph edge list
     graph_edge_list.extend(source_edge_list)
 

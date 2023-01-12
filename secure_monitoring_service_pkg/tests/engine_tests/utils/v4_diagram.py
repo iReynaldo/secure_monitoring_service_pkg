@@ -19,9 +19,39 @@ class V4Diagram(Diagram):
         self._add_edges(engine)
         self._add_propagation_ranks(engine)
         self._add_avoid_list_table(shared_data)
+        self._add_relay_usage_table(shared_data)
         # https://stackoverflow.com/a/57461245/8903959
         self.dot.attr(label=description)
         self._render(path=path, view=view)
+
+
+    def _add_relay_usage_table(self, shared_data):
+        rows = ''
+        relay_usage = shared_data.get("relay_usage", None)
+        if not relay_usage:
+            return
+        # If there are no avoid lists, don't print anything
+        for asn in relay_usage:
+            row = f'''
+                <TR>
+                  <TD BGCOLOR="#adadff">{asn}</TD>
+                  <TD BGCOLOR="#adadff:white">{shared_data["relay_prefixes"][asn]}</TD>
+                  <TD>{relay_usage[asn]}</TD>
+                </TR>
+            '''
+            rows = rows + row
+
+        relay_usage_tbl_html = f'''<
+          <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+              <TR>
+                  <TD COLSPAN="3" BORDER="0">Relay Usage</TD>
+              </TR>
+              {rows}
+            </TABLE>
+        >'''
+
+        kwargs = {"color": "black", "style": "filled", "fillcolor": "white"}
+        self.dot.node("Relay Usage", relay_usage_tbl_html, shape="plaintext", **kwargs)
 
     def _add_avoid_list_table(self, shared_data):
         rows = ''
@@ -40,17 +70,6 @@ class V4Diagram(Diagram):
             '''
             rows = rows + row
 
-        # avoid_list_tbl_html = f'''<
-        #     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-        #       <TR>
-        #       <TD COLSPAN="2" BORDER="0">(Avoid List)</TD>
-        #       </TR>
-        #       <TR>
-        #           <TD BGCOLOR="#ff6060:white"> Some Prefix </TD>
-        #           <TD>bla bla bla</TD>
-        #       </TR>
-        #     </TABLE>>
-        # '''
         avoid_list_tbl_html = f'''<
           <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
               <TR>
@@ -59,15 +78,6 @@ class V4Diagram(Diagram):
               {rows}
             </TABLE>
         >'''
-
-        # avoid_list_tbl_html = f'''<
-        # <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-        #   <TR>
-        #   <TD COLSPAN="2" BORDER="0">(Avoid List)</TD>
-        #   </TR>
-        #   {rows}
-        # </TABLE>>
-        # '''
 
         kwargs = {"color": "black", "style": "filled", "fillcolor": "white"}
         self.dot.node("Avoid List", avoid_list_tbl_html, shape="plaintext", **kwargs)

@@ -50,8 +50,8 @@ from .config_148 import Config148
 from .config_149 import Config149
 from .config_150 import Config150
 from .config_151 import Config151
-# from .config_152 import Config152
-# from .config_153 import Config153
+from .config_152 import Config152
+from .config_153 import Config153
 # from .config_154 import Config154
 # from .config_155 import Config155
 # from .config_156 import Config156
@@ -114,8 +114,8 @@ __all__ = [
     "Config149",
     "Config150",
     "Config151",
-    # "Config152",
-    # "Config153",
+    "Config152",
+    "Config153",
     # "Config154",
     # "Config155",
     # "Config156",

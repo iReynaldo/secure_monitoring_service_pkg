@@ -40,7 +40,6 @@ class V4Subgraph(Subgraph):
     # metadata_collector.cur_percent_adoption = percent_adopt
     # metadata_collector.cur_trial = trial
 
-    # TODO (Needs Testing): Update this to support multiple attackers and victims
     def verify_avoid_list(self,
                           engine,
                           scenario,
@@ -143,6 +142,7 @@ class V4Subgraph(Subgraph):
                 if scenario.relay_asns:
                     self._recalculate_outcomes_with_relays(scenario,
                                                            engine,
+                                                           attacker_ann,
                                                            outcomes,
                                                            traceback_asn_outcomes,
                                                            shared_data)
@@ -178,10 +178,12 @@ class V4Subgraph(Subgraph):
         self.data[propagation_round][scenario.graph_label][percent_adopt
         ].append(shared_data.get(key, 0))  # noqa
 
-    def _recalculate_outcomes_with_relays(self, scenario: Scenario, engine, outcomes, traceback_asn_outcomes,
-                                          shared_data):
+    def _recalculate_outcomes_with_relays(self, scenario, engine, attacker_ann, outcomes, traceback_asn_outcomes,
+                                          shared_data, track_relay_usage=False):
         """Mutate outcomes and traceback_asn_outcomes with potential reconnections
         from relays."""
+        # This flag will indicate if re-computation of outcomes is necessary
+        changes_made_flag = False
         # Create a set of relays that have successful connections to origin
         connected_relays = set()
         for relay_asn in scenario.relay_asns:
@@ -199,11 +201,18 @@ class V4Subgraph(Subgraph):
                         outcomes[as_obj] = Outcomes.VICTIM_SUCCESS
                         # Update traceback_asn_outcome to victim asn
                         traceback_asn_outcomes[as_obj.asn] = scenario.get_victim_asn()
-                        # TODO: Uncomment the following if we want to track which relays are being used
-                        # # Add ASN to set of ASes using the relay to shared_data
-                        # relay_usage = shared_data.get("relay_usage", dict())
-                        # relay_users = relay_usage.get(selected_relay_asn, set())
-                        # relay_users.add(as_obj.asn)
+                        # Update flag to signal re-computation of outcomes
+                        changes_made_flag = True
+                        # Track which relays are being used
+                        if track_relay_usage:
+                            # Add ASN to set of ASes using the relay to shared_data
+                            relay_usage = shared_data.get("relay_usage", dict())
+                            relay_users = relay_usage.get(selected_relay_asn, set())
+                            relay_users.add(as_obj.asn)
+                            relay_usage[selected_relay_asn] = relay_users
+                            shared_data["relay_usage"] = relay_usage
+        if changes_made_flag:
+            self._get_engine_outcomes(engine, scenario, attacker_ann, outcomes, traceback_asn_outcomes, True)
 
     def get_prefix_with_minimum_successful_connections(self, scenario, shared_data):
         min_prefix = ""
@@ -223,11 +232,13 @@ class V4Subgraph(Subgraph):
                         traceback_asn_outcomes: Dict[int, int],
                         engine: SimulationEngine,
                         scenario: Scenario,
-                        attacker_ann: Ann
+                        attacker_ann: Ann,
+                        force_recompute: bool = False
                         ) -> Tuple[Type[Outcomes], Type[int]]:
         """Recursively returns the as outcome"""
-
-        if as_obj in outcomes:
+        if force_recompute and as_obj in outcomes and outcomes[as_obj] != Outcomes.DISCONNECTED:
+            return outcomes[as_obj], traceback_asn_outcomes[as_obj.asn]
+        if not force_recompute and as_obj in outcomes:
             return outcomes[as_obj], traceback_asn_outcomes[as_obj.asn]
         else:
             # Get the most specific announcement in the rib
@@ -251,7 +262,8 @@ class V4Subgraph(Subgraph):
                                                               traceback_asn_outcomes,
                                                               engine,
                                                               scenario,
-                                                              attacker_ann)
+                                                              attacker_ann,
+                                                              force_recompute)
             assert outcome != Outcomes.UNDETERMINED, "Shouldn't be possible"
 
             outcomes[as_obj] = outcome
@@ -283,20 +295,32 @@ class V4Subgraph(Subgraph):
                              engine: SimulationEngine,
                              scenario: Scenario,
                              attacker_ann: Ann,
-                             ) -> Tuple[Dict[AS, Outcomes], Dict[int, int]]:
+                             outcomes: dict = None,
+                             traceback_asn_outcomes: dict = None,
+                             recompute_disconnections: bool = False) -> Tuple[Dict[AS, Outcomes], Dict[int, int]]:
         """Gets the outcomes of all ASes"""
 
         # {ASN: outcome}
-        outcomes: Dict[AS, Outcomes] = dict()
-        traceback_asn_outcomes: Dict[int, int] = dict()
+        outcomes: Dict[AS, Outcomes] = outcomes if outcomes else dict()
+        traceback_asn_outcomes: Dict[int, int] = traceback_asn_outcomes if traceback_asn_outcomes else dict()
         for as_obj in engine.as_dict.values():
-            # Gets AS outcome and stores it in the outcomes dict
-            self._get_as_outcome(as_obj,
-                                 outcomes,
-                                 traceback_asn_outcomes,
-                                 engine,
-                                 scenario,
-                                 attacker_ann)
+            if recompute_disconnections and outcomes[as_obj] == Outcomes.DISCONNECTED:
+                # Gets AS outcome and stores it in the outcomes dict
+                self._get_as_outcome(as_obj,
+                                     outcomes,
+                                     traceback_asn_outcomes,
+                                     engine,
+                                     scenario,
+                                     attacker_ann,
+                                     force_recompute=True)
+            else:
+                # Gets AS outcome and stores it in the outcomes dict
+                self._get_as_outcome(as_obj,
+                                     outcomes,
+                                     traceback_asn_outcomes,
+                                     engine,
+                                     scenario,
+                                     attacker_ann)
         return outcomes, traceback_asn_outcomes
 
     def _add_traceback_to_shared_data(self,
@@ -307,8 +331,6 @@ class V4Subgraph(Subgraph):
         """Adds traceback info to shared data"""
 
         counted_group_size = False  # Flag to not recalculate AS-group (i.e. etc, input clique, edge) size
-        # TODO: The following changes to use the prefix are breaking changes in the plotting
-        # TODO: Need to fix Subgraphs and System test diagram creation
         for prefix, outcomes in prefix_outcomes.items():
             for as_obj, outcome in outcomes.items():
                 as_type = self._get_as_type(as_obj)

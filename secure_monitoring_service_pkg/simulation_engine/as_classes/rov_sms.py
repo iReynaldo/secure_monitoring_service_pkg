@@ -1,3 +1,5 @@
+import random
+
 from rovpp_pkg import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg.simulation_engine.trusted_server import TrustedServer
@@ -32,7 +34,6 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
             self.trusted_server.receive_report(report)
         return super(ROVSMS, self).receive_ann(ann, *args, **kwargs)
 
-    # TODO: Fix this use of the engine_input. Possibly needs something else
     def _force_add_blackholes_from_avoid_list(self, ordered_prefix_subprefix_dict):
         holes = []
 
@@ -53,7 +54,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
 
                             # Set the blackhole attributes in case they're not set for some reason
                             # TODO: Trackdown the reason this sometimes happens ...
-                            # TODO: to bebug this issue, you'll need to comment out the following lines
+                            #   to bebug this issue, you'll need to comment out the following lines
                             # -------------------------------------------------------------------------------
                             if rib_entry.roa_valid_length:
                                 rib_entry.roa_valid_length = False
@@ -83,13 +84,16 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
 
     def use_relay(self, relay_asns, relay_prefix_dict):
         """return the relay that it would use"""
-        # Note: for now since we're using a single ASN, then we don't need
-        # implement the preference selection.
-        asn = next(iter(relay_asns))
-        if relay_prefix_dict[asn] in self._local_rib._info:
-            return asn
-        # TODO: Relationship preference
-        # TODO: Shortest path
+        # Check what relay ASes are available to this AS
+        accessible_relays = list()
+        for asn in relay_asns:
+            if relay_prefix_dict[asn] in self._local_rib._info:
+                accessible_relays.append(asn)
+        # Uniformly at random select from available relays
+        return random.choice(accessible_relays) if len(accessible_relays) > 0 else None
+        # TODO: Future enhancement: Consider picking prefence with
+        #   1. Relationship preference
+        #   2. Shortest path
 
 
 class ROVSMSK1(ROVSMS):

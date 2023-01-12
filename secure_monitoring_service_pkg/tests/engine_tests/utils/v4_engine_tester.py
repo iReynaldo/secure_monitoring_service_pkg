@@ -51,11 +51,15 @@ class V4EngineTester(EngineTester):
             shared_data: Dict[Any, Any] = dict()
             # Update outcomes if reconnections via relays can be made
             if scenario.relay_asns:
+                # Add relay prefix data to shared data
+                shared_data["relay_prefixes"] = scenario.relay_prefixes
                 V4Subgraph()._recalculate_outcomes_with_relays(scenario,
                                                                engine,
+                                                               attacker_ann,
                                                                outcomes,
                                                                traceback_asn_outcomes,
-                                                               shared_data)
+                                                               shared_data,
+                                                               track_relay_usage=True)
             prefix_outcomes[attacker_ann.prefix] = outcomes
             # Convert this to just be {ASN: Outcome} (Not the AS object)
             outcomes_yaml = {as_obj.asn: result for as_obj, result in outcomes.items()}
