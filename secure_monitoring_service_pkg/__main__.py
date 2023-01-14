@@ -1,45 +1,53 @@
 from datetime import datetime
 from pathlib import Path
-import random
-import os
 import time
 
 from rovpp_pkg import ROVPPAnn
+from rovpp_pkg import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg import V4Subgraph
 from secure_monitoring_service_pkg import V4Simulation
 from secure_monitoring_service_pkg import ROVSMS, ROVSMSK1, ROVSMSK2
-from secure_monitoring_service_pkg import ROVSMSK3, ROVSMSK5, ROVSMSK10
+from secure_monitoring_service_pkg import ROVSMSK3, ROVSMSK5, ROVSMSK6
+from secure_monitoring_service_pkg import ROVSMSK10
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
+from secure_monitoring_service_pkg import CDN
 
+############################
+# Constants
+############################
 
 BASE_PATH = Path("~/Desktop/graphs/").expanduser()
 
-# Set Random Seed to make deterministic runs
-os.environ["PYTHONHASHSEED"] = "0"
-random.seed(0)
+# Adopting settings
+adopters_for_1_attackers = [ROVPPV1LiteSimpleAS, ROVSMS, ROVSMSK1, ROVSMSK2]
+adopters_for_2_attackers = [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK2, ROVSMSK3]
+adopters_for_3_attackers = [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK2, ROVSMSK5, ROVSMSK5, ROVSMSK10]
 
+
+#############################
+# Main Components
+#############################
 
 def get_default_kwargs():
-    return {"percent_adoptions": [0.01, .05, .1, .2, .3, .4, .6, .8, 0.99],
-            "num_trials": 5,
+    return {"percent_adoptions": [0.1, 0.2, 0.4, 0.6, 0.8],
+            "num_trials": 2,
             "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
-            "parse_cpus": 1}
-
-
+            "parse_cpus": 1,
+            "python_hash_seed": 0}
 
 
 def main():
-
-    # assert isinstance(input("Turn asserts off for speed?"), str)
     sims = [
         V4Simulation(scenarios=[SubprefixAutoImmuneScenario(AdoptASCls=Cls,
                                                             AnnCls=ROVPPAnn,
-                                                            num_attackers=2)
-                                for Cls in [ROVSMSK1]
+                                                            num_attackers=1,
+                                                            min_rov_confidence=0,
+                                                            relay_asns=CDN.akamai)
+                                for Cls in adopters_for_1_attackers
                                 ],
-                     output_path=BASE_PATH / "autoimmune",
+                     output_path=BASE_PATH / "akamai_autoimmune_1_attacker",
                      **get_default_kwargs()),
     ]
 

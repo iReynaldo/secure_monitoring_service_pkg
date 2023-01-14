@@ -11,6 +11,10 @@ from secure_monitoring_service_pkg.simulation_framework.sim_logger \
     import sim_logger as logger
 
 
+################################
+# Main Scenario Class
+################################
+
 class V4Scenario(Scenario):
 
     def __init__(self, *args, relay_asns=None, **kwargs):

@@ -7,6 +7,7 @@ __all__ = [
     "SubprefixAutoImmuneScenario",
     "V4Simulation",
     "V4Subgraph",
+    "CDN",
     "TrustedServer",
     "Report",
     "mvdp",
