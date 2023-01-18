@@ -32,6 +32,9 @@ cd ../overleaf_results_doc
 echo "Pulling latest changes from Overleaf"
 git pull origin master
 
+# Confirm changes are pulled
+read -p "Ctrl-C to cancel or Enter to Proceed"
+
 # Unzip results
 unzip $graphs_zip_file
 # Copy over all results files

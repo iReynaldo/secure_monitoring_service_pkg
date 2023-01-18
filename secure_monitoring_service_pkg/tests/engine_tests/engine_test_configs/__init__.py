@@ -52,7 +52,7 @@ from .config_150 import Config150
 from .config_151 import Config151
 from .config_152 import Config152
 from .config_153 import Config153
-# from .config_154 import Config154
+from .config_154 import Config154
 # from .config_155 import Config155
 # from .config_156 import Config156
 # from .config_157 import Config157
@@ -116,7 +116,7 @@ __all__ = [
     "Config151",
     "Config152",
     "Config153",
-    # "Config154",
+    "Config154",
     # "Config155",
     # "Config156",
     # "Config157",
