@@ -211,8 +211,8 @@ class V4Subgraph(Subgraph):
                             relay_users.add(as_obj.asn)
                             relay_usage[selected_relay_asn] = relay_users
                             shared_data["relay_usage"] = relay_usage
-        if changes_made_flag:
-            self._get_engine_outcomes(engine, scenario, attacker_ann, outcomes, traceback_asn_outcomes, True)
+            if scenario.tunnel_customer_traffic and changes_made_flag:
+                self._get_engine_outcomes(engine, scenario, attacker_ann, outcomes, traceback_asn_outcomes, True)
 
     def get_prefix_with_minimum_successful_connections(self, scenario, shared_data):
         min_prefix = ""

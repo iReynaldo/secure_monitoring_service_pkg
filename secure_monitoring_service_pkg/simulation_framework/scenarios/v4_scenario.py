@@ -17,13 +17,14 @@ from secure_monitoring_service_pkg.simulation_framework.sim_logger \
 
 class V4Scenario(Scenario):
 
-    def __init__(self, *args, relay_asns=None, **kwargs):
+    def __init__(self, *args, relay_asns=None, tunnel_customer_traffic=False, **kwargs):
         super(V4Scenario, self).__init__(*args, **kwargs)
         self.has_rovsms_ases = False
         self.trusted_server_ref = None
         self.avoid_lists = None  # Used for verifying avoid list
         self.name = "V4Scenario"
         self.relay_asns = relay_asns
+        self.tunnel_customer_traffic = tunnel_customer_traffic
 
     @property
     def _default_adopters(self) -> Set[int]:
