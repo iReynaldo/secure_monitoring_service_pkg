@@ -8,6 +8,7 @@ __all__ = [
     "V4Simulation",
     "V4Subgraph",
     "CDN",
+    "Peer",
     "TrustedServer",
     "Report",
     "mvdp",
