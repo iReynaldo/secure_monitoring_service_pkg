@@ -21,34 +21,48 @@ from secure_monitoring_service_pkg import CDN
 BASE_PATH = Path("~/Desktop/graphs/").expanduser()
 
 # Adopting settings
-adopters_for_1_attackers = [ROVPPV1LiteSimpleAS, ROVSMS, ROVSMSK1, ROVSMSK2]
-adopters_for_2_attackers = [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK2, ROVSMSK3]
-adopters_for_3_attackers = [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK2, ROVSMSK5, ROVSMSK5, ROVSMSK10]
+adoption_settings = {
+    "adopters_for_1_attackers": [ROVPPV1LiteSimpleAS, ROVSMS, ROVSMSK1, ROVSMSK2],
+    "adopters_for_2_attackers": [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK2, ROVSMSK3],
+    "adopters_for_5_attackers": [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK2, ROVSMSK5, ROVSMSK6, ROVSMSK10]
+}
 
 
 #############################
 # Main Components
 #############################
 
-def get_default_kwargs():
-    return {"percent_adoptions": [0.1, 0.2, 0.4, 0.6, 0.8],
-            "num_trials": 2,
-            "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
-            "parse_cpus": 1,
-            "python_hash_seed": 0}
+
+def scenario_kwargs():
+    return {
+        "num_attackers": 1,
+        "min_rov_confidence": 0,
+        "adoption_subcategory_attrs": ("stub_or_mh_ases", "etc_ases", "input_clique_ases"),
+        "relay_asns": CDN().akamai,
+        "tunnel_customer_traffic": False,
+    }
+
+
+def simulation_kwargs():
+    return {
+        "percent_adoptions": [0.1, 0.2, 0.4, 0.6, 0.8],
+        "num_trials": 1,
+        "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
+        "parse_cpus": 1,
+        "python_hash_seed": 0
+    }
 
 
 def main():
+    adoption_classes = adoption_settings[f"adopters_for_{scenario_kwargs()['num_attackers']}_attackers"]
     sims = [
         V4Simulation(scenarios=[SubprefixAutoImmuneScenario(AdoptASCls=Cls,
                                                             AnnCls=ROVPPAnn,
-                                                            num_attackers=1,
-                                                            min_rov_confidence=0,
-                                                            relay_asns=CDN.akamai)
-                                for Cls in adopters_for_1_attackers
+                                                            **scenario_kwargs())
+                                for Cls in adoption_classes
                                 ],
-                     output_path=BASE_PATH / "akamai_autoimmune_1_attacker",
-                     **get_default_kwargs()),
+                     output_path=BASE_PATH / "default",
+                     **simulation_kwargs()),
     ]
 
     for sim in sims:
