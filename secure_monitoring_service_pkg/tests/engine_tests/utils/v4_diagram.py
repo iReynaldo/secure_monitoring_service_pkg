@@ -28,18 +28,29 @@ class V4Diagram(Diagram):
     def _add_relay_usage_table(self, shared_data):
         rows = ''
         relay_usage = shared_data.get("relay_usage", None)
+        relay_prefixes = shared_data.get("relay_prefixes", None)
         if not relay_usage:
             return
-        # If there are no avoid lists, don't print anything
-        for asn in relay_usage:
-            row = f'''
-                <TR>
-                  <TD BGCOLOR="#adadff">{asn}</TD>
-                  <TD BGCOLOR="#adadff:white">{shared_data["relay_prefixes"][asn]}</TD>
-                  <TD>{relay_usage[asn]}</TD>
-                </TR>
-            '''
-            rows = rows + row
+        if relay_prefixes:
+            # If there are no avoid lists, don't print anything
+            for asn in relay_usage:
+                row = f'''
+                    <TR>
+                      <TD BGCOLOR="#adadff">{asn}</TD>
+                      <TD BGCOLOR="#adadff:white">{shared_data["relay_prefixes"][asn]}</TD>
+                      <TD>{relay_usage[asn]}</TD>
+                    </TR>
+                '''
+        else:
+            for asn in relay_usage:
+                row = f'''
+                    <TR>
+                      <TD BGCOLOR="#adadff">{asn}</TD>
+                      <TD>{relay_usage[asn]}</TD>
+                    </TR>
+                '''
+        rows = rows + row
+
 
         relay_usage_tbl_html = f'''<
           <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
@@ -84,10 +95,13 @@ class V4Diagram(Diagram):
 
     def _get_html(self, as_obj, engine, scenario):
         asn_str = str(as_obj.asn)
+        if isinstance(scenario, SubprefixAutoImmuneScenario):
+            if scenario.relay_asns and as_obj.asn in scenario.relay_asns:
+                asn_str = "&#9937; " + asn_str + " &#9937;"
         if as_obj.asn in scenario.victim_asns:
-            asn_str = "&#128519;" + asn_str + "&#128519;"
+            asn_str = "&#128519; " + asn_str + " &#128519;"
         elif as_obj.asn in scenario.attacker_asns:
-            asn_str = "&#128520;" + asn_str + "&#128520;"
+            asn_str = "&#128520; " + asn_str + " &#128520;"
 
         html = f"""<
             <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">

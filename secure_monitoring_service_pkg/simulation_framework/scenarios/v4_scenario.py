@@ -17,7 +17,7 @@ from secure_monitoring_service_pkg.simulation_framework.sim_logger \
 
 class V4Scenario(Scenario):
 
-    def __init__(self, *args, relay_asns=None, tunnel_customer_traffic=False, **kwargs):
+    def __init__(self, *args, relay_asns=None, assume_relays_are_reachable=False, tunnel_customer_traffic=False, **kwargs):
         super(V4Scenario, self).__init__(*args, **kwargs)
         self.has_rovsms_ases = False
         self.trusted_server_ref = None
@@ -25,6 +25,7 @@ class V4Scenario(Scenario):
         self.name = "V4Scenario"
         self.relay_asns = relay_asns
         self.tunnel_customer_traffic = tunnel_customer_traffic
+        self.assume_relays_are_reachable = assume_relays_are_reachable
 
     @property
     def _default_adopters(self) -> Set[int]:

@@ -62,7 +62,7 @@ from .engine_test_configs import Config151
 from .engine_test_configs import Config152
 from .engine_test_configs import Config153
 from .engine_test_configs import Config154
-# from .engine_test_configs import Config155
+from .engine_test_configs import Config155
 # from .engine_test_configs import Config156
 # from .engine_test_configs import Config157
 # from .engine_test_configs import Config158
@@ -147,7 +147,7 @@ class TestEngine:
                               Config152,
                               Config153,
                               Config154,
-                              # Config155,
+                              Config155,
                               # Config156,
                               # Config157,
                               # Config158,

@@ -82,18 +82,23 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
             # Add blackhole ann to localRIB
             self._local_rib.add_ann(hole)
 
-    def use_relay(self, relay_asns, relay_prefix_dict):
+    def use_relay(self, relay_asns, relay_prefix_dict, assume_relays_are_reachable):
         """return the relay that it would use"""
-        # Check what relay ASes are available to this AS
-        accessible_relays = list()
-        for asn in relay_asns:
-            if relay_prefix_dict[asn] in self._local_rib._info:
-                accessible_relays.append(asn)
-        # Uniformly at random select from available relays
-        return random.choice(accessible_relays) if len(accessible_relays) > 0 else None
         # TODO: Future enhancement: Consider picking prefence with
         #   1. Relationship preference
         #   2. Shortest path
+        # Check if Relays are assumed to be reachable
+        if assume_relays_are_reachable:
+            return random.choice(list(relay_asns))
+        else:
+            # Check what relay ASes are available to this AS
+            accessible_relays = list()
+            for asn in relay_asns:
+                if relay_prefix_dict[asn] in self._local_rib._info:
+                    accessible_relays.append(asn)
+            # Uniformly at random select from available relays
+            return random.choice(accessible_relays) if len(accessible_relays) > 0 else None
+
 
 
 class ROVSMSK1(ROVSMS):

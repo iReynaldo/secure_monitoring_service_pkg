@@ -195,7 +195,9 @@ class V4Subgraph(Subgraph):
                 # TODO: Why doesn't issubclass(as_obj, ROVSMS) work here for Config150?
                 if hasattr(as_obj, "trusted_server") and \
                         outcomes[as_obj] == Outcomes.DISCONNECTED:
-                    selected_relay_asn = as_obj.use_relay(connected_relays, scenario.relay_prefixes)
+                    selected_relay_asn = as_obj.use_relay(connected_relays,
+                                                          scenario.relay_prefixes,
+                                                          scenario.assume_relays_are_reachable)
                     if selected_relay_asn:
                         # Update outcome for asn to VICTIM SUCCESS
                         outcomes[as_obj] = Outcomes.VICTIM_SUCCESS

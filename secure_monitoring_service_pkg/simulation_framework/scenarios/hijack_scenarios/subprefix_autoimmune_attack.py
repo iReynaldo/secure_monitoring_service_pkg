@@ -58,8 +58,10 @@ class SubprefixAutoImmuneScenario(V4Scenario):
                                         roa_origin=roa_origin,
                                         recv_relationship=Relationships.ORIGIN))
 
-        # Setup Relay Announcements
-        anns.extend(self.generate_relay_announcements())
+        # If we assume relays are not reachable, then create their announcements
+        if not self.assume_relays_are_reachable:
+            # Setup Relay Announcements
+            anns.extend(self.generate_relay_announcements())
 
         return tuple(anns)
 

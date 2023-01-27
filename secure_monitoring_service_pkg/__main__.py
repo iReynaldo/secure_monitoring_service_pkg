@@ -36,13 +36,19 @@ adoption_settings = {
 
 
 def scenario_kwargs():
-    return {
+    settings = {
         "num_attackers": 1,
         "min_rov_confidence": 0,
         "adoption_subcategory_attrs": ("stub_or_mh_ases", "etc_ases", "input_clique_ases"),
-        "relay_asns": CDN().akamai,
+        "relay_asns": Peer.twenty,
+        "assume_relays_are_reachable": True,
         "tunnel_customer_traffic": False,
     }
+    if not (settings["relay_asns"] == Peer.twenty or settings["relay_asns"] == Peer.hundred):
+        assert not settings["assume_relays_are_reachable"], "assume_relays_are_reachable " \
+                                                            "should only be set True for " \
+                                                            "Peer relay setting"
+    return settings
 
 
 def simulation_kwargs():
@@ -50,7 +56,7 @@ def simulation_kwargs():
         "percent_adoptions": [0.1, 0.2, 0.4, 0.6, 0.8],
         "num_trials": 1,
         "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
-        "parse_cpus": 1,
+        "parse_cpus": 4,
         "python_hash_seed": 0
     }
 
