@@ -27,8 +27,9 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
         if ann.invalid_by_roa:
             logger.debug(f"ASN {self.asn} sending report about {ann.prefix}")
             if self._max_num_dishonest_nodes > 0:
-                adjusted_as_path = (self.asn,) + ann.as_path
-                report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=adjusted_as_path)
+                if self.asn not in ann.as_path:
+                    adjusted_as_path = (self.asn,) + ann.as_path
+                    report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=adjusted_as_path)
             else:
                 report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=ann.as_path)
             self.trusted_server.receive_report(report)
