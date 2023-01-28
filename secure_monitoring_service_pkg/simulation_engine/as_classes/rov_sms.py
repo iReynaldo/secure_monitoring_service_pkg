@@ -30,9 +30,10 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                 if self.asn not in ann.as_path:
                     adjusted_as_path = (self.asn,) + ann.as_path
                     report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=adjusted_as_path)
+                    self.trusted_server.receive_report(report)
             else:
                 report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=ann.as_path)
-            self.trusted_server.receive_report(report)
+                self.trusted_server.receive_report(report)
         return super(ROVSMS, self).receive_ann(ann, *args, **kwargs)
 
     def _force_add_blackholes_from_avoid_list(self, ordered_prefix_subprefix_dict):
