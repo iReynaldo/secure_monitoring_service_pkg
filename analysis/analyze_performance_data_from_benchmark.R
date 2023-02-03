@@ -23,6 +23,7 @@ selected_raw_data <- raw_data[raw_data$tag == "analysis", ]
 not_optimized_raw_data <- raw_data[raw_data$tag == "notOptimized", ]
 optimization_raw_data <- raw_data[raw_data$tag == "optimization", ]
 aws_raw_data <- raw_data[raw_data$tag == "aws-z1d.3xlarge", ]
+hpc_raw_data <- raw_data[raw_data$tag == "hpc", ]
 
 
 # -----------------------------
@@ -54,16 +55,25 @@ aws_optimization_percentage_grouping <- aws_raw_data %>% group_by(tag, policy, h
 aws_optimization_trials_grouping <- aws_raw_data %>% group_by(tag, policy, hijack_type, num_trials) %>% summarise(avg_max_memory = mean(max_memory),
                                                                                                                        avg_runtime = mean(runtime))
 
+# AutoImmune Attack After Optimization on HPC (hi-core 12 cores)
+hpc_optimization_percentage_grouping <- hpc_raw_data %>% group_by(tag, policy, hijack_type, percentages) %>% summarise(avg_max_memory = mean(max_memory),
+                                                                                                                       avg_runtime = mean(runtime))
+hpc_optimization_trials_grouping <- hpc_raw_data %>% group_by(tag, policy, hijack_type, num_trials) %>% summarise(avg_max_memory = mean(max_memory),
+                                                                                                                  avg_runtime = mean(runtime))
+
+
 # Merged Percentage Group
 merged_data_percentage <- rbind(subprefix_percentage_grouping, autoimmune_percentage_grouping)
 merged_data_percentage <- rbind(merged_data_percentage, optimization_percentage_grouping)
 merged_data_percentage <- rbind(merged_data_percentage, aws_optimization_percentage_grouping)
+merged_data_percentage <- rbind(merged_data_percentage, hpc_optimization_percentage_grouping)
 k1_policy_merged_percentage <- merged_data_percentage %>% filter(policy == 'v4k1')
 
 # Merged Trials Group
 merged_data_trials <- rbind(subprefix_trials_grouping, autoimmune_trials_grouping)
 merged_data_trials <- rbind(merged_data_trials, optimization_trials_grouping)
 merged_data_trials <- rbind(merged_data_trials, aws_optimization_trials_grouping)
+merged_data_trials <- rbind(merged_data_trials, hpc_optimization_trials_grouping)
 k1_policy_merged_trials <- merged_data_trials %>% filter(policy == 'v4k1')
 
 
