@@ -17,3 +17,9 @@ print(random.choices(possible_ases, k=20))
 
 print("Set of 100")
 print(random.choices(possible_ases, k=100))
+
+print("Set of 5")
+print(random.choices(possible_ases, k=5))
+
+print("Set of 10")
+print(random.choices(possible_ases, k=10))
