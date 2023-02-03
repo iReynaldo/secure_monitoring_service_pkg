@@ -44,7 +44,8 @@ def scenario_kwargs():
         "assume_relays_are_reachable": True,
         "tunnel_customer_traffic": False,
     }
-    if not (settings["relay_asns"] == Peer.twenty or settings["relay_asns"] == Peer.hundred):
+    if not (settings["relay_asns"] == Peer.twenty or settings["relay_asns"] == Peer.hundred
+    or settings["relay_asns"] == Peer.five or settings["relay_asns"] == Peer.ten):
         assert not settings["assume_relays_are_reachable"], "assume_relays_are_reachable " \
                                                             "should only be set True for " \
                                                             "Peer relay setting"
