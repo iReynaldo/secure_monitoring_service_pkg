@@ -98,6 +98,25 @@ def test_k1_with_adopters_in_report_paths():
     expected_avoid_set = {1, 2, 3}
     assert set(avoid_list) == expected_avoid_set
 
+def test_invalid_vertex_error():
+    """
+    Loop test.
+    Not sure how to deal with this right now,
+    but acknowledge this shouldn't happen.
+    This came before attacker could be adopter fix.
+    I suspect that 24843 is an attacker (not verified).
+    Only way this could happen logically since this was
+    an autoimmune attack, and that's the position of the attacker.
+    :return:
+    """
+    reports_path_list = [
+        [24843, 43930, 24843, 62943]
+    ]
+    try:
+        # flow_value = mvdp.get_mvdp_with_subgraph_pictures(reports_path_list, 1)
+        avoid_list = mvdp.get_avoid_list(reports_path_list, 1)
+    except:
+        pass
 
 if __name__ == "__main__":
     test_essentials_3_nodes()
@@ -106,3 +125,4 @@ if __name__ == "__main__":
     test_essentials_9_nodes_k1()
     test_essentials_9_nodes_k2()
     test_k1_with_adopters_in_report_paths()
+    test_invalid_vertex_error()
