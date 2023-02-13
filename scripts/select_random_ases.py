@@ -5,21 +5,20 @@ from caida_collector_pkg import CaidaCollector
 from bgp_simulator_pkg import BGPSimpleAS
 from bgp_simulator_pkg import SimulationEngine
 
-random.seed(0)
 
 engine = CaidaCollector(BaseASCls=BGPSimpleAS,
                         GraphCls=SimulationEngine,
                         ).run()
 possible_ases = list(engine.stub_or_mh_asns)
 
-print("Set of 20")
-print(random.choices(possible_ases, k=20))
+previous_set = None
+for k in [5, 10, 20, 100]:
+    random.seed(0)
+    print(f"Set of {k}")
+    new_set = random.choices(possible_ases, k=k)
+    if previous_set is None:
+        previous_set = new_set
+    print(f"Previous set is subset: {set(previous_set).issubset(set(new_set))}")
+    print(new_set)
+    previous_set = new_set
 
-print("Set of 100")
-print(random.choices(possible_ases, k=100))
-
-print("Set of 5")
-print(random.choices(possible_ases, k=5))
-
-print("Set of 10")
-print(random.choices(possible_ases, k=10))
