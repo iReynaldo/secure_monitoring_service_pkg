@@ -1,4 +1,5 @@
-from typing import Tuple, Optional, Type, Set
+from typing import Tuple, Optional, Type, Set, Dict, List
+from ipaddress import ip_network
 
 from caida_collector_pkg import AS
 
@@ -61,6 +62,38 @@ class V4Scenario(Scenario):
 
                 as_obj._force_add_blackholes_from_avoid_list(self.ordered_prefix_subprefix_dict)
 
+    def _get_ordered_prefix_subprefix_dict(self):
+        """Saves a dict of prefix to subprefixes
+
+        mypy was having a lot of trouble with this section
+        thus the type ignores
+        """
+
+        prefixes = set([])
+        all_announcements_including_not_sent = set()
+        all_announcements_including_not_sent.update(self.announcements)
+        all_announcements_including_not_sent.update(self.get_attacker_announcements())
+        for ann in all_announcements_including_not_sent:
+            prefixes.add(ann.prefix)
+        # Do this here for speed
+        prefixes: List[Union[IPv4Network, IPv6Network]] = [  # type: ignore
+            ip_network(x) for x in prefixes]
+        # Sort prefixes with most specific prefix first
+        # Note that this must be sorted for the traceback to get the
+        # most specific prefix first
+        prefixes = list(sorted(prefixes,
+                               key=lambda x: x.num_addresses))  # type: ignore
+
+        prefix_subprefix_dict = {x: [] for x in prefixes}  # type: ignore
+        for outer_prefix, subprefix_list in prefix_subprefix_dict.items():
+            for prefix in prefixes:
+                if (prefix.subnet_of(outer_prefix)  # type: ignore
+                        and prefix != outer_prefix):
+                    subprefix_list.append(str(prefix))
+        # Get rid of ip_network
+        self.ordered_prefix_subprefix_dict: Dict[str, List[str]] = {
+            str(k): v for k, v in prefix_subprefix_dict.items()}
+
     def pre_aggregation_hook(self, **kwargs):
         """
         kwargs should contain the following
@@ -115,6 +148,14 @@ class V4Scenario(Scenario):
                 if attacker_asn in ann.as_path:
                     attacker_announcements.add(ann)
         return attacker_announcements
+
+    def get_victim_announcements(self):
+        victim_announcements = set()
+        for ann in self.announcements:
+            for victim_asn in self.victim_asns:
+                if victim_asn in ann.as_path:
+                    victim_announcements.add(ann)
+        return victim_announcements
 
     def generate_relay_announcements(self):
         anns = list()

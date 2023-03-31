@@ -43,7 +43,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
         for _, ann in self._local_rib.prefix_anns():
             ann_holes = []
             # For each hole in ann: (holes are invalid subprefixes)
-            for subprefix in ordered_prefix_subprefix_dict[ann.prefix]:
+            for subprefix in self.trusted_server._recommendations.keys():
                 if self.trusted_server.rec_blackhole(subprefix,
                                                      ann.as_path):
                     does_not_have_subprefix = True
