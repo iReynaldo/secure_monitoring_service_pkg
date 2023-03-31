@@ -55,7 +55,7 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
 
 def other_settings():
     settings = {
-        "scenario": SUBPREFIX_HIJACK,
+        "scenario": AUTOIMMUNE,
         "output_filename": "default"
     }
     return settings
@@ -63,13 +63,16 @@ def other_settings():
 
 def scenario_kwargs():
     settings = {
-        "num_attackers": 1,
-        "min_rov_confidence": 0,
+        "num_attackers": 2,
+        "min_rov_confidence": 1,
         "adoption_subcategory_attrs": ("stub_or_mh_ases", "etc_ases", "input_clique_ases"),
         "relay_asns": None,
         "assume_relays_are_reachable": False,
         "tunnel_customer_traffic": False,
     }
+    # Set for AutoImmune attack indirect/direct
+    if other_settings()["scenario"] == AUTOIMMUNE:
+        settings["indirect"] = False
 
     # Validate Settings
     if not (settings["relay_asns"] == Peer.twenty or settings["relay_asns"] == Peer.hundred
@@ -83,7 +86,7 @@ def scenario_kwargs():
 def simulation_kwargs():
     return {
         "percent_adoptions": [0.1, 0.2, 0.4, 0.6, 0.8],
-        "num_trials": 1,
+        "num_trials": 3,
         "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
         "parse_cpus": 4,
         "python_hash_seed": 0,

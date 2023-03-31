@@ -1,0 +1,26 @@
+all_ATTACKER_SUCCESS_1.2.0.0/16: 3
+all_ATTACKER_SUCCESS_perc_1.2.0.0/16: 15.789473684210526
+all_VICTIM_SUCCESS_1.2.0.0/16: 16
+all_VICTIM_SUCCESS_perc_1.2.0.0/16: 84.21052631578948
+avoid_list_for_1.2.1.0/24:
+- 10
+avoid_list_for_1.2.2.0/24:
+- 2
+avoid_list_for_1.2.3.0/24:
+- 3
+etc_BGP Simple: 11
+etc_BGP Simple_VICTIM_SUCCESS_1.2.0.0/16: 11
+etc_BGP Simple_VICTIM_SUCCESS_percent_1.2.0.0/16: 100.0
+num_ases_should_not_be_on_avoid_list: 0
+num_of_victim_providers: 3
+num_victim_providers_on_avoid_list: 3
+set: true
+size_of_avoid_list: 3
+stubs_or_mh_BGP Simple: 4
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_1.2.0.0/16: 3
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_percent_1.2.0.0/16: 75.0
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_1.2.0.0/16: 1
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_percent_1.2.0.0/16: 25.0
+stubs_or_mh_ROV V4 Lite K2: 4
+stubs_or_mh_ROV V4 Lite K2_VICTIM_SUCCESS_1.2.0.0/16: 4
+stubs_or_mh_ROV V4 Lite K2_VICTIM_SUCCESS_percent_1.2.0.0/16: 100.0
