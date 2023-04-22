@@ -66,9 +66,25 @@ from .engine_test_configs import Config155
 from .engine_test_configs import Config156
 from .engine_test_configs import Config157
 from .engine_test_configs import Config158
-# from .engine_test_configs import Config159
+from .engine_test_configs import Config159
 # from .engine_test_configs import Config160
-
+# from .engine_test_configs import Config159,
+# from .engine_test_configs import Config160,
+# from .engine_test_configs import Config161,
+# from .engine_test_configs import Config162,
+# from .engine_test_configs import Config163,
+# from .engine_test_configs import Config164,
+# from .engine_test_configs import Config165,
+# from .engine_test_configs import Config166,
+# from .engine_test_configs import Config167,
+# from .engine_test_configs import Config168,
+# from .engine_test_configs import Config169,
+# from .engine_test_configs import Config170,
+# from .engine_test_configs import Config171,
+# from .engine_test_configs import Config172,
+# from .engine_test_configs import Config173,
+# from .engine_test_configs import Config174,
+# from .engine_test_configs import Config175,
 
 ######################################
 # Make tests deterministic
@@ -151,8 +167,23 @@ class TestEngine:
                               Config156,
                               Config157,
                               Config158,
-                              # Config159,
+                              Config159,
                               # Config160,
+                              # Config161,
+                              # Config162,
+                              # Config163,
+                              # Config164,
+                              # Config165,
+                              # Config166,
+                              # Config167,
+                              # Config168,
+                              # Config169,
+                              # Config170,
+                              # Config171,
+                              # Config172,
+                              # Config173,
+                              # Config174,
+                              # Config175,
                               ])
     def test_engine(self, conf: EngineTestConfig, overwrite: bool):
         """Performs a system test on the engine
