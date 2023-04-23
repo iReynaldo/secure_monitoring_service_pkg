@@ -67,10 +67,8 @@ from .engine_test_configs import Config156
 from .engine_test_configs import Config157
 from .engine_test_configs import Config158
 from .engine_test_configs import Config159
-# from .engine_test_configs import Config160
-# from .engine_test_configs import Config159,
-# from .engine_test_configs import Config160,
-# from .engine_test_configs import Config161,
+from .engine_test_configs import Config160
+from .engine_test_configs import Config161
 # from .engine_test_configs import Config162,
 # from .engine_test_configs import Config163,
 # from .engine_test_configs import Config164,
@@ -168,8 +166,8 @@ class TestEngine:
                               Config157,
                               Config158,
                               Config159,
-                              # Config160,
-                              # Config161,
+                              Config160,
+                              Config161,
                               # Config162,
                               # Config163,
                               # Config164,

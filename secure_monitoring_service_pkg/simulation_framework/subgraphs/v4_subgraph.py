@@ -139,7 +139,7 @@ class V4Subgraph(Subgraph):
                 # {as_obj: outcome}
                 outcomes, traceback_asn_outcomes = \
                     self._get_engine_outcomes(engine, scenario, attacker_ann)
-                if scenario.relay_asns:
+                if scenario.relay_asns and (isinstance(scenario, SubprefixAutoImmuneScenario) or isinstance(scenario, V4SubprefixHijackScenario)):
                     self._recalculate_outcomes_with_relays(scenario,
                                                            engine,
                                                            attacker_ann,

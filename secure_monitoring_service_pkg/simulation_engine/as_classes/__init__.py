@@ -1,6 +1,8 @@
 from .rov_sms import *
+from .artemis import Artermis
 
 __all__ = [
+    "Artermis",
     "ROVSMS",
     "ROVSMSK1",
     "ROVSMSK2",

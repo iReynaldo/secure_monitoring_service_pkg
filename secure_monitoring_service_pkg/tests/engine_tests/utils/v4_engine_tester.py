@@ -11,6 +11,9 @@ from bgp_simulator_pkg import Outcomes
 from .v4_diagram import V4Diagram
 
 from secure_monitoring_service_pkg.simulation_framework.subgraphs.v4_subgraph import V4Subgraph
+from ....simulation_framework.scenarios.hijack_scenarios import SubprefixAutoImmuneScenario
+from ....simulation_framework.scenarios.hijack_scenarios import V4SubprefixHijackScenario
+
 
 class V4EngineTester(EngineTester):
 
@@ -50,7 +53,7 @@ class V4EngineTester(EngineTester):
             # Create Shared data
             shared_data: Dict[Any, Any] = dict()
             # Update outcomes if reconnections via relays can be made
-            if scenario.relay_asns:
+            if scenario.relay_asns and (isinstance(scenario, SubprefixAutoImmuneScenario) or isinstance(scenario, V4SubprefixHijackScenario)):
                 # Add relay prefix data to shared data
                 shared_data["relay_prefixes"] = scenario.relay_prefixes
                 V4Subgraph()._recalculate_outcomes_with_relays(scenario,

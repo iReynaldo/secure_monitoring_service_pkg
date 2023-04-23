@@ -134,7 +134,7 @@ class V4Diagram(Diagram):
                     ann_help = "&#128520;"
                 elif any(x == ann.origin for x in scenario.victim_asns):
                     ann_help = "&#128519;"
-                elif isinstance(scenario, SubprefixAutoImmuneScenario) and \
+                elif hasattr(scenario, "relay_asns") and scenario.relay_asns and \
                         any(x == ann.origin for x in scenario.relay_asns):
                     ann_help = "&#9937;"
                 else:

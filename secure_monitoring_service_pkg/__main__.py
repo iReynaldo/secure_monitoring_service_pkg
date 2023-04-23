@@ -14,6 +14,7 @@ from secure_monitoring_service_pkg import ROVSMSK3, ROVSMSK5, ROVSMSK6
 from secure_monitoring_service_pkg import ROVSMSK10
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
+from secure_monitoring_service_pkg import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg import CDN
 from secure_monitoring_service_pkg import Peer
 
@@ -33,6 +34,7 @@ adoption_settings = {
 # Scenario options
 AUTOIMMUNE = "SubprefixAutoImmuneScenario"
 SUBPREFIX_HIJACK = "V4SubprefixHijackScenario"
+ARTEMIS_SUBPREFIX_HIJACK = "ArtemisSubprefixHijackScenario"
 
 
 #############################
@@ -121,6 +123,16 @@ def main():
             V4Simulation(scenarios=[SubprefixAutoImmuneScenario(AdoptASCls=Cls,
                                                                 AnnCls=ROVPPAnn,
                                                                 **scenario_kwargs())
+                                    for Cls in adoption_classes
+                                    ],
+                         output_path=BASE_PATH / settings["output_filename"],
+                         **simulation_kwargs()),
+        ]
+    elif settings["scenario"] == ARTEMIS_SUBPREFIX_HIJACK:
+        sims = [
+            V4Simulation(scenarios=[ArtemisSubprefixHijackScenario(AdoptASCls=Cls,
+                                                                   AnnCls=ROVPPAnn,
+                                                                   **scenario_kwargs())
                                     for Cls in adoption_classes
                                     ],
                          output_path=BASE_PATH / settings["output_filename"],

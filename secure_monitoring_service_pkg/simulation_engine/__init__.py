@@ -7,6 +7,7 @@ __all__ = [
     "TrustedServer",
     "Report",
     "mvdp",
+    "Artermis",
     "ROVSMS",
     "ROVSMSK1",
     "ROVSMSK2",
