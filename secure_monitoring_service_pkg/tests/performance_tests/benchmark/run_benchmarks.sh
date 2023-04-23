@@ -39,7 +39,7 @@ do
         for num_trials in 10 20 30 60 100
         do
             echo "Running ${policy} at ${percent}% adoption for ${num_trials} trials"
-            pypy probe.py --scenario ${scenario} --policy ${policy} --percentages ${percent} --num_trials ${num_trials} --cpus 12 --tag ${tag}
+            python probe.py --scenario ${scenario} --policy ${policy} --percentages ${percent} --num_trials ${num_trials} --cpus 12 --tag ${tag}
         done
     done
 done

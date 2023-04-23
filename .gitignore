@@ -195,4 +195,5 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 
-
+# UConn HPC SLURM
+*.out
