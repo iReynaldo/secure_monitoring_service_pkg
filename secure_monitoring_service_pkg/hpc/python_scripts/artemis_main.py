@@ -65,7 +65,7 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
 
 def other_settings():
     settings = {
-        "scenario": AUTOIMMUNE,
+        "scenario": ARTEMIS_SUBPREFIX_HIJACK,
         "output_filename": f"artemis_{cdn_arg}_cdn_50_trials"
     }
     return settings
@@ -120,7 +120,7 @@ def main():
         V4Simulation(scenarios=[ArtemisSubprefixHijackScenario(AdoptASCls=Cls,
                                                                AnnCls=ROVPPAnn,
                                                                **scenario_kwargs())
-                                for Cls in Artermis
+                                for Cls in [Artermis,]
                                 ],
                      output_path=BASE_PATH / settings["output_filename"],
                      **simulation_kwargs()),
