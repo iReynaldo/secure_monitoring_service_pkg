@@ -9,4 +9,6 @@ source /home/rjm11010/miniconda3/etc/profile.d/conda.sh
 conda activate v4sims
 
 export PYTHONHASHSEED=0
-python ../../python_scripts/artemis_main.py neustar
+python ../../python_scripts/artemis_main.py neustar 1
+python ../../python_scripts/artemis_main.py neustar 2
+python ../../python_scripts/artemis_main.py neustar 5

@@ -43,7 +43,7 @@ ARTEMIS_SUBPREFIX_HIJACK = "ArtemisSubprefixHijackScenario"
 ############################
 
 cdn_arg = sys.argv[1]
-
+num_attackers = int(sys.argv[2])
 
 #############################
 # Functions
@@ -73,7 +73,7 @@ def other_settings():
 
 def scenario_kwargs():
     settings = {
-        "num_attackers": 1,
+        "num_attackers": num_attackers,
         "min_rov_confidence": 1000,
         "adoption_subcategory_attrs": ("stub_or_mh_ases", "etc_ases", "input_clique_ases"),
         "relay_asns": getattr(CDN, cdn_arg),
