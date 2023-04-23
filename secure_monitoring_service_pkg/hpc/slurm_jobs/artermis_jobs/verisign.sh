@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=hi-core                   # Name of partition
-#SBATCH --ntasks=100                            # Request Number of CPU cores
+#SBATCH --ntasks=50                            # Request Number of CPU cores
 #SBATCH --mail-type=BEGIN,END,FAIL              # Event(s) that triggers email notification (BEGIN,END,FAIL,ALL)
 #SBATCH --mail-user=reynaldo.morillo@uconn.edu  # Destination email address
 
