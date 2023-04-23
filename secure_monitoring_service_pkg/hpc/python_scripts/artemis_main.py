@@ -55,6 +55,7 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
     del simulation_kwargs["subgraphs"]  # We don't need to output this
     simulation_kwargs["caida_kwargs"] = str(simulation_kwargs["caida_kwargs"])
     settings.update(simulation_kwargs)
+    scenario_kwargs["relay_asns"] = list(scenario_kwargs["relay_asns"]) if len(scenario_kwargs["relay_asns"]) <= 5 else [len(scenario_kwargs["relay_asns"]),]
     settings.update(scenario_kwargs)
     return settings
 
