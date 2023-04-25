@@ -67,7 +67,7 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
 def other_settings():
     settings = {
         "scenario": ARTEMIS_SUBPREFIX_HIJACK,
-        "output_filename": f"artemis_{cdn_arg}_cdn_50_trials"
+        "output_filename": f"artemis_{cdn_arg}_cdn"
     }
     return settings
 
@@ -97,9 +97,9 @@ def scenario_kwargs():
 def simulation_kwargs():
     return {
         "percent_adoptions": [0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99],
-        "num_trials": 50,
+        "num_trials": 500,
         "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
-        "parse_cpus": 50,
+        "parse_cpus": 160,
         "python_hash_seed": 0,
         "caida_kwargs": {}  # {"csv_path": Path("./aux_files/rov_adoption_5.csv")}
     }
