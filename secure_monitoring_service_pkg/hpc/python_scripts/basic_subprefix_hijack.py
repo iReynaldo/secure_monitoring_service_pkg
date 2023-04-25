@@ -81,7 +81,7 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
     del simulation_kwargs["subgraphs"]  # We don't need to output this
     simulation_kwargs["caida_kwargs"] = str(simulation_kwargs["caida_kwargs"])
     settings.update(simulation_kwargs)
-    scenario_kwargs["relay_asns"] = list(scenario_kwargs["relay_asns"]) if len(
+    scenario_kwargs["relay_asns"] = list(scenario_kwargs["relay_asns"]) if scenario_kwargs["relay_asns"] and len(
         scenario_kwargs["relay_asns"]) <= 5 else [len(scenario_kwargs["relay_asns"]), ]
     settings.update(scenario_kwargs)
     return settings
@@ -118,9 +118,9 @@ def scenario_kwargs():
 def simulation_kwargs():
     return {
         "percent_adoptions": [0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99],
-        "num_trials": 500,
+        "num_trials": 50,
         "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
-        "parse_cpus": 250,
+        "parse_cpus": 150,
         "python_hash_seed": 0,
         "caida_kwargs": {"csv_path": Path("./aux_files/rov_adoption_5.csv")} if rov_setting else {}
     }
