@@ -137,6 +137,7 @@ def main():
     # Load Simulation settings
     settings = other_settings()
     settings["output_filename"] = settings["output_filename"] + \
+                                  f"_{overlay_setting_raw}_relay" + \
                                   f"_{scenario_kwargs()['num_attackers']}_attacker" + \
                                   f"_{simulation_kwargs()['num_trials']}_trials"
 
