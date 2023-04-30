@@ -22,10 +22,6 @@ from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
 
 BASE_PATH = Path("~/Desktop/graphs/").expanduser()
 
-# Set Random Seed to make deterministic runs
-os.environ["PYTHONHASHSEED"] = "0"
-random.seed(0)
-
 
 def main(settings, policy, scenario):
     scenarios = list()
@@ -66,6 +62,11 @@ def process_args(args):
     settings["percent_adoptions"] = list(args.percentages)
     settings["num_trials"] = args.num_trials
     settings["parse_cpus"] = args.cpus
+    # TODO: The following settings are defaults not passed in
+    #  These can be added as arguments at a later time.
+    settings["caida_kwargs"] = {}  # {"csv_path": Path("./aux_files/rov_adoption_5.csv")}
+    settings["python_hash_seed"] = args.seed
+
 
     # Interpret the policy_str
     policy = None
@@ -117,6 +118,11 @@ def parse_args():
                         nargs='?',
                         default="V4SubprefixHijackScenario",
                         help='Attack Scenario')
+    parser.add_argument('--seed',
+                        type=int,
+                        nargs='?',
+                        default=0,
+                        help='Number of CPUs to use')
     return process_args(parser.parse_args())
 
 

@@ -7,6 +7,8 @@ from bgp_simulator_pkg import Outcomes
 from bgp_simulator_pkg import Relationships
 from bgp_simulator_pkg import Scenario
 from bgp_simulator_pkg import Announcement
+from bgp_simulator_pkg import Timestamps
+
 
 from secure_monitoring_service_pkg.simulation_framework.sim_logger \
     import sim_logger as logger
@@ -18,7 +20,8 @@ from secure_monitoring_service_pkg.simulation_framework.sim_logger \
 
 class V4Scenario(Scenario):
 
-    def __init__(self, *args, relay_asns=None, assume_relays_are_reachable=False, tunnel_customer_traffic=False, **kwargs):
+    def __init__(self, *args, relay_asns=None, attack_relays=False,
+                 assume_relays_are_reachable=False, tunnel_customer_traffic=False, **kwargs):
         super(V4Scenario, self).__init__(*args, **kwargs)
         self.has_rovsms_ases = False
         self.trusted_server_ref = None
@@ -27,6 +30,7 @@ class V4Scenario(Scenario):
         self.relay_asns = relay_asns
         self.tunnel_customer_traffic = tunnel_customer_traffic
         self.assume_relays_are_reachable = assume_relays_are_reachable
+        self.attack_relays = attack_relays
 
     @property
     def _default_adopters(self) -> Set[int]:
@@ -159,6 +163,7 @@ class V4Scenario(Scenario):
 
     def generate_relay_announcements(self):
         anns = list()
+        roa_origin: int = next(iter(self.victim_asns))
         # Setup Relay Announcements
         if self.relay_asns:
             for i, relay_asn in enumerate(self.relay_asns):
@@ -171,6 +176,16 @@ class V4Scenario(Scenario):
                                         roa_valid_length=True,
                                         roa_origin=relay_asn,
                                         recv_relationship=Relationships.ORIGIN))
+                # Add Attacker announcements for relays
+                if self.attack_relays:
+                    for attacker_asn in self.attacker_asns:
+                        anns.append(self.AnnCls(prefix=relay_prefix,
+                                                as_path=(attacker_asn,),
+                                                timestamp=Timestamps.ATTACKER.value,
+                                                seed_asn=attacker_asn,
+                                                roa_valid_length=False,
+                                                roa_origin=roa_origin,
+                                                recv_relationship=Relationships.ORIGIN))
         return anns
 
     def get_victim_asn(self, **kwargs):
