@@ -26,7 +26,7 @@ BASE_PATH = Path("~/Desktop/graphs/").expanduser()
 
 # Adopting settings
 adoption_settings = {
-    "adopters_for_1_attackers": [ROVSimpleAS, ROVPPV1LiteSimpleAS, ROVSMS],
+    "adopters_for_1_attackers": [ROVSimpleAS, ROVPPV1LiteSimpleAS],
     "adopters_for_2_attackers": [ROVSimpleAS, ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK2, ROVSMSK3],
     "adopters_for_5_attackers": [ROVSimpleAS, ROVPPV1LiteSimpleAS, ROVSMSK2, ROVSMSK5, ROVSMSK10]
 }
@@ -40,13 +40,11 @@ SUBPREFIX_HIJACK = "V4SubprefixHijackScenario"
 # Arguments
 ############################
 
-if len(sys.argv) != 5:
+if len(sys.argv) != 4:
     raise "This script needs 3 arguments " \
           "[rov setting, overlay setting, attack/no-attacker relay]"
 
-python_hash_seed = int(sys.argv[1])
-
-rov_setting_raw = sys.argv[2].lower()  # none / real
+rov_setting_raw = sys.argv[1].lower()  # none / real
 if rov_setting_raw == 'none':
     rov_setting = False
 elif rov_setting_raw == 'real':
@@ -54,7 +52,7 @@ elif rov_setting_raw == 'real':
 else:
     raise "Unknown ROV setting given"
 
-overlay_setting_raw = sys.argv[3].lower()  # None, akamai, cloudflare ..., five, ten, twenty, ...
+overlay_setting_raw = sys.argv[2].lower()  # None, akamai, cloudflare ..., five, ten, twenty, ...
 if overlay_setting_raw == 'none':
     overlay_setting = None
 elif overlay_setting_raw in ['akamai', 'cloudflare', 'verisign', 'incapsula', 'neustar']:
@@ -64,7 +62,7 @@ elif overlay_setting_raw in ['five', 'ten', 'twenty', 'hundred']:
 else:
     raise "Unknown Overlay setting given"
 
-attack_relay_raw = sys.argv[4].lower()  # True / False
+attack_relay_raw = sys.argv[3].lower()  # True / False
 if attack_relay_raw == 'true':
     attack_relay = True
 elif attack_relay_raw == 'false':
@@ -97,14 +95,14 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
 def other_settings():
     settings = {
         "scenario": SUBPREFIX_HIJACK,
-        "output_filename": "basic_subprefix_hijack_with_rov_v1lite_k2-5-10"
+        "output_filename": "rovpp_basic_subprefix_hijack_with_rov_v1lite_upto10_percent"
     }
     return settings
 
 
 def scenario_kwargs():
     settings = {
-        "num_attackers": 5,
+        "num_attackers": 1,
         "min_rov_confidence": 0 if rov_setting else 1000,
         "adoption_subcategory_attrs": ("stub_or_mh_ases", "etc_ases", "input_clique_ases"),
         "relay_asns": overlay_setting,
@@ -121,10 +119,10 @@ def scenario_kwargs():
 def simulation_kwargs():
     return {
         "percent_adoptions": [0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99],
-        "num_trials": 50,
+        "num_trials": 500,
         "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
-        "parse_cpus": 250,
-        "python_hash_seed": python_hash_seed,
+        "parse_cpus": 100,
+        "python_hash_seed": 0,
         "caida_kwargs": {"csv_path": Path("../../../aux_files/rov_adoption_real.csv")} if rov_setting else {}
     }
 
@@ -140,7 +138,6 @@ def main():
     # Load Simulation settings
     settings = other_settings()
     settings["output_filename"] = settings["output_filename"] + \
-                                  f"_{python_hash_seed}_hash" + \
                                   f"_{overlay_setting_raw}_relay" + \
                                   f"_{scenario_kwargs()['num_attackers']}_attacker" + \
                                   f"_{simulation_kwargs()['num_trials']}_trials"

@@ -8,7 +8,7 @@
 # Environment Variables
 ####################################
 
-PYTHONHASHSEED=0;
+export PYTHONHASHSEED=0;
 
 
 ####################################
