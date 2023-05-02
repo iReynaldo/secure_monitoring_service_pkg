@@ -27,11 +27,11 @@ class V4Scenario(Scenario):
         self.trusted_server_ref = None
         self.avoid_lists = None  # Used for verifying avoid list
         self.name = "V4Scenario"
+        self.relay_prefixes: Dict[int, str] = dict()
         self.relay_asns = relay_asns
         self.tunnel_customer_traffic = tunnel_customer_traffic
         self.assume_relays_are_reachable = assume_relays_are_reachable
         self.attack_relays = attack_relays
-        self.relay_prefixes = dict()
 
     @property
     def _default_adopters(self) -> Set[int]:

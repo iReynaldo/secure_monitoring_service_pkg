@@ -48,40 +48,41 @@ class V4EngineTester(EngineTester):
         prefix_outcomes: Dict[str, Dict[AS, Outcomes]] = dict()
         prefix_outcomes_yaml: Dict[str, Dict[AS, Outcomes]] = dict()
         for attacker_ann in scenario.get_attacker_announcements():
-            # Get traceback results {AS: Outcome}
-            outcomes, traceback_asn_outcomes = V4Subgraph()._get_engine_outcomes(engine, scenario, attacker_ann)
-            # Create Shared data
-            shared_data: Dict[Any, Any] = dict()
-            # Update outcomes if reconnections via relays can be made
-            if scenario.relay_asns and (isinstance(scenario, SubprefixAutoImmuneScenario) or isinstance(scenario, V4SubprefixHijackScenario)):
-                # Add relay prefix data to shared data
-                shared_data["relay_prefixes"] = scenario.relay_prefixes
-                V4Subgraph()._recalculate_outcomes_with_relays(scenario,
-                                                               engine,
-                                                               attacker_ann,
-                                                               outcomes,
-                                                               traceback_asn_outcomes,
-                                                               shared_data,
-                                                               track_relay_usage=True)
-            prefix_outcomes[attacker_ann.prefix] = outcomes
-            # Convert this to just be {ASN: Outcome} (Not the AS object)
-            outcomes_yaml = {as_obj.asn: result for as_obj, result in outcomes.items()}
-            prefix_outcomes_yaml[attacker_ann.prefix] = outcomes_yaml
+            if (scenario.relay_asns and attacker_ann.prefix not in scenario.relay_prefixes.values()) or (not scenario.relay_asns):
+                # Get traceback results {AS: Outcome}
+                outcomes, traceback_asn_outcomes = V4Subgraph()._get_engine_outcomes(engine, scenario, attacker_ann)
+                # Create Shared data
+                shared_data: Dict[Any, Any] = dict()
+                # Update outcomes if reconnections via relays can be made
+                if scenario.relay_asns and (isinstance(scenario, SubprefixAutoImmuneScenario) or isinstance(scenario, V4SubprefixHijackScenario)):
+                    # Add relay prefix data to shared data
+                    shared_data["relay_prefixes"] = scenario.relay_prefixes
+                    V4Subgraph()._recalculate_outcomes_with_relays(scenario,
+                                                                   engine,
+                                                                   attacker_ann,
+                                                                   outcomes,
+                                                                   traceback_asn_outcomes,
+                                                                   shared_data,
+                                                                   track_relay_usage=True)
+                prefix_outcomes[attacker_ann.prefix] = outcomes
+                # Convert this to just be {ASN: Outcome} (Not the AS object)
+                outcomes_yaml = {as_obj.asn: result for as_obj, result in outcomes.items()}
+                prefix_outcomes_yaml[attacker_ann.prefix] = outcomes_yaml
 
 
-            # Add additional things to shared_data for system test checking
-            if scenario.avoid_lists:
-                for prefix in scenario.avoid_lists:
-                    shared_data[f"avoid_list_for_{prefix}"] = sorted(scenario.avoid_lists[prefix])
+                # Add additional things to shared_data for system test checking
+                if scenario.avoid_lists:
+                    for prefix in scenario.avoid_lists:
+                        shared_data[f"avoid_list_for_{prefix}"] = sorted(scenario.avoid_lists[prefix])
 
-            # Verify the Avoid List
-            if scenario.has_rovsms_ases:
-                V4Subgraph().verify_avoid_list(engine,
-                                               scenario,
-                                               outcomes,
-                                               shared_data,
-                                               traceback_asn_outcomes,
-                                               trigger_assert=False)
+                # Verify the Avoid List
+                if scenario.has_rovsms_ases:
+                    V4Subgraph().verify_avoid_list(engine,
+                                                   scenario,
+                                                   outcomes,
+                                                   shared_data,
+                                                   traceback_asn_outcomes,
+                                                   trigger_assert=False)
 
 
 

@@ -1,9 +1,12 @@
-from typing import Tuple, Set, Dict
+from typing import Tuple, Set, Dict, Optional, Type
+
+from caida_collector_pkg import AS
 
 from bgp_simulator_pkg import Announcement
 from bgp_simulator_pkg import Prefixes
 from bgp_simulator_pkg import Relationships
 from bgp_simulator_pkg import Timestamps
+from bgp_simulator_pkg import Outcomes
 
 from ..v4_scenario import V4Scenario
 from ....simulation_engine.report import Report
@@ -16,13 +19,13 @@ class SubprefixAutoImmuneScenario(V4Scenario):
 
     __slots__ = ()
 
-    def __init__(self, *args, relay_asns=None, indirect=True, **kwargs):
+    def __init__(self, *args, fightback=False, relay_asns=None, indirect=True, **kwargs):
         super(SubprefixAutoImmuneScenario, self).__init__(*args, relay_asns=relay_asns, **kwargs)
         self.subprefixes = dict()
         self.providers = dict()
         self.name: str = "SubprefixAutoImmuneScenario"
-        self.relay_prefixes: Dict[int, str] = dict()
         self.indirect = indirect  # If the autoimmune attack is indirect(True)/direct(False)
+        self.fightback = fightback
 
     def _get_announcements(self, *args, **kwargs) -> Tuple["Announcement", ...]:
         """Returns victim, attacker, and relay anns for autoimmune attack
@@ -68,6 +71,9 @@ class SubprefixAutoImmuneScenario(V4Scenario):
                         report = Report(reporting_asn=attacker_asn, prefix=subprefix, as_path=(attacker_asn, provider.asn))
                         trusted_server_ref.receive_report(report)
 
+        if self.fightback:
+            anns.extend(self.generate_fightback_relay_announcements())
+
         # If we assume relays are not reachable, then create their announcements
         if not self.assume_relays_are_reachable:
             # Setup Relay Announcements
@@ -90,6 +96,22 @@ class SubprefixAutoImmuneScenario(V4Scenario):
                                                        roa_origin=next(iter(self.victim_asns)),
                                                        recv_relationship=Relationships.ORIGIN))
             return attacker_announcements
+
+    def generate_fightback_relay_announcements(self):
+        anns = list()
+        # Setup Relay Announcements
+        if self.relay_asns:
+            for i, relay_asn in enumerate(self.relay_asns):
+                relay_prefix = Prefixes.SUBPREFIX.value
+                self.relay_prefixes[relay_asn] = relay_prefix
+                anns.append(self.AnnCls(prefix=relay_prefix,
+                                        as_path=(relay_asn,),
+                                        timestamp=2,
+                                        seed_asn=relay_asn,
+                                        roa_valid_length=True,
+                                        roa_origin=relay_asn,
+                                        recv_relationship=Relationships.ORIGIN))
+        return anns
 
     def apply_blackholes_from_avoid_list(self, engine):
         logger.debug(f"Inside apply_blackholes_from_avoid_list")

@@ -69,20 +69,20 @@ from .engine_test_configs import Config158
 from .engine_test_configs import Config159
 from .engine_test_configs import Config160
 from .engine_test_configs import Config161
-# from .engine_test_configs import Config162,
-# from .engine_test_configs import Config163,
-# from .engine_test_configs import Config164,
-# from .engine_test_configs import Config165,
-# from .engine_test_configs import Config166,
-# from .engine_test_configs import Config167,
-# from .engine_test_configs import Config168,
-# from .engine_test_configs import Config169,
-# from .engine_test_configs import Config170,
-# from .engine_test_configs import Config171,
-# from .engine_test_configs import Config172,
-# from .engine_test_configs import Config173,
-# from .engine_test_configs import Config174,
-# from .engine_test_configs import Config175,
+from .engine_test_configs import Config162
+from .engine_test_configs import Config163
+# from .engine_test_configs import Config164
+# from .engine_test_configs import Config165
+# from .engine_test_configs import Config166
+# from .engine_test_configs import Config167
+# from .engine_test_configs import Config168
+# from .engine_test_configs import Config169
+# from .engine_test_configs import Config170
+# from .engine_test_configs import Config171
+# from .engine_test_configs import Config172
+# from .engine_test_configs import Config173
+# from .engine_test_configs import Config174
+# from .engine_test_configs import Config175
 
 ######################################
 # Make tests deterministic
@@ -168,8 +168,8 @@ class TestEngine:
                               Config159,
                               Config160,
                               Config161,
-                              # Config162,
-                              # Config163,
+                              Config162,
+                              Config163,
                               # Config164,
                               # Config165,
                               # Config166,

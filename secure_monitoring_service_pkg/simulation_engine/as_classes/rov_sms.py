@@ -1,4 +1,5 @@
 import random
+import ipaddress
 
 from rovpp_pkg import ROVPPV1LiteSimpleAS
 
@@ -44,8 +45,8 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
             ann_holes = []
             # For each hole in ann: (holes are invalid subprefixes)
             for subprefix in self.trusted_server._recommendations.keys():
-                if self.trusted_server.rec_blackhole(subprefix,
-                                                     ann.as_path):
+                if ipaddress.ip_network(subprefix).subnet_of(ipaddress.ip_network(ann.prefix)) and \
+                        self.trusted_server.rec_blackhole(subprefix, ann.as_path):
                     does_not_have_subprefix = True
                     # Check if AS already has blackhole
                     for _, rib_entry in self._local_rib.prefix_anns():
@@ -96,7 +97,8 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
             # Check what relay ASes are available to this AS
             accessible_relays = list()
             for asn in relay_asns:
-                if relay_prefix_dict[asn] in self._local_rib._info:
+                prefix = relay_prefix_dict[asn]
+                if prefix in self._local_rib._info and asn in self._local_rib._info[prefix].as_path:
                     accessible_relays.append(asn)
             # Uniformly at random select from available relays
             return random.choice(accessible_relays) if len(accessible_relays) > 0 else None

@@ -35,9 +35,9 @@ class Config159(EngineTestConfig):
                                            assume_relays_are_reachable=True,
                                            indirect=False)
 
-    non_default_as_cls_dict: Dict[int, Type[AS]] = {3: ROVSimpleAS,
+    non_default_as_cls_dict: Dict[int, Type[AS]] = {3: ROVSMSK1,
                                                     4: ROVSMSK1,
-                                                    8: ROVSimpleAS,
+                                                    8: ROVSMSK1,
                                                     10: ROVSMSK1,
                                                     11: ROVSMSK1,
                                                     7: ROVSimpleAS}
