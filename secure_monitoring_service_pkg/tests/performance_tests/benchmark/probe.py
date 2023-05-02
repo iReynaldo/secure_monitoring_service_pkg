@@ -91,7 +91,7 @@ def parse_args():
     parser.add_argument('-p', '--percentages',
                         type=float,
                         nargs='*',
-                        default=[0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1],
+                        default=[0.0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0],
                         help='a list of floats')
     parser.add_argument('-n', '--num_trials',
                         type=int,

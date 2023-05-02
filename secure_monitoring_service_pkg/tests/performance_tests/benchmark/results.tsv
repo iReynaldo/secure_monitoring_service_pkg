@@ -483,3 +483,4 @@ cn471	Linux	4.18.0-372.9.1.el8.x86_64	2023-04-30T20:23:16.710277	82.148985722975
 cn471	Linux	4.18.0-372.9.1.el8.x86_64	2023-04-30T20:24:41.585370	75.4669486930361	1595236	updated-subprefix-python	12	30	V4SubprefixHijackScenario	v4k5	python	3.9.16	[0.8]
 cn471	Linux	4.18.0-372.9.1.el8.x86_64	2023-04-30T20:25:59.670592	161.13210359599907	1595276	updated-subprefix-python	12	60	V4SubprefixHijackScenario	v4k5	python	3.9.16	[0.8]
 cn471	Linux	4.18.0-372.9.1.el8.x86_64	2023-04-30T20:28:43.883202	175.69632340304088	1599272	updated-subprefix-python	12	100	V4SubprefixHijackScenario	v4k5	python	3.9.16	[0.8]
+uconn-ThinkPad-P14s-Gen-2a	Linux	5.19.0-38-generic	2023-05-02T18:48:53.540036	1432.9728649508907	1608164	standard	2	10	V4SubprefixHijackScenario	v4k1	python	3.10.6	[0.0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0]
