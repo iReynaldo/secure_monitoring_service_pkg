@@ -3,6 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import time
 import json
+import subprocess
 
 from rovpp_pkg import ROVPPAnn
 from rovpp_pkg import ROVPPV1LiteSimpleAS
@@ -41,6 +42,16 @@ ARTEMIS_SUBPREFIX_HIJACK = "ArtemisSubprefixHijackScenario"
 # Functions
 #############################
 
+# Function for this obtained here and updated with more safe function call
+# https://stackoverflow.com/a/41210204
+def get_git_revision_hash():
+  return subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout[:-1]
+
+
+def get_git_short_revision_hash():
+  return subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout[:-1]
+
+
 def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settings):
     settings = dict()
     settings.update(other_settings)
@@ -48,6 +59,8 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
     simulation_kwargs["caida_kwargs"] = str(simulation_kwargs["caida_kwargs"])
     settings.update(simulation_kwargs)
     settings.update(scenario_kwargs)
+    settings["git_hash"] = get_git_revision_hash()
+    settings["git_short_hash"] = get_git_short_revision_hash()
     return settings
 
 

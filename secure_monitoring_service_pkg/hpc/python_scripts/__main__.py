@@ -3,6 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import time
 import json
+import subprocess
 
 from rovpp_pkg import ROVPPAnn
 from rovpp_pkg import ROVPPV1LiteSimpleAS
@@ -14,6 +15,7 @@ from secure_monitoring_service_pkg import ROVSMSK3, ROVSMSK5, ROVSMSK6
 from secure_monitoring_service_pkg import ROVSMSK10
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
+from secure_monitoring_service_pkg import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg import CDN
 from secure_monitoring_service_pkg import Peer
 
@@ -33,11 +35,22 @@ adoption_settings = {
 # Scenario options
 AUTOIMMUNE = "SubprefixAutoImmuneScenario"
 SUBPREFIX_HIJACK = "V4SubprefixHijackScenario"
+ARTEMIS_SUBPREFIX_HIJACK = "ArtemisSubprefixHijackScenario"
 
 
 #############################
 # Functions
 #############################
+
+# Function for this obtained here and updated with more safe function call
+# https://stackoverflow.com/a/41210204
+def get_git_revision_hash():
+  return subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout[:-1]
+
+
+def get_git_short_revision_hash():
+  return subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout[:-1]
+
 
 def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settings):
     settings = dict()
@@ -46,6 +59,8 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
     simulation_kwargs["caida_kwargs"] = str(simulation_kwargs["caida_kwargs"])
     settings.update(simulation_kwargs)
     settings.update(scenario_kwargs)
+    settings["git_hash"] = get_git_revision_hash()
+    settings["git_short_hash"] = get_git_short_revision_hash()
     return settings
 
 
@@ -121,6 +136,16 @@ def main():
             V4Simulation(scenarios=[SubprefixAutoImmuneScenario(AdoptASCls=Cls,
                                                                 AnnCls=ROVPPAnn,
                                                                 **scenario_kwargs())
+                                    for Cls in adoption_classes
+                                    ],
+                         output_path=BASE_PATH / settings["output_filename"],
+                         **simulation_kwargs()),
+        ]
+    elif settings["scenario"] == ARTEMIS_SUBPREFIX_HIJACK:
+        sims = [
+            V4Simulation(scenarios=[ArtemisSubprefixHijackScenario(AdoptASCls=Cls,
+                                                                   AnnCls=ROVPPAnn,
+                                                                   **scenario_kwargs())
                                     for Cls in adoption_classes
                                     ],
                          output_path=BASE_PATH / settings["output_filename"],
