@@ -8,6 +8,7 @@ import random
 import argparse
 import platform
 import resource
+import subprocess
 
 
 from rovpp_pkg import ROVPPAnn
@@ -21,6 +22,17 @@ from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
 
 
 BASE_PATH = Path("~/Desktop/graphs/").expanduser()
+
+
+# Function for this obtained here and updated with more safe function call
+# https://stackoverflow.com/a/41210204
+def get_git_revision_hash():
+  return subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout[:-1]
+
+
+def get_git_short_revision_hash():
+  return subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout[:-1]
+
 
 
 def main(settings, policy, scenario):
@@ -66,7 +78,6 @@ def process_args(args):
     #  These can be added as arguments at a later time.
     settings["caida_kwargs"] = {}  # {"csv_path": Path("./aux_files/rov_adoption_5.csv")}
     settings["python_hash_seed"] = args.seed
-
 
     # Interpret the policy_str
     policy = None
@@ -154,6 +165,8 @@ if __name__ == "__main__":
             "machine_name",
             "os",
             "os_version",
+            "git_hash",
+            "git_short_hash"
             "timestamp",
             "runtime",
             "max_memory",
@@ -180,6 +193,8 @@ if __name__ == "__main__":
             "machine_name": os.uname().nodename,
             "os": platform.system(),
             "os_version": platform.release(),
+            "git_hash": get_git_revision_hash(),
+            "git_short_hash": get_git_short_revision_hash(),
             "timestamp": timestamp,
             "tag": args.tag,
             "runtime": runtime,
