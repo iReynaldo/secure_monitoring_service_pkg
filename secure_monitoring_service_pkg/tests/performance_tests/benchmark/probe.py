@@ -166,7 +166,7 @@ if __name__ == "__main__":
             "os",
             "os_version",
             "git_hash",
-            "git_short_hash"
+            "git_short_hash",
             "timestamp",
             "runtime",
             "max_memory",
