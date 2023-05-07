@@ -280,6 +280,7 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
     del simulation_kwargs["subgraphs"]  # We don't need to output this
     simulation_kwargs["caida_kwargs"] = str(simulation_kwargs["caida_kwargs"])
     settings.update(simulation_kwargs)
+    scenario_kwargs["relay_asns"] = str(scenario_kwargs["relay_asns"])
     settings.update(scenario_kwargs)
     settings["git_hash"] = get_git_revision_hash()
     settings["git_short_hash"] = get_git_short_revision_hash()
