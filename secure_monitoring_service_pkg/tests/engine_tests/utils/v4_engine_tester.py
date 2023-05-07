@@ -13,6 +13,7 @@ from .v4_diagram import V4Diagram
 from secure_monitoring_service_pkg.simulation_framework.subgraphs.v4_subgraph import V4Subgraph
 from ....simulation_framework.scenarios.hijack_scenarios import SubprefixAutoImmuneScenario
 from ....simulation_framework.scenarios.hijack_scenarios import V4SubprefixHijackScenario
+from ....simulation_framework.scenarios.hijack_scenarios import ArtemisSubprefixHijackScenario
 
 
 class V4EngineTester(EngineTester):
@@ -48,7 +49,9 @@ class V4EngineTester(EngineTester):
         prefix_outcomes: Dict[str, Dict[AS, Outcomes]] = dict()
         prefix_outcomes_yaml: Dict[str, Dict[AS, Outcomes]] = dict()
         for attacker_ann in scenario.get_attacker_announcements():
-            if (scenario.relay_asns and attacker_ann.prefix not in scenario.relay_prefixes.values()) or (not scenario.relay_asns):
+            if (scenario.relay_asns and attacker_ann.prefix not in scenario.relay_prefixes.values()) or \
+                    (not scenario.relay_asns) or \
+                    isinstance(scenario, ArtemisSubprefixHijackScenario):
                 # Get traceback results {AS: Outcome}
                 outcomes, traceback_asn_outcomes = V4Subgraph()._get_engine_outcomes(engine, scenario, attacker_ann)
                 # Create Shared data

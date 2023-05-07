@@ -83,7 +83,7 @@ class SubprefixAutoImmuneScenario(V4Scenario):
 
     def get_attacker_announcements(self):
         if self.indirect:
-            return super().get_victim_announcements()
+            return super().get_attacker_announcements()
         else:
             attacker_announcements = set()
             some_attacker_asn = next(iter(self.attacker_asns))

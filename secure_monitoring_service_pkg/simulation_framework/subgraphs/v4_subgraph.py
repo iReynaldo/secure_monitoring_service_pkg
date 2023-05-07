@@ -15,6 +15,7 @@ from rovpp_pkg import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg.simulation_framework.scenarios import SubprefixAutoImmuneScenario
 from secure_monitoring_service_pkg.simulation_framework.scenarios import V4SubprefixHijackScenario
+from secure_monitoring_service_pkg.simulation_framework.scenarios import ArtemisSubprefixHijackScenario
 
 # TODO: Re-introduce metadata_collector
 # from secure_monitoring_service_pkg.simulation_framework import metadata_collector
@@ -136,7 +137,9 @@ class V4Subgraph(Subgraph):
         prefix_outcomes: Dict[str, Dict[AS, Outcomes]] = dict()
         for attacker_ann in scenario.get_attacker_announcements():
             if not shared_data.get("set"):  # this gets set in __add_traceback_to_shared_data
-                if (scenario.relay_asns and attacker_ann.prefix not in scenario.relay_prefixes.values()) or (not scenario.relay_asns):
+                if (scenario.relay_asns and attacker_ann.prefix not in scenario.relay_prefixes.values()) or \
+                        (not scenario.relay_asns) or \
+                        isinstance(scenario, ArtemisSubprefixHijackScenario):
                     # {as_obj: outcome}
                     outcomes, traceback_asn_outcomes = \
                         self._get_engine_outcomes(engine, scenario, attacker_ann)
@@ -221,11 +224,12 @@ class V4Subgraph(Subgraph):
         min_prefix = ""
         min_percentage = sys.maxsize
         for attacker_ann in scenario.get_attacker_announcements():
-            # This string must match up to "_perc_" with the one in victim_success_all_subgraph.py
-            subgraph_key = f"all_{Outcomes.VICTIM_SUCCESS.name}_perc_{attacker_ann.prefix}"
-            if shared_data[subgraph_key] < min_percentage:
-                min_percentage = shared_data[subgraph_key]
-                min_prefix = attacker_ann.prefix
+            if attacker_ann.prefix not in scenario.relay_prefixes.values():
+                # This string must match up to "_perc_" with the one in victim_success_all_subgraph.py
+                subgraph_key = f"all_{Outcomes.VICTIM_SUCCESS.name}_perc_{attacker_ann.prefix}"
+                if shared_data[subgraph_key] < min_percentage:
+                    min_percentage = shared_data[subgraph_key]
+                    min_prefix = attacker_ann.prefix
         return min_prefix
 
     # MARK: New
