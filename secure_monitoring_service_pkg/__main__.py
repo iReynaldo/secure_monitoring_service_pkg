@@ -7,6 +7,8 @@ import subprocess
 from pathlib import Path
 import argparse
 
+from bgp_simulator_pkg import ROVSimpleAS
+
 from rovpp_pkg import ROVPPAnn
 from rovpp_pkg import ROVPPV1LiteSimpleAS
 
@@ -29,9 +31,9 @@ BASE_PATH = Path("~/Desktop/graphs/").expanduser()
 
 # Adopting settings
 adoption_settings = {
-    "adopters_for_1_attackers": [ROVPPV1LiteSimpleAS, ROVSMS, ROVSMSK1, ROVSMSK2],
-    "adopters_for_2_attackers": [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK2, ROVSMSK3],
-    "adopters_for_5_attackers": [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK5, ROVSMSK10]
+    "adopters_for_1_attackers": [ROVSimpleAS, ROVPPV1LiteSimpleAS, ROVSMS, ROVSMSK1, ROVSMSK2],
+    "adopters_for_2_attackers": [ROVSimpleAS, ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK2, ROVSMSK3],
+    "adopters_for_5_attackers": [ROVSimpleAS, ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK5, ROVSMSK10]
 }
 
 # Scenario options
@@ -39,126 +41,223 @@ AUTOIMMUNE = "SubprefixAutoImmuneScenario"
 SUBPREFIX_HIJACK = "V4SubprefixHijackScenario"
 ARTEMIS_SUBPREFIX_HIJACK = "ArtemisSubprefixHijackScenario"
 
+POLICIES = {
+    'rov': ROVSimpleAS,
+    'v1lite': ROVPPV1LiteSimpleAS,
+    'v4': ROVSMS,
+    'v4k1': ROVSMSK1,
+    'v4k2': ROVSMSK2,
+    'v4k3': ROVSMSK3,
+    'v4k5': ROVSMSK5,
+    'v4k6': ROVSMSK6,
+    'v4k10': ROVSMSK10
+}
+
+
+#############################
+# Functions
+#############################
+
+def process_policies(args):
+    policies = list()
+    for policy in args.policy:
+        policies.append(POLICIES[policy])
+    return policies
+
+
+def process_scenario_args(args):
+    overlay_setting_raw = args.relay_asns[0]
+    if overlay_setting_raw == 'none':
+        overlay_setting = None
+        # Ensure attack relays is false
+        assert args.attack_relays is False, "Cannot set attack_relays if relays is none"
+    elif overlay_setting_raw in ['akamai', 'cloudflare', 'verisign', 'incapsula', 'neustar']:
+        overlay_setting = CDN().__getattribute__(overlay_setting_raw)
+    elif overlay_setting_raw in ['five', 'ten', 'twenty', 'hundred']:
+        overlay_setting = Peer().__getattribute__(overlay_setting_raw)
+    else:
+        raise ValueError(f"Unknown Overlay setting given: {overlay_setting_raw}")
+
+    settings = {
+        "num_attackers": args.num_attackers,
+        "min_rov_confidence": 0 if args.rov_adoption != 'none' else 1000,
+        "adoption_subcategory_attrs": args.adoption_subcategory,
+        "relay_asns": overlay_setting,
+        "attack_relays": args.attack_relays,
+        "assume_relays_are_reachable": args.assume_relays_are_reachable,
+        "tunnel_customer_traffic": args.tunnel_customer_traffic,
+    }
+    # Set for AutoImmune attack indirect/direct
+    if args.scenario[0] == AUTOIMMUNE:
+        settings["indirect"] = True if args.autoimmune_attack_type[0] == 'indirect' else False
+
+    return settings
+
+
+def process_simulation_args(args):
+    rov_setting_raw = args.rov_adoption  # none / real
+    if rov_setting_raw == 'none':
+        rov_setting = False
+    elif rov_setting_raw == 'real':
+        rov_setting = True
+    else:
+        raise ValueError(f"Unknown ROV setting given: {rov_setting_raw}")
+
+    return {
+        "percent_adoptions": args.percentages,
+        "num_trials": args.num_trials,
+        "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
+        "parse_cpus": args.cpus,
+        "python_hash_seed": args.python_hash_seed,
+        "caida_kwargs": {"csv_path": Path("./aux_files/rov_adoption_real.csv")} if rov_setting else {}
+    }
+
+
+def process_other_args(args):
+    # If output filename given, use it
+    if args.output:
+        output_filename = args.output
+    else:
+        # Auto Generate Filename
+        output_filename = f"{args.scenario}_scenario" + \
+                          f"_{args.autoimmune_attack_type}_type" + \
+                          f"_{args.rov_adoption}_rov" + \
+                          f"_{args.python_hash_seed}_hash" + \
+                          f"_{args.relay_asns[0]}_relay" + \
+                          f"_{args.attack_relays}_attackRelay" + \
+                          f"_{args.num_attackers}_attacker" + \
+                          f"_{args.num_trials}_trials" + \
+                          f"_{str(args.percentages).replace(' ', '')}_percentages"
+
+    settings = {
+        "scenario": args.scenario,
+        "output_filename": output_filename
+    }
+    return settings
+
 
 #############################
 # Arg Parser
 #############################
 
-# def process_args(args):
-#     # By default, we're doing the subprefix hijack
-#     settings = {"subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name]}
-#     settings["percent_adoptions"] = list(args.percentages)
-#     settings["num_trials"] = args.num_trials
-#     settings["parse_cpus"] = args.cpus
-#
-#     # Interpret the policy_str
-#     policy = None
-#     policy_str = args.policy
-#     if policy_str == "v1lite":
-#         policy = ROVPPV1LiteSimpleAS
-#     elif policy_str == "v4":
-#         policy = ROVSMS
-#     elif policy_str == "v4k1":
-#         policy = ROVSMSK1
-#     elif policy_str == "v4k5":
-#         policy = ROVSMSK5
-#     else:
-#         raise (ValueError,
-#                "Unrecognized policy specified. "
-#                "Use following options {v1, v4, v4k1, v4k5}")
-#     return settings, policy, args
-#
-#
-# def parse_args():
-#     parser = argparse.ArgumentParser(description='Secure Monitoring Service Simulation')
-#     # Simulation Args
-#     parser.add_argument('-p', '--percentages',
-#                         type=float,
-#                         nargs='*',
-#                         default=[0.1, 0.2, 0.4, 0.6, 0.8],
-#                         help='a list of floats')
-#     parser.add_argument('-n', '--num_trials',
-#                         type=int,
-#                         nargs='?',
-#                         default=10,
-#                         help='Number of trials to run')
-#     parser.add_argument('-c', '--cpus',
-#                         type=int,
-#                         nargs='?',
-#                         default=1,
-#                         help='Number of CPUs to use')
-#     parser.add_argument('-phs', '--python_hash_seed',
-#                         type=int,
-#                         nargs='?',
-#                         default=0,
-#                         help='Deterministic setting seed. '
-#                              'Needs to be same as environment '
-#                              'variable PYTHONHASHSEED')
-#     parser.add_argument('-rov', '--rov_adoption',
-#                         type=str,
-#                         nargs='?',
-#                         default='0',
-#                         help='ROV adoption setting. If given, '
-#                              'ROV ASes will be added to simulation.',
-#                         choices=['real', '5', '10', '15', '20',
-#                                  '30', '40', '50', '60', '70', '80', '90'])
-#
-#     # Scenario Args
-#     parser.add_argument('-na', '--num_attackers',
-#                         type=int,
-#                         nargs='?',
-#                         default=1,
-#                         help='Number of attackers')
-#     parser.add_argument('-asub', '--adoption_subcategory',
-#                         type=str,
-#                         nargs='*',
-#                         default=("stub_or_mh_ases", "etc_ases", "input_clique_ases"),
-#                         help='The area in the graph for adoption. '
-#                              'Does not restrict additional ROV adoption')
-#     parser.add_argument('-relay', '--relay_asns',
-#                         type=str,
-#                         nargs=2,
-#                         default=("stub_or_mh_ases", "etc_ases", "input_clique_ases"),
-#                         help='The relays that can be used',
-#                         choices=['Caida akamai',
-#                                  'Caida cloudflare',
-#                                  'Caida verisign',
-#                                  'Caida incapsula',
-#                                  'Caida neustar',
-#                                  'Peer five',
-#                                  'Peer ten',
-#                                  'Peer twenty',
-#                                  'Peer hundred'])
-#     parser.add_argument('--assume_relays_are_reachable',
-#                         type=bool,
-#                         nargs='?',
-#                         default=True,
-#                         help='This will enable/disable relays from sending '
-#                              'out a relay prefix. If set to True, then the '
-#                              'relay prefixes are not sent, and relays are'
-#                              ' assumed to be reachable to any adopting AS.')
-#     parser.add_argument('--tunnel_customer_traffic',
-#                         type=bool,
-#                         nargs='?',
-#                         default=False,
-#                         help='Whether or not to allow adopters to tunnel '
-#                              'reconnected traffic.')
-#     parser.add_argument('-y', '--policy',
-#                         type=str,
-#                         nargs='?',
-#                         default="v4k1",
-#                         help='Adoption Policy to use')
-#     parser.add_argument('-o', '--output',
-#                         type=str,
-#                         nargs='?',
-#                         default="default",
-#                         help='Output filename')
-#     parser.add_argument('-s', '--scenario',
-#                         type=str,
-#                         nargs='?',
-#                         default="V4SubprefixHijackScenario",
-#                         help='Attack Scenario')
-#     return process_args(parser.parse_args())
+def process_args(args):
+    # Processes Scenario Args
+    scenario_args = process_scenario_args(args)
+    # Processes Simulation Args
+    simulation_args = process_simulation_args(args)
+    # Processes Other Args
+    other_args = process_other_args(args)
+
+    return args, scenario_args, simulation_args, other_args
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Secure Monitoring Service Simulation')
+    # Simulation Args
+    parser.add_argument('--percentages',
+                        type=float,
+                        nargs='*',
+                        default=[0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99],
+                        help='a list of floats')
+    parser.add_argument('-o', '--output',
+                        type=str,
+                        nargs='?',
+                        default=None,
+                        help='Output filename')
+    parser.add_argument('--num_trials',
+                        type=int,
+                        nargs='?',
+                        default=10,
+                        help='Number of trials to run')
+    parser.add_argument('--cpus',
+                        type=int,
+                        nargs='?',
+                        default=1,
+                        help='Number of CPUs to use')
+    parser.add_argument('--python_hash_seed',
+                        type=int,
+                        nargs='?',
+                        default=0,
+                        help='Deterministic setting seed. '
+                             'Needs to be same as environment '
+                             'variable PYTHONHASHSEED')
+    parser.add_argument('--rov_adoption',
+                        type=str,
+                        nargs='?',
+                        default='none',
+                        help='ROV adoption setting. If given, '
+                             'ROV ASes will be added to simulation.',
+                        choices=['none', 'real'])
+
+    # Scenario Args
+    parser.add_argument('--num_attackers',
+                        type=int,
+                        nargs='?',
+                        default=1,
+                        help='Number of attackers')
+    parser.add_argument('--adoption_subcategory',
+                        type=str,
+                        nargs='*',
+                        default=("stub_or_mh_ases", "etc_ases", "input_clique_ases"),
+                        help='The area in the graph for adoption. '
+                             'Does not restrict additional ROV adoption')
+    parser.add_argument('--relay_asns',
+                        type=str,
+                        nargs=1,
+                        default="none",
+                        help='The relays that can be used',
+                        choices=['none',
+                                 'akamai',
+                                 'cloudflare',
+                                 'verisign',
+                                 'incapsula',
+                                 'neustar',
+                                 'five',
+                                 'ten',
+                                 'twenty',
+                                 'hundred'])
+    parser.add_argument('--attack_relays',
+                        type=bool,
+                        nargs='?',
+                        default=False,
+                        help='Whether or not to attack relays.')
+    parser.add_argument('--assume_relays_are_reachable',
+                        type=bool,
+                        nargs='?',
+                        default=False,
+                        help='This will enable/disable relays from sending '
+                             'out a relay prefix. If set to True, then the '
+                             'relay prefixes are not sent, and relays are'
+                             ' assumed to be reachable to any adopting AS.')
+    parser.add_argument('--tunnel_customer_traffic',
+                        type=bool,
+                        nargs='?',
+                        default=False,
+                        help='Whether or not to allow adopters to tunnel '
+                             'reconnected traffic.')
+    parser.add_argument('--policy',
+                        type=str,
+                        nargs='*',
+                        default=None,
+                        help='Adoption Policies to use',
+                        choices=POLICIES.keys())
+    parser.add_argument('--scenario',
+                        type=str,
+                        nargs='?',
+                        default="V4SubprefixHijackScenario",
+                        help='Attack Scenario',
+                        choices=['V4SubprefixHijackScenario',
+                                 'SubprefixAutoImmuneScenario',
+                                 'ArtemisSubprefixHijackScenario'])
+    parser.add_argument('--autoimmune_attack_type',
+                        type=str,
+                        nargs='?',
+                        default='none',
+                        help='This setting is only used for the '
+                             'SubprefixAutoImmuneScenario, to indicate '
+                             'if it is direct/indirect.',
+                        choices=['none', 'direct', 'indirect'])
+    return process_args(parser.parse_args())
 
 
 #############################
@@ -168,11 +267,11 @@ ARTEMIS_SUBPREFIX_HIJACK = "ArtemisSubprefixHijackScenario"
 # Function for this obtained here and updated with more safe function call
 # https://stackoverflow.com/a/41210204
 def get_git_revision_hash():
-  return subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout[:-1]
+    return subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout[:-1]
 
 
 def get_git_short_revision_hash():
-  return subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout[:-1]
+    return subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout[:-1]
 
 
 def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settings):
@@ -188,97 +287,54 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
 
 
 #############################
-# Simulation Arguments
-#############################
-
-def other_settings():
-    settings = {
-        "scenario": AUTOIMMUNE,
-        "output_filename": "default"
-    }
-    return settings
-
-
-def scenario_kwargs():
-    settings = {
-        "num_attackers": 2,
-        "min_rov_confidence": 1,
-        "adoption_subcategory_attrs": ("stub_or_mh_ases", "etc_ases", "input_clique_ases"),
-        "relay_asns": None,
-        "assume_relays_are_reachable": False,
-        "tunnel_customer_traffic": False,
-    }
-    # Set for AutoImmune attack indirect/direct
-    if other_settings()["scenario"] == AUTOIMMUNE:
-        settings["indirect"] = False
-
-    # Validate Settings
-    if not (settings["relay_asns"] == Peer.twenty or settings["relay_asns"] == Peer.hundred
-            or settings["relay_asns"] == Peer.five or settings["relay_asns"] == Peer.ten):
-        assert not settings["assume_relays_are_reachable"], "assume_relays_are_reachable " \
-                                                            "should only be set True for " \
-                                                            "Peer relay setting"
-    return settings
-
-
-def simulation_kwargs():
-    return {
-        "percent_adoptions": [0.1, 0.2, 0.4, 0.6, 0.8],
-        "num_trials": 3,
-        "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
-        "parse_cpus": 4,
-        "python_hash_seed": 0,
-        "caida_kwargs": {}  # {"csv_path": Path("./aux_files/rov_adoption_5.csv")}
-    }
-
-
-#############################
 # Main
 #############################
 
 def main():
-    # Get adoption classes
-    adoption_classes = adoption_settings[f"adopters_for_{scenario_kwargs()['num_attackers']}_attackers"]
+    all_args, scenario_args, simulation_args, other_args = parse_args()
 
-    # Load Simulation settings
-    settings = other_settings()
+    # Get adoption classes
+    if all_args.policy:
+        adoption_classes = process_policies(all_args)
+    else:
+        adoption_classes = adoption_settings[f"adopters_for_{scenario_args['num_attackers']}_attackers"]
 
     sims = None
-    if settings["scenario"] == SUBPREFIX_HIJACK:
+    if other_args["scenario"] == SUBPREFIX_HIJACK:
         sims = [
             V4Simulation(scenarios=[V4SubprefixHijackScenario(AdoptASCls=Cls,
                                                               AnnCls=ROVPPAnn,
-                                                              **scenario_kwargs())
+                                                              **scenario_args)
                                     for Cls in adoption_classes
                                     ],
-                         output_path=BASE_PATH / settings["output_filename"],
-                         **simulation_kwargs()),
+                         output_path=BASE_PATH / other_args["output_filename"],
+                         **simulation_args),
         ]
-    elif settings["scenario"] == AUTOIMMUNE:
+    elif other_args["scenario"] == AUTOIMMUNE:
         sims = [
             V4Simulation(scenarios=[SubprefixAutoImmuneScenario(AdoptASCls=Cls,
                                                                 AnnCls=ROVPPAnn,
-                                                                **scenario_kwargs())
+                                                                **scenario_args)
                                     for Cls in adoption_classes
                                     ],
-                         output_path=BASE_PATH / settings["output_filename"],
-                         **simulation_kwargs()),
+                         output_path=BASE_PATH / other_args["output_filename"],
+                         **simulation_args),
         ]
-    elif settings["scenario"] == ARTEMIS_SUBPREFIX_HIJACK:
+    elif other_args["scenario"] == ARTEMIS_SUBPREFIX_HIJACK:
         sims = [
             V4Simulation(scenarios=[ArtemisSubprefixHijackScenario(AdoptASCls=Cls,
                                                                    AnnCls=ROVPPAnn,
-                                                                   **scenario_kwargs())
+                                                                   **scenario_args)
                                     for Cls in adoption_classes
                                     ],
-                         output_path=BASE_PATH / settings["output_filename"],
-                         **simulation_kwargs()),
+                         output_path=BASE_PATH / other_args["output_filename"],
+                         **simulation_args),
         ]
     else:
-        raise f"Unknown scenario specified: {settings['scenario']}"
+        raise f"Unknown scenario specified: {other_args['scenario']}"
 
     # collect experiment settings
-    experiment_settings_to_save = process_experiment_settings(simulation_kwargs(), scenario_kwargs(), other_settings())
+    experiment_settings_to_save = process_experiment_settings(simulation_args, scenario_args, other_args)
 
     # Run Simulations
     for sim in sims:
