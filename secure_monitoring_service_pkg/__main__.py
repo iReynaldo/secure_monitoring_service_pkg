@@ -67,9 +67,9 @@ def process_policies(args):
 
 def process_scenario_args(args):
     overlay_setting_raw = args.relay_asns[0]
-    if overlay_setting_raw == 'none':
+    print(f"The overlay setting {overlay_setting_raw}")
+    if overlay_setting_raw == None:
         overlay_setting = None
-        # Ensure attack relays is false
         assert args.attack_relays is False, "Cannot set attack_relays if relays is none"
     elif overlay_setting_raw in ['akamai', 'cloudflare', 'verisign', 'incapsula', 'neustar']:
         overlay_setting = CDN().__getattribute__(overlay_setting_raw)
@@ -204,7 +204,7 @@ def parse_args():
     parser.add_argument('--relay_asns',
                         type=str,
                         nargs=1,
-                        default="none",
+                        default=[None],
                         help='The relays that can be used',
                         choices=['none',
                                  'akamai',
