@@ -67,7 +67,6 @@ def process_policies(args):
 
 def process_scenario_args(args):
     overlay_setting_raw = args.relay_asns[0]
-    print(f"The overlay setting {overlay_setting_raw}")
     if overlay_setting_raw == None:
         overlay_setting = None
         assert args.attack_relays is False, "Cannot set attack_relays if relays is none"
@@ -88,8 +87,8 @@ def process_scenario_args(args):
         "tunnel_customer_traffic": args.tunnel_customer_traffic,
     }
     # Set for AutoImmune attack indirect/direct
-    if args.scenario[0] == AUTOIMMUNE:
-        settings["indirect"] = True if args.autoimmune_attack_type[0] == 'indirect' else False
+    if args.scenario == AUTOIMMUNE:
+        settings["indirect"] = True if args.autoimmune_attack_type == 'indirect' else False
 
     return settings
 
