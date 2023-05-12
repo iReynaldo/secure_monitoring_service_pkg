@@ -20,7 +20,17 @@ etc_ROVSimple_VICTIM_SUCCESS_percent_1.2.1.0/24: 100.0
 num_ases_should_not_be_on_avoid_list: 0
 num_of_victim_providers: 1
 num_victim_providers_on_avoid_list: 1
-relay_prefixes: {}
+relay_prefixes:
+  12: 1.1.1.0/24
+  13: 2.2.2.0/24
+relay_usage:
+  12: !!set
+    10: null
+  13: !!set
+    3: null
+    4: null
+    8: null
+    11: null
 set: true
 size_of_avoid_list: 1
 stubs_or_mh_BGP Simple: 4

@@ -41,6 +41,7 @@ class V4Diagram(Diagram):
                       <TD>{relay_usage[asn]}</TD>
                     </TR>
                 '''
+                rows = rows + row
         else:
             for asn in relay_usage:
                 row = f'''
@@ -49,7 +50,7 @@ class V4Diagram(Diagram):
                       <TD>{relay_usage[asn]}</TD>
                     </TR>
                 '''
-        rows = rows + row
+                rows = rows + row
 
 
         relay_usage_tbl_html = f'''<

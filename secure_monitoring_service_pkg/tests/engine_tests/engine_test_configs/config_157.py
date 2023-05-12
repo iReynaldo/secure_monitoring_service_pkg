@@ -34,7 +34,7 @@ class Config157(EngineTestConfig):
                                            BaseASCls=BGPSimpleAS,
                                            AnnCls=ROVPPAnn,
                                            relay_asns=relay_asns,
-                                           assume_relays_are_reachable=True,
+                                           assume_relays_are_reachable=False,
                                            indirect=False)
 
     non_default_as_cls_dict: Dict[int, Type[AS]] = {3: ROVSMSK1,

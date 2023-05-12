@@ -41,6 +41,8 @@ AUTOIMMUNE = "SubprefixAutoImmuneScenario"
 SUBPREFIX_HIJACK = "V4SubprefixHijackScenario"
 ARTEMIS_SUBPREFIX_HIJACK = "ArtemisSubprefixHijackScenario"
 
+ALL_PERCENTAGES = [0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99]
+
 POLICIES = {
     'rov': ROVSimpleAS,
     'v1lite': ROVPPV1LiteSimpleAS,
@@ -117,6 +119,7 @@ def process_other_args(args):
     if args.output:
         output_filename = args.output
     else:
+        percentages_str = 'full' if args.percentages == ALL_PERCENTAGES else str(args.percentages).replace(' ', '')
         # Auto Generate Filename
         output_filename = f"{args.scenario}_scenario" + \
                           f"_{args.autoimmune_attack_type}_type" + \
@@ -126,7 +129,7 @@ def process_other_args(args):
                           f"_{args.attack_relays}_attackRelay" + \
                           f"_{args.num_attackers}_attacker" + \
                           f"_{args.num_trials}_trials" + \
-                          f"_{str(args.percentages).replace(' ', '')}_percentages"
+                          f"_{percentages_str}_percentages"
 
     settings = {
         "scenario": args.scenario,
@@ -156,7 +159,7 @@ def parse_args():
     parser.add_argument('--percentages',
                         type=float,
                         nargs='*',
-                        default=[0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99],
+                        default=ALL_PERCENTAGES,
                         help='a list of floats')
     parser.add_argument('-o', '--output',
                         type=str,
