@@ -33,7 +33,7 @@ BASE_PATH = Path("~/Desktop/graphs/").expanduser()
 adoption_settings = {
     "adopters_for_1_attackers": [ROVSimpleAS, ROVPPV1LiteSimpleAS, ROVSMS, ROVSMSK1, ROVSMSK2],
     "adopters_for_2_attackers": [ROVSimpleAS, ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK2, ROVSMSK3],
-    "adopters_for_5_attackers": [ROVSimpleAS, ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK5, ROVSMSK10]
+    "adopters_for_5_attackers": [ROVSimpleAS, ROVPPV1LiteSimpleAS, ROVSMSK2, ROVSMSK5, ROVSMSK10]
 }
 
 # Scenario options
