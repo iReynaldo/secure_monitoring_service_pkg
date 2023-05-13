@@ -168,7 +168,7 @@ class V4Scenario(Scenario):
         # Setup Relay Announcements
         if self.relay_asns:
             for i, relay_asn in enumerate(self.relay_asns):
-                relay_prefix = f"{i + 1}.{i + 1}.{i + 1}.0/24"
+                relay_prefix = f"{i + 1}.{i + 1}.{i + 1}.0/16"
                 self.relay_prefixes[relay_asn] = relay_prefix
                 anns.append(self.AnnCls(prefix=relay_prefix,
                                         as_path=(relay_asn,),
