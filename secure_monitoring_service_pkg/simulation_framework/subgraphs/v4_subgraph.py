@@ -199,13 +199,20 @@ class V4Subgraph(Subgraph):
         if as_obj._local_rib.get_ann(origin_prefix):
             origin_prefix_network = ipaddress.ip_network(origin_prefix)
             # Check if relay has not created a blackhole
+            # TODO: I think this can be done more efficiently and elegantly?
             # Identify the attacker announcement that attacks the origin prefix
+            attacker_prefix = None
             for attacker_ann in scenario.get_attacker_announcements():
                 attacker_prefix_network = ipaddress.ip_network(attacker_ann.prefix)
-                # Check that it has not created a blackhole for the identified attacking prefix
-                if attacker_prefix_network.subnet_of(origin_prefix_network) and not attacker_ann.blackhole:
-                    return True
-        return False
+                if attacker_prefix_network.subnet_of(origin_prefix_network):
+                    attacker_prefix = attacker_ann.prefix
+                    break
+            # Check that it has not created a blackhole for the identified attacking prefix
+            if attacker_prefix:
+                attacker_ann = as_obj._local_rib.get_ann(attacker_prefix)
+                if attacker_ann and attacker_ann.blackhole:
+                    return False
+        return True
 
     def _recalculate_outcomes_with_relays(self, scenario, engine, attacker_ann, outcomes, traceback_asn_outcomes,
                                           shared_data, track_relay_usage=False):

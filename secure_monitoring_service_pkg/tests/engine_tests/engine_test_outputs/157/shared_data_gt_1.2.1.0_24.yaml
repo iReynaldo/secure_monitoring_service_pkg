@@ -23,14 +23,6 @@ num_victim_providers_on_avoid_list: 1
 relay_prefixes:
   12: 1.1.1.0/24
   13: 2.2.2.0/24
-relay_usage:
-  12: !!set
-    10: null
-  13: !!set
-    3: null
-    4: null
-    8: null
-    11: null
 set: true
 size_of_avoid_list: 1
 stubs_or_mh_BGP Simple: 4
