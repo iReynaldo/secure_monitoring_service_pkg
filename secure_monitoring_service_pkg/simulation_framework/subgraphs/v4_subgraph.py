@@ -16,6 +16,7 @@ from rovpp_pkg import ROVPPV1LiteSimpleAS
 from secure_monitoring_service_pkg.simulation_framework.scenarios import SubprefixAutoImmuneScenario
 from secure_monitoring_service_pkg.simulation_framework.scenarios import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg.simulation_framework.scenarios import ArtemisSubprefixHijackScenario
+from secure_monitoring_service_pkg.simulation_framework.scenarios.v4_scenario import CDN_RELAY_SETTING
 
 # TODO: Re-introduce metadata_collector
 # from secure_monitoring_service_pkg.simulation_framework import metadata_collector
@@ -143,7 +144,9 @@ class V4Subgraph(Subgraph):
                     # {as_obj: outcome}
                     outcomes, traceback_asn_outcomes = \
                         self._get_engine_outcomes(engine, scenario, attacker_ann)
-                    if scenario.relay_asns and (isinstance(scenario, SubprefixAutoImmuneScenario) or isinstance(scenario, V4SubprefixHijackScenario)):
+                    if scenario.relay_asns and (
+                            isinstance(scenario, SubprefixAutoImmuneScenario) or isinstance(scenario,
+                                                                                            V4SubprefixHijackScenario)):
                         self._recalculate_outcomes_with_relays(scenario,
                                                                engine,
                                                                attacker_ann,
@@ -182,7 +185,14 @@ class V4Subgraph(Subgraph):
         self.data[propagation_round][scenario.graph_label][percent_adopt
         ].append(shared_data.get(key, 0))  # noqa
 
-    def _relay_is_available(self, engine, scenario, relay_asn):
+    def _as_has_blackhole_for_attack_on_origin_prefix(self, as_obj, attacker_prefix):
+        # Check if created a blackhole
+        attacker_ann_from_relay_local_rib = as_obj._local_rib.get_ann(attacker_prefix)
+        if attacker_ann_from_relay_local_rib and attacker_ann_from_relay_local_rib.blackhole:
+            return True
+        return False
+
+    def _relay_is_available(self, engine, scenario, attacker_prefix, relay_asn):
         """
         Checks if the relay ASN has a path to the legit origin
         AND
@@ -195,24 +205,21 @@ class V4Subgraph(Subgraph):
         """
         as_obj = engine.as_dict[relay_asn]
         origin_prefix = next(iter(scenario.get_victim_announcements())).prefix
-        # Check if relay has path to origin
-        if as_obj._local_rib.get_ann(origin_prefix):
-            origin_prefix_network = ipaddress.ip_network(origin_prefix)
-            # Check if relay has not created a blackhole
-            # TODO: I think this can be done more efficiently and elegantly?
-            # Identify the attacker announcement that attacks the origin prefix
-            attacker_prefix = None
-            for attacker_ann in scenario.get_attacker_announcements():
-                attacker_prefix_network = ipaddress.ip_network(attacker_ann.prefix)
-                if attacker_prefix_network.subnet_of(origin_prefix_network):
-                    attacker_prefix = attacker_ann.prefix
-                    break
-            # Check that it has not created a blackhole for the identified attacking prefix
-            if attacker_prefix:
-                attacker_ann = as_obj._local_rib.get_ann(attacker_prefix)
-                if attacker_ann and attacker_ann.blackhole:
-                    return False
-        return True
+        # Check if relay has path to origin AND
+        # does not have a blackhole for attacker's attack on the origin
+        origin_ann = as_obj._local_rib.get_ann(origin_prefix)
+        if origin_ann and \
+                not self._as_has_blackhole_for_attack_on_origin_prefix(as_obj, attacker_prefix):
+            if scenario.trusted_server_ref:
+                # Check that the AS path for the origin prefix does not have any ASes that have blackholes
+                ases_with_blackholes = scenario.trusted_server_ref.adopters_with_blackhole.get(attacker_prefix, None)
+                if ases_with_blackholes:
+                    for asn in origin_ann.as_path:
+                        if asn in ases_with_blackholes:
+                            return False
+            return True
+        else:
+            return False
 
     def _recalculate_outcomes_with_relays(self, scenario, engine, attacker_ann, outcomes, traceback_asn_outcomes,
                                           shared_data, track_relay_usage=False):
@@ -223,33 +230,53 @@ class V4Subgraph(Subgraph):
         # Create a set of relays that have successful connections to origin
         connected_relays = set()
         for relay_asn in scenario.relay_asns:
-            if self._relay_is_available(engine, scenario, relay_asn):
+            if self._relay_is_available(engine, scenario, attacker_ann.prefix, relay_asn):
                 connected_relays.add(relay_asn)
+        
         if len(connected_relays) > 0:
+            # If the relay_setting is CDN, then if any one of the
+            # the relay ASNs is avaialable, then all corresponding relay
+            # ASNs are also available, as we can assume they can tunnel to each other
+            not_connected_relay_as_obj = list()
+            if scenario.relay_setting == CDN_RELAY_SETTING:
+                for asn in scenario.relay_asns - connected_relays:
+                    not_connected_relay_as_obj.append(engine.as_dict[asn])
             # For each adopting ASN (except relay), check if it's disconnected
-            for as_obj in outcomes:
-                # TODO: Why doesn't issubclass(as_obj, ROVSMS) work here for Config150?
-                if hasattr(as_obj, "trusted_server") and \
-                        outcomes[as_obj] == Outcomes.DISCONNECTED and \
-                        as_obj.asn not in connected_relays:
-                    selected_relay_asn = as_obj.use_relay(connected_relays,
-                                                          scenario.relay_prefixes,
-                                                          scenario.assume_relays_are_reachable)
-                    if selected_relay_asn:
-                        # Update outcome for asn to outcome of the Relay that was selected
-                        outcomes[as_obj] = outcomes[engine.as_dict[selected_relay_asn]]
-                        # Update traceback_asn_outcome to victim asn
-                        traceback_asn_outcomes[as_obj.asn] = traceback_asn_outcomes[selected_relay_asn]
-                        # Update flag to signal re-computation of outcomes
-                        changes_made_flag = True
-                        # Track which relays are being used
-                        if track_relay_usage:
-                            # Add ASN to set of ASes using the relay to shared_data
-                            relay_usage = shared_data.get("relay_usage", dict())
-                            relay_users = relay_usage.get(selected_relay_asn, set())
-                            relay_users.add(as_obj.asn)
-                            relay_usage[selected_relay_asn] = relay_users
-                            shared_data["relay_usage"] = relay_usage
+            for as_obj_iterator in [not_connected_relay_as_obj, outcomes]:
+                for as_obj in as_obj_iterator:
+                    # TODO: Why doesn't issubclass(as_obj, ROVSMS) work here for Config150?
+                    if hasattr(as_obj, "trusted_server") and \
+                            outcomes[as_obj] == Outcomes.DISCONNECTED and \
+                            as_obj.asn not in connected_relays:
+                        if scenario.relay_setting != CDN_RELAY_SETTING:
+                            selected_relay_asn = as_obj.use_relay(connected_relays,
+                                                                  scenario.relay_prefixes,
+                                                                  scenario.assume_relays_are_reachable)
+                        else:
+                            selected_relay_asn = as_obj.use_relay(connected_relays,
+                                                                  scenario.relay_prefixes,
+                                                                  True)
+                        if selected_relay_asn:
+                            # Update outcome for asn to outcome of the Relay that was selected
+                            outcomes[as_obj] = outcomes[engine.as_dict[selected_relay_asn]]
+                            # Update traceback_asn_outcome to victim asn
+                            traceback_asn_outcomes[as_obj.asn] = traceback_asn_outcomes[selected_relay_asn]
+                            # Update flag to signal re-computation of outcomes
+                            changes_made_flag = True
+                            # Track which relays are being used
+                            if track_relay_usage:
+                                # Add ASN to set of ASes using the relay to shared_data
+                                relay_usage = shared_data.get("relay_usage", dict())
+                                relay_users = relay_usage.get(selected_relay_asn, set())
+                                relay_users.add(as_obj.asn)
+                                relay_usage[selected_relay_asn] = relay_users
+                                shared_data["relay_usage"] = relay_usage
+                # If relay setting is CDN, then they can tunnel between each other
+                if scenario.relay_setting == CDN_RELAY_SETTING:
+                    # After the first time through the inner loop,
+                    # all the relays should be considered
+                    # available, because their evaluated first.
+                    connected_relays = scenario.relay_asns
             if scenario.tunnel_customer_traffic and changes_made_flag:
                 self._get_engine_outcomes(engine, scenario, attacker_ann, outcomes, traceback_asn_outcomes, True)
 

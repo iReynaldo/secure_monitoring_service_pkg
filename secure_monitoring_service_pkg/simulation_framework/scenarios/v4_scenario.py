@@ -9,10 +9,18 @@ from bgp_simulator_pkg import Scenario
 from bgp_simulator_pkg import Announcement
 from bgp_simulator_pkg import Timestamps
 
-
+from .cdn import CDN
 from secure_monitoring_service_pkg.simulation_framework.sim_logger \
     import sim_logger as logger
 
+
+################################
+# Constants
+################################
+
+CDN_RELAY_SETTING = "cdn"
+PEER_RELAY_SETTING = "peer"
+NO_RELAY_SETTING = "no_relay"
 
 ################################
 # Main Scenario Class
@@ -32,6 +40,20 @@ class V4Scenario(Scenario):
         self.tunnel_customer_traffic = tunnel_customer_traffic
         self.assume_relays_are_reachable = assume_relays_are_reachable
         self.attack_relays = attack_relays
+        if relay_asns:
+            if self._is_using_cdn(relay_asns):
+                self.relay_setting = CDN_RELAY_SETTING
+            else:
+                self.relay_setting = PEER_RELAY_SETTING
+        else:
+            self.relay_setting = NO_RELAY_SETTING
+    def _is_using_cdn(self, relay_asns):
+        if relay_asns == CDN().akamai or relay_asns == CDN().cloudflare or \
+            relay_asns == CDN().verisign or relay_asns == CDN().incapsula or \
+                relay_asns == CDN().neustar:
+            return True
+        else:
+            return False
 
     @property
     def _default_adopters(self) -> Set[int]:
@@ -111,7 +133,12 @@ class V4Scenario(Scenario):
         }
         """
         # Add blackholes from avoid list
-        self.apply_blackholes_from_avoid_list(kwargs["engine"])
+        engine = kwargs["engine"]
+        self.apply_blackholes_from_avoid_list(engine)
+        # Add blackhole information to trusted server
+        if self.trusted_server_ref:
+            for attacker_ann in self.get_attacker_announcements_for_origin():
+                self.trusted_server_ref.gather_blackhole_information(attacker_ann.prefix, engine)
 
     def post_propagation_hook(self, *args, **kwargs):
         # TODO: Verify if this will continue to work
@@ -153,6 +180,22 @@ class V4Scenario(Scenario):
                 if attacker_asn in ann.as_path:
                     attacker_announcements.add(ann)
         return attacker_announcements
+
+    def get_attacker_announcements_for_origin(self):
+        """
+        These are the attacker announcements that target the origin
+        :return:
+        """
+        anns = set()
+        # Get origin prefix
+        origin_prefix = next(iter(self.get_victim_announcements())).prefix
+        origin_prefix_network = ip_network(origin_prefix)
+        # Identify the attacker announcement that attacks the origin prefix
+        for attacker_ann in self.get_attacker_announcements():
+            attacker_prefix_network = ip_network(attacker_ann.prefix)
+            if attacker_prefix_network.subnet_of(origin_prefix_network):
+                anns.add(attacker_ann)
+        return anns
 
     def get_victim_announcements(self):
         victim_announcements = set()

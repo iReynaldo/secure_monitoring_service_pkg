@@ -1,5 +1,6 @@
 from collections import defaultdict
 import copy
+import ipaddress
 from typing import Dict, Set, List, Tuple
 
 from bgp_simulator_pkg import Announcement as Ann
@@ -14,7 +15,8 @@ class TrustedServer:
                  "_make_recs",
                  "_max_num_dishonest_nodes",
                  "scenario_name",
-                 "prefix_provider_mapping")
+                 "prefix_provider_mapping",
+                 "adopters_with_blackhole")
     name = "TrustedServer"
 
     def __init__(self, max_num_dishonest_nodes: int = 0):
@@ -28,6 +30,7 @@ class TrustedServer:
         # V4Scenatio apply_blackholes_from_avoid_list
         self.scenario_name = None
         self.prefix_provider_mapping = None  # Only in SubprefixAutoImmuneScenario
+        self.adopters_with_blackhole: Dict[str, Set[int]] = dict()  # per prefix, ASNs in the sets are adopters that have blackholes
 
     def rec_blackhole(self, subprefix: str, as_path: Tuple[int, ...]) -> bool:
         """Recommends a blackhole for a subprefix"""
@@ -92,6 +95,19 @@ class TrustedServer:
         for ann in self._raw_data[prefix]:
             path_list.append(ann.as_path)
         return path_list
+
+    def has_blackhole(self, asn, attacker_prefix, engine) -> bool:
+        as_obj = engine.as_dict[asn]
+        attacker_ann_from_relay_local_rib = as_obj._local_rib.get_ann(attacker_prefix)
+        if attacker_ann_from_relay_local_rib and attacker_ann_from_relay_local_rib.blackhole:
+            return True
+        return False
+
+    def gather_blackhole_information(self, attacker_prefix, engine):
+        for avoid_list_set in self._recommendations.values():
+            for asn in avoid_list_set:
+                if self.has_blackhole(asn, attacker_prefix, engine):
+                    self.adopters_with_blackhole[attacker_prefix].add(asn)
 
     def reset(self):
         del self._raw_data
