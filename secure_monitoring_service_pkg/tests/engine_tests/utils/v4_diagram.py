@@ -96,7 +96,7 @@ class V4Diagram(Diagram):
 
     def _get_html(self, as_obj, engine, scenario):
         asn_str = str(as_obj.asn)
-        if isinstance(scenario, SubprefixAutoImmuneScenario):
+        if hasattr(scenario, "relay_asns") and scenario.relay_asns:
             if scenario.relay_asns and as_obj.asn in scenario.relay_asns:
                 asn_str = "&#9937; " + asn_str + " &#9937;"
         if as_obj.asn in scenario.victim_asns:
