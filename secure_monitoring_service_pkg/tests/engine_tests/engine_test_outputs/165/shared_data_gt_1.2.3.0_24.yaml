@@ -12,9 +12,9 @@ etc_ROV V4 Lite K1: 4
 etc_ROV V4 Lite K1_VICTIM_SUCCESS_1.2.3.0/24: 4
 etc_ROV V4 Lite K1_VICTIM_SUCCESS_percent_1.2.3.0/24: 100.0
 relay_prefixes:
-  7786: 3.3.3.0/24
-  12008: 1.1.1.0/24
-  19905: 2.2.2.0/24
+  7786: 7.7.7.0/24
+  12008: 7.7.7.0/24
+  19905: 7.7.7.0/24
 relay_usage:
   12008: !!set
     4: null

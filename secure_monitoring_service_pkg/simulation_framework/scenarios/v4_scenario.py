@@ -22,6 +22,8 @@ CDN_RELAY_SETTING = "cdn"
 PEER_RELAY_SETTING = "peer"
 NO_RELAY_SETTING = "no_relay"
 
+RELAY_PREFIX = "7.7.7.0/24"
+
 ################################
 # Main Scenario Class
 ################################
@@ -211,25 +213,24 @@ class V4Scenario(Scenario):
         # Setup Relay Announcements
         if self.relay_asns:
             for i, relay_asn in enumerate(self.relay_asns):
-                relay_prefix = f"{i + 1}.{i + 1}.{i + 1}.0/24"
-                self.relay_prefixes[relay_asn] = relay_prefix
-                anns.append(self.AnnCls(prefix=relay_prefix,
+                self.relay_prefixes[relay_asn] = RELAY_PREFIX
+                anns.append(self.AnnCls(prefix=RELAY_PREFIX,
                                         as_path=(relay_asn,),
                                         timestamp=2,
                                         seed_asn=relay_asn,
                                         roa_valid_length=True,
                                         roa_origin=relay_asn,
                                         recv_relationship=Relationships.ORIGIN))
-                # Add Attacker announcements for relays
-                if self.attack_relays:
-                    for attacker_asn in self.attacker_asns:
-                        anns.append(self.AnnCls(prefix=relay_prefix,
-                                                as_path=(attacker_asn,),
-                                                timestamp=Timestamps.ATTACKER.value,
-                                                seed_asn=attacker_asn,
-                                                roa_valid_length=False,
-                                                roa_origin=roa_origin,
-                                                recv_relationship=Relationships.ORIGIN))
+            # Add Attacker announcements for relays
+            if self.attack_relays:
+                for attacker_asn in self.attacker_asns:
+                    anns.append(self.AnnCls(prefix=RELAY_PREFIX,
+                                            as_path=(attacker_asn,),
+                                            timestamp=Timestamps.ATTACKER.value,
+                                            seed_asn=attacker_asn,
+                                            roa_valid_length=False,
+                                            roa_origin=roa_origin,
+                                            recv_relationship=Relationships.ORIGIN))
         return anns
 
     def get_victim_asn(self, **kwargs):
