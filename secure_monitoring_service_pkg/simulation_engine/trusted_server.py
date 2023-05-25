@@ -2,6 +2,7 @@ from collections import defaultdict
 import copy
 import ipaddress
 from typing import Dict, Set, List, Tuple
+from collections import defaultdict
 
 from bgp_simulator_pkg import Announcement as Ann
 
@@ -30,7 +31,7 @@ class TrustedServer:
         # V4Scenatio apply_blackholes_from_avoid_list
         self.scenario_name = None
         self.prefix_provider_mapping = None  # Only in SubprefixAutoImmuneScenario
-        self.adopters_with_blackhole: Dict[str, Set[int]] = dict()  # per prefix, ASNs in the sets are adopters that have blackholes
+        self.adopters_with_blackhole: Dict[str, Set[int]] = defaultdict(set)  # per prefix, ASNs in the sets are adopters that have blackholes
 
     def rec_blackhole(self, subprefix: str, as_path: Tuple[int, ...]) -> bool:
         """Recommends a blackhole for a subprefix"""
