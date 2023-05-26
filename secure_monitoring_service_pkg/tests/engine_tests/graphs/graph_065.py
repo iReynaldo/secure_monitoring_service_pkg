@@ -10,13 +10,14 @@ from bgp_simulator_pkg.enums import ASNs
 
 class Graph065(GraphInfo):
     r"""
-    Image of scenario @ this link
+    Image of scenario @ this linkz
     TODO: add link here
     """
 
     def __init__(self):
         self.attacker_asn_set = {ASNs.ATTACKER.value}
         super(Graph065, self).__init__(
+            peer_links=set([PeerLink(12008, 19905), ]),
             customer_provider_links=set(
                 [
                     CPLink(provider_asn=12008, customer_asn=7786),

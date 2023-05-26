@@ -299,7 +299,8 @@
   - 5
   input_clique: false
   ixp: false
-  peers: !!python/tuple []
+  peers: !!python/tuple
+  - 6
   propagation_rank: 2
   providers: !!python/tuple []
 4: !yamlable/ROVSMSK1
@@ -487,7 +488,8 @@
   - 5
   input_clique: false
   ixp: false
-  peers: !!python/tuple []
+  peers: !!python/tuple
+  - 3
   propagation_rank: 2
   providers: !!python/tuple []
 666: !yamlable/BGPSimpleAS

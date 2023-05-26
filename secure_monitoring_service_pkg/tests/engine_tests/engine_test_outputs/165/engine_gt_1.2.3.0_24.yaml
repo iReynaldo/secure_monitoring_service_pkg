@@ -574,7 +574,8 @@
   - 5
   input_clique: false
   ixp: false
-  peers: !!python/tuple []
+  peers: !!python/tuple
+  - 19905
   propagation_rank: 2
   providers: !!python/tuple []
 19905: !yamlable/ROVSMSK1
@@ -622,6 +623,7 @@
   - 5
   input_clique: false
   ixp: false
-  peers: !!python/tuple []
+  peers: !!python/tuple
+  - 12008
   propagation_rank: 2
   providers: !!python/tuple []
