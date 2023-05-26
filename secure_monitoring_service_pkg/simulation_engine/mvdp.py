@@ -289,7 +289,7 @@ def get_avoid_list(reports_path_list, max_num_dishonest_nodes, specific_target_a
         reports_path_list)
     for target_asn in target_asn_set:
         # Optimization: Calculate mvdp only if it's not a leaf
-        if asn_seq_map[target_asn] not in nparray_of_leaf_vector_ids:
+        if target_asn in asn_seq_map and (asn_seq_map[target_asn] not in nparray_of_leaf_vector_ids):
             max_num_vdp = get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_num, target_asn,
                                       sim_logger.CONDUCTING_SYSTEM_TEST)
             if max_num_vdp > max_num_dishonest_nodes:

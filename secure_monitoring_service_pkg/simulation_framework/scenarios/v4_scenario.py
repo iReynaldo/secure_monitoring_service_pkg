@@ -207,7 +207,7 @@ class V4Scenario(Scenario):
                     victim_announcements.add(ann)
         return victim_announcements
 
-    def generate_relay_announcements(self):
+    def generate_relay_announcements(self, providers_dict=None):
         anns = list()
         roa_origin: int = next(iter(self.victim_asns))
         # Setup Relay Announcements
@@ -221,6 +221,8 @@ class V4Scenario(Scenario):
                                         roa_valid_length=True,
                                         roa_origin=relay_asn,
                                         recv_relationship=Relationships.ORIGIN))
+                if providers_dict:
+                    providers_dict[RELAY_PREFIX] = relay_asn  # This is not really needed for autoimmune attack
             # Add Attacker announcements for relays
             if self.attack_relays:
                 for attacker_asn in self.attacker_asns:

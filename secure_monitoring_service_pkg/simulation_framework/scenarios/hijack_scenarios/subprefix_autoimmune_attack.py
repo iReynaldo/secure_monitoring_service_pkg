@@ -77,7 +77,7 @@ class SubprefixAutoImmuneScenario(V4Scenario):
         # If we assume relays are not reachable, then create their announcements
         if not self.assume_relays_are_reachable:
             # Setup Relay Announcements
-            anns.extend(self.generate_relay_announcements())
+            anns.extend(self.generate_relay_announcements(self.providers))
 
         return tuple(anns)
 
