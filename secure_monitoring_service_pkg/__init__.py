@@ -6,6 +6,7 @@ __all__ = [
     "V4SubprefixHijackScenario",
     "SubprefixAutoImmuneScenario",
     "ArtemisSubprefixHijackScenario",
+    "V4SuperprefixPrefixHijack",
     "V4Simulation",
     "V4Subgraph",
     "CDN",

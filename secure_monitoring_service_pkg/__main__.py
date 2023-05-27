@@ -20,6 +20,7 @@ from secure_monitoring_service_pkg import ROVSMSK10
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
 from secure_monitoring_service_pkg import ArtemisSubprefixHijackScenario
+from secure_monitoring_service_pkg import V4SuperprefixPrefixHijack
 from secure_monitoring_service_pkg import CDN
 from secure_monitoring_service_pkg import Peer
 
@@ -40,6 +41,7 @@ adoption_settings = {
 AUTOIMMUNE = "SubprefixAutoImmuneScenario"
 SUBPREFIX_HIJACK = "V4SubprefixHijackScenario"
 ARTEMIS_SUBPREFIX_HIJACK = "ArtemisSubprefixHijackScenario"
+SUPERPREFIX_PLUS_PREFIX_HIJACK = "V4SuperprefixPrefixHijack"
 
 ALL_PERCENTAGES = [0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99]
 
@@ -328,6 +330,16 @@ def main():
             V4Simulation(scenarios=[ArtemisSubprefixHijackScenario(AdoptASCls=Cls,
                                                                    AnnCls=ROVPPAnn,
                                                                    **scenario_args)
+                                    for Cls in adoption_classes
+                                    ],
+                         output_path=BASE_PATH / other_args["output_filename"],
+                         **simulation_args),
+        ]
+    elif other_args["scenario"] == SUPERPREFIX_PLUS_PREFIX_HIJACK:
+        sims = [
+            V4Simulation(scenarios=[V4SuperprefixPrefixHijack(AdoptASCls=Cls,
+                                                              AnnCls=ROVPPAnn,
+                                                              **scenario_args)
                                     for Cls in adoption_classes
                                     ],
                          output_path=BASE_PATH / other_args["output_filename"],

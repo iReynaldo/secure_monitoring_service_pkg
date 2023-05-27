@@ -3,6 +3,7 @@ from .subgraphs import *
 from .scenarios import V4SubprefixHijackScenario
 from .scenarios import SubprefixAutoImmuneScenario
 from .scenarios import ArtemisSubprefixHijackScenario
+from .scenarios import V4SuperprefixPrefixHijack
 from .scenarios import CDN
 from .scenarios import Peer
 from .v4_simulation import V4Simulation
@@ -13,6 +14,7 @@ __all__ = [
     "V4SubprefixHijackScenario",
     "SubprefixAutoImmuneScenario",
     "ArtemisSubprefixHijackScenario",
+    "V4SuperprefixPrefixHijack",
     "V4Simulation",
     "V4Subgraph",
     "V4Scenario",
