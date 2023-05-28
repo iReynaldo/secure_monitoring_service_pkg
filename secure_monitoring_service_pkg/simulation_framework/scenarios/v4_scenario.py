@@ -216,7 +216,7 @@ class V4Scenario(Scenario):
                 self.relay_prefixes[relay_asn] = RELAY_PREFIX
                 anns.append(self.AnnCls(prefix=RELAY_PREFIX,
                                         as_path=(relay_asn,),
-                                        timestamp=2,
+                                        timestamp=Timestamps.VICTIM.value,
                                         seed_asn=relay_asn,
                                         roa_valid_length=True,
                                         roa_origin=relay_asn,
