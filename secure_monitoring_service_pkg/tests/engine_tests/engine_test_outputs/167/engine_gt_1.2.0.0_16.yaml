@@ -30,7 +30,7 @@
       - 6
       - 777
       attacker_on_route: false
-      blackhole: true
+      blackhole: false
       holes: !!python/tuple []
       prefix: 1.2.0.0/16
       preventive: false
@@ -38,10 +38,10 @@
         name: PROVIDERS
         value: 1
       roa_origin: 777
-      roa_valid_length: false
+      roa_valid_length: true
       seed_asn: null
       timestamp: 0
-      traceback_end: true
+      traceback_end: false
       withdraw: false
     7.7.7.0/24: !yamlable/ROVPPAnn
       as_path: !!python/tuple
@@ -100,7 +100,7 @@
       - 6
       - 777
       attacker_on_route: false
-      blackhole: true
+      blackhole: false
       holes: !!python/tuple []
       prefix: 1.2.0.0/16
       preventive: false
@@ -108,10 +108,10 @@
         name: PROVIDERS
         value: 1
       roa_origin: 777
-      roa_valid_length: false
+      roa_valid_length: true
       seed_asn: null
       timestamp: 0
-      traceback_end: true
+      traceback_end: false
       withdraw: false
     7.7.7.0/24: !yamlable/ROVPPAnn
       as_path: !!python/tuple
@@ -168,7 +168,7 @@
       - 6
       - 777
       attacker_on_route: false
-      blackhole: true
+      blackhole: false
       holes: !!python/tuple []
       prefix: 1.2.0.0/16
       preventive: false
@@ -176,10 +176,10 @@
         name: PEERS
         value: 2
       roa_origin: 777
-      roa_valid_length: false
+      roa_valid_length: true
       seed_asn: null
       timestamp: 0
-      traceback_end: true
+      traceback_end: false
       withdraw: false
     7.7.7.0/24: !yamlable/ROVPPAnn
       as_path: !!python/tuple
@@ -314,7 +314,7 @@
         name: CUSTOMERS
         value: 3
       roa_origin: 777
-      roa_valid_length: false
+      roa_valid_length: true
       seed_asn: null
       timestamp: 1
       traceback_end: true
@@ -461,7 +461,7 @@
       - 6
       - 777
       attacker_on_route: false
-      blackhole: true
+      blackhole: false
       holes: !!python/tuple []
       prefix: 1.2.0.0/16
       preventive: false
@@ -469,10 +469,10 @@
         name: CUSTOMERS
         value: 3
       roa_origin: 777
-      roa_valid_length: false
+      roa_valid_length: true
       seed_asn: null
       timestamp: 0
-      traceback_end: true
+      traceback_end: false
       withdraw: false
     7.7.7.0/24: !yamlable/ROVPPAnn
       as_path: !!python/tuple

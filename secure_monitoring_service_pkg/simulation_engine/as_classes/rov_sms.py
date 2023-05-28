@@ -37,50 +37,82 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                 self.trusted_server.receive_report(report)
         return super(ROVSMS, self).receive_ann(ann, *args, **kwargs)
 
-    # TODO: There's some strange behavior for the case of a prefix hijack.
-    #  It looks like it's preferring to keep the attacker's announcement, even when the
-    #  path to the origin is shorter .... the problem has been tracked down to this funciton
     def _force_add_blackholes_from_avoid_list(self, ordered_prefix_subprefix_dict):
         holes = []
-
-        logger.debug("Entered _force_add_blackholes_from_avoid_list")
-        # print(self.asn)
-        for prefix, ann in self._local_rib.prefix_anns():
-            # print(f"{prefix}: {ann}")
-            ann_holes = []
-            # For each hole in ann: (holes are invalid subprefixes)
-            for subprefix in self.trusted_server._recommendations.keys():
-                subprefix_network = ipaddress.ip_network(subprefix)
-                ann_prefix_network = ipaddress.ip_network(ann.prefix)
-                # print(self.asn)
-                if subprefix_network.subnet_of(ann_prefix_network) and \
-                        self.trusted_server.rec_blackhole(subprefix, ann.as_path):
-                    # # Check if prefix hijack / subprefix hijack
-                    # if ann_prefix_network.subnet_of(subprefix_network):
-                    #     # In this case only add the blackhole if path to attacker is shorter
-                    #     if len(ann.as_path) < subprefix
-
-                    does_not_have_subprefix = True
-                    # Check if AS already has blackhole
-                    for _, rib_entry in self._local_rib.prefix_anns():
-                        if rib_entry.prefix == subprefix and \
-                                (rib_entry.blackhole or rib_entry.traceback_end or not rib_entry.roa_valid_length):
-                            does_not_have_subprefix = False
-
-                    if does_not_have_subprefix:
-                        # We need to create our own subprefix ann
-                        # Since we may not have actually received the hijack
-                        # Since this policy is for hidden hijacks
+        for reported_prefix in self.trusted_server._recommendations:
+            reported_prefix_network = ipaddress.ip_network(reported_prefix)
+            for prefix, ann in self._local_rib.prefix_anns():
+                ann_prefix_network = ipaddress.ip_network(prefix)
+                # Check if ann is
+                # - The reported prefix is a subprefix of it
+                # - Valid (i.e. not invalid and not unknown)
+                # - The AS path of has a member on the avoid list
+                if reported_prefix_network.subnet_of(ann_prefix_network) and \
+                    (not ann.invalid_by_roa and not (ann.roa_origin is None)) and \
+                    self.trusted_server.rec_blackhole(reported_prefix, ann.as_path):
+                    # Create Blackhole
+                    # We need to create our own subprefix ann
+                    # Since we may not have actually received the hijack
+                    # Since this policy is for hidden hijacks
+                    reported_prefix_ann = self._local_rib.get_ann(reported_prefix)
+                    if reported_prefix_ann:
+                        blackhole_ann = reported_prefix_ann.copy()
+                    else:
                         blackhole_ann = ann.copy()
-                        blackhole_ann.prefix = subprefix
-                        blackhole_ann.roa_valid_length = False
-                        blackhole_ann.blackhole = True
-                        blackhole_ann.traceback_end = True
-                        holes.append(blackhole_ann)
+                    blackhole_ann.prefix = reported_prefix
+                    blackhole_ann.roa_valid_length = False
+                    blackhole_ann.blackhole = True
+                    blackhole_ann.traceback_end = True
+                    holes.append(blackhole_ann)
 
         for hole in holes:
-            # Add blackhole ann to localRIB
-            self._local_rib.add_ann(hole)
+                # Add blackhole ann to localRIB
+                self._local_rib.add_ann(hole)
+
+    # # TODO: There's some strange behavior for the case of a prefix hijack.
+    # #  It looks like it's preferring to keep the attacker's announcement, even when the
+    # #  path to the origin is shorter .... the problem has been tracked down to this funciton
+    # def _force_add_blackholes_from_avoid_list(self, ordered_prefix_subprefix_dict):
+    #     holes = []
+    #
+    #     logger.debug("Entered _force_add_blackholes_from_avoid_list")
+    #     print(self.asn)
+    #     for prefix, ann in self._local_rib.prefix_anns():
+    #         print(f"{prefix}: {ann}")
+    #         ann_holes = []
+    #         # For each hole in ann: (holes are invalid subprefixes)
+    #         for subprefix in self.trusted_server._recommendations.keys():
+    #             subprefix_network = ipaddress.ip_network(subprefix)
+    #             ann_prefix_network = ipaddress.ip_network(ann.prefix)
+    #             print(self.asn)
+    #             if subprefix_network.subnet_of(ann_prefix_network) and \
+    #                     self.trusted_server.rec_blackhole(subprefix, ann.as_path):
+    #                 # # Check if prefix hijack / subprefix hijack
+    #                 # if ann_prefix_network.subnet_of(subprefix_network):
+    #                 #     # In this case only add the blackhole if path to attacker is shorter
+    #                 #     if len(ann.as_path) < subprefix
+    #
+    #                 does_not_have_subprefix = True
+    #                 # Check if AS already has blackhole
+    #                 for _, rib_entry in self._local_rib.prefix_anns():
+    #                     if rib_entry.prefix == subprefix and \
+    #                             (rib_entry.blackhole or rib_entry.traceback_end or not rib_entry.roa_valid_length):
+    #                         does_not_have_subprefix = False
+    #
+    #                 if does_not_have_subprefix:
+    #                     # We need to create our own subprefix ann
+    #                     # Since we may not have actually received the hijack
+    #                     # Since this policy is for hidden hijacks
+    #                     blackhole_ann = ann.copy()
+    #                     blackhole_ann.prefix = subprefix
+    #                     blackhole_ann.roa_valid_length = False
+    #                     blackhole_ann.blackhole = True
+    #                     blackhole_ann.traceback_end = True
+    #                     holes.append(blackhole_ann)
+    #
+    #     for hole in holes:
+    #         # Add blackhole ann to localRIB
+    #         self._local_rib.add_ann(hole)
 
     def use_relay(self, relay_asns, relay_prefix_dict, assume_relays_are_reachable):
         """return the relay that it would use"""
