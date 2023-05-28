@@ -37,38 +37,35 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                 self.trusted_server.receive_report(report)
         return super(ROVSMS, self).receive_ann(ann, *args, **kwargs)
 
+    # TODO: There's some strange behavior for the case of a prefix hijack.
+    #  It looks like it's preferring to keep the attacker's announcement, even when the
+    #  path to the origin is shorter .... the problem has been tracked down to this funciton
     def _force_add_blackholes_from_avoid_list(self, ordered_prefix_subprefix_dict):
         holes = []
 
         logger.debug("Entered _force_add_blackholes_from_avoid_list")
-        for _, ann in self._local_rib.prefix_anns():
+        # print(self.asn)
+        for prefix, ann in self._local_rib.prefix_anns():
+            # print(f"{prefix}: {ann}")
             ann_holes = []
             # For each hole in ann: (holes are invalid subprefixes)
             for subprefix in self.trusted_server._recommendations.keys():
-                if ipaddress.ip_network(subprefix).subnet_of(ipaddress.ip_network(ann.prefix)) and \
+                subprefix_network = ipaddress.ip_network(subprefix)
+                ann_prefix_network = ipaddress.ip_network(ann.prefix)
+                # print(self.asn)
+                if subprefix_network.subnet_of(ann_prefix_network) and \
                         self.trusted_server.rec_blackhole(subprefix, ann.as_path):
+                    # # Check if prefix hijack / subprefix hijack
+                    # if ann_prefix_network.subnet_of(subprefix_network):
+                    #     # In this case only add the blackhole if path to attacker is shorter
+                    #     if len(ann.as_path) < subprefix
+
                     does_not_have_subprefix = True
                     # Check if AS already has blackhole
                     for _, rib_entry in self._local_rib.prefix_anns():
-                        if rib_entry.prefix == subprefix:
-                            logger.debug(f"ordered_prefix_subprefix_dict = {ordered_prefix_subprefix_dict}")
-                            logger.debug(f"Found subprefix {subprefix} in RIB of {self.asn}")
+                        if rib_entry.prefix == subprefix and \
+                                (rib_entry.blackhole or rib_entry.traceback_end or not rib_entry.roa_valid_length):
                             does_not_have_subprefix = False
-
-                            # Set the blackhole attributes in case they're not set for some reason
-                            # TODO: Trackdown the reason this sometimes happens ...
-                            #   to bebug this issue, you'll need to comment out the following lines
-                            # -------------------------------------------------------------------------------
-                            if rib_entry.roa_valid_length:
-                                rib_entry.roa_valid_length = False
-                            if not rib_entry.blackhole:
-                                rib_entry.blackhole = True
-                            if not rib_entry.traceback_end:
-                                rib_entry.traceback_end = True
-                            # -------------------------------------------------------------------------------
-                            # These should be True
-                            assert rib_entry.blackhole == True, "The found subprefix does not have blackhole set to true"
-                            assert rib_entry.traceback_end == True, "The found subprefix does not have traceback_end set to true"
 
                     if does_not_have_subprefix:
                         # We need to create our own subprefix ann
