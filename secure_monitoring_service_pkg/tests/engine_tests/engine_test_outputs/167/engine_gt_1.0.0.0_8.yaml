@@ -58,7 +58,7 @@
       roa_origin: 2
       roa_valid_length: true
       seed_asn: null
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -127,7 +127,7 @@
       roa_origin: 2
       roa_valid_length: true
       seed_asn: 2
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -195,7 +195,7 @@
       roa_origin: 3
       roa_valid_length: true
       seed_asn: 3
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -334,7 +334,7 @@
       roa_origin: 3
       roa_valid_length: true
       seed_asn: null
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -401,7 +401,7 @@
       roa_origin: 3
       roa_valid_length: true
       seed_asn: null
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -488,7 +488,7 @@
       roa_origin: 6
       roa_valid_length: true
       seed_asn: 6
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -555,7 +555,7 @@
       roa_origin: 3
       roa_valid_length: true
       seed_asn: null
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -622,7 +622,7 @@
       roa_origin: 6
       roa_valid_length: true
       seed_asn: null
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}

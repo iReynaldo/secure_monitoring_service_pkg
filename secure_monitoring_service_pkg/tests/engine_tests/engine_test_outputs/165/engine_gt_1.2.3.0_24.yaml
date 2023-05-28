@@ -58,7 +58,7 @@
       roa_origin: 7786
       roa_valid_length: true
       seed_asn: null
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -128,7 +128,7 @@
       roa_origin: 12008
       roa_valid_length: true
       seed_asn: null
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -195,7 +195,7 @@
       roa_origin: 12008
       roa_valid_length: true
       seed_asn: null
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -265,7 +265,7 @@
       roa_origin: 12008
       roa_valid_length: true
       seed_asn: null
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -332,7 +332,7 @@
       roa_origin: 19905
       roa_valid_length: true
       seed_asn: null
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -402,7 +402,7 @@
       roa_origin: 7786
       roa_valid_length: true
       seed_asn: 7786
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -533,7 +533,7 @@
           roa_origin: 7786
           roa_valid_length: true
           seed_asn: null
-          timestamp: 2
+          timestamp: 0
           traceback_end: false
           withdraw: false
         : !!python/tuple []
@@ -562,7 +562,7 @@
       roa_origin: 12008
       roa_valid_length: true
       seed_asn: 12008
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
@@ -612,7 +612,7 @@
       roa_origin: 19905
       roa_valid_length: true
       seed_asn: 19905
-      timestamp: 2
+      timestamp: 0
       traceback_end: false
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
