@@ -124,6 +124,26 @@
       timestamp: 1
       traceback_end: false
       withdraw: false
+    1.2.0.0/16: !yamlable/ROVPPAnn
+      as_path: !!python/tuple
+      - 3
+      - 7
+      - 2
+      - 666
+      attacker_on_route: false
+      blackhole: true
+      holes: !!python/tuple []
+      prefix: 1.2.0.0/16
+      preventive: false
+      recv_relationship: !simulator_codec/Relationships
+        name: CUSTOMERS
+        value: 3
+      roa_origin: null
+      roa_valid_length: false
+      seed_asn: null
+      timestamp: 1
+      traceback_end: true
+      withdraw: false
   _recv_q: !yamlable/RecvQueue {}
   asn: 3
   customer_cone_size: 11
@@ -244,7 +264,7 @@
         name: PROVIDERS
         value: 1
       roa_origin: 777
-      roa_valid_length: true
+      roa_valid_length: false
       seed_asn: null
       timestamp: 1
       traceback_end: true
@@ -380,6 +400,27 @@
       seed_asn: null
       timestamp: 1
       traceback_end: false
+      withdraw: false
+    1.2.0.0/16: !yamlable/ROVPPAnn
+      as_path: !!python/tuple
+      - 8
+      - 6
+      - 7
+      - 2
+      - 666
+      attacker_on_route: false
+      blackhole: true
+      holes: !!python/tuple []
+      prefix: 1.2.0.0/16
+      preventive: false
+      recv_relationship: !simulator_codec/Relationships
+        name: PROVIDERS
+        value: 1
+      roa_origin: null
+      roa_valid_length: false
+      seed_asn: null
+      timestamp: 1
+      traceback_end: true
       withdraw: false
   _recv_q: !yamlable/RecvQueue {}
   asn: 8
@@ -535,7 +576,7 @@
         name: PROVIDERS
         value: 1
       roa_origin: 777
-      roa_valid_length: true
+      roa_valid_length: false
       seed_asn: null
       timestamp: 1
       traceback_end: true
@@ -717,7 +758,7 @@
         name: PROVIDERS
         value: 1
       roa_origin: 777
-      roa_valid_length: true
+      roa_valid_length: false
       seed_asn: null
       timestamp: 1
       traceback_end: true
