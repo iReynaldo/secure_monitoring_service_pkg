@@ -21,8 +21,8 @@ num_ases_should_not_be_on_avoid_list: 0
 num_of_victim_providers: 1
 num_victim_providers_on_avoid_list: 0
 relay_prefixes:
-  12: 7.7.7.0/24
-  13: 7.7.7.0/24
+  12: 1.1.1.0/24
+  13: 2.2.2.0/24
 relay_usage:
   13: !!set
     3: null

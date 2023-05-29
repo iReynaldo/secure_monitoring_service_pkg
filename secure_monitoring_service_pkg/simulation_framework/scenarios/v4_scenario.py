@@ -207,14 +207,24 @@ class V4Scenario(Scenario):
                     victim_announcements.add(ann)
         return victim_announcements
 
+    def create_attacker_relay_announcement(self, prefix, seed_asn, roa_origin):
+        return self.AnnCls(prefix=prefix,
+                           as_path=(seed_asn,),
+                           timestamp=Timestamps.ATTACKER.value,
+                           seed_asn=seed_asn,
+                           roa_valid_length=True,
+                           roa_origin=roa_origin,
+                           recv_relationship=Relationships.ORIGIN)
+
     def generate_relay_announcements(self, providers_dict=None):
         anns = list()
         roa_origin: int = next(iter(self.victim_asns))
         # Setup Relay Announcements
         if self.relay_asns:
             for i, relay_asn in enumerate(self.relay_asns):
-                self.relay_prefixes[relay_asn] = RELAY_PREFIX
-                anns.append(self.AnnCls(prefix=RELAY_PREFIX,
+                relay_prefix = RELAY_PREFIX if self.relay_setting == CDN_RELAY_SETTING else f"{i + 1}.{i + 1}.{i + 1}.0/24"
+                self.relay_prefixes[relay_asn] = relay_prefix
+                anns.append(self.AnnCls(prefix=relay_prefix,
                                         as_path=(relay_asn,),
                                         timestamp=Timestamps.VICTIM.value,
                                         seed_asn=relay_asn,
@@ -222,17 +232,16 @@ class V4Scenario(Scenario):
                                         roa_origin=relay_asn,
                                         recv_relationship=Relationships.ORIGIN))
                 if providers_dict:
-                    providers_dict[RELAY_PREFIX] = relay_asn  # This is not really needed for autoimmune attack
+                    providers_dict[relay_prefix] = relay_asn  # This is not really needed for autoimmune attack
             # Add Attacker announcements for relays
             if self.attack_relays:
-                for attacker_asn in self.attacker_asns:
-                    anns.append(self.AnnCls(prefix=RELAY_PREFIX,
-                                            as_path=(attacker_asn,),
-                                            timestamp=Timestamps.ATTACKER.value,
-                                            seed_asn=attacker_asn,
-                                            roa_valid_length=True,
-                                            roa_origin=roa_origin,
-                                            recv_relationship=Relationships.ORIGIN))
+                if self.relay_setting == CDN_RELAY_SETTING:
+                    for attacker_asn in self.attacker_asns:
+                        anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
+                else:
+                    for attacker_asn in self.attacker_asns:
+                        for relay_prefix in set(self.relay_prefixes.values()):  # Converted to set to remove duplicates
+                            anns.append(self.create_attacker_relay_announcement(relay_prefix, attacker_asn, roa_origin))
         return anns
 
     def get_victim_asn(self, **kwargs):
