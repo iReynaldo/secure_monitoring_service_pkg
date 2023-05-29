@@ -48,7 +48,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                 # - Valid (i.e. not invalid and not unknown)
                 # - The AS path of has a member on the avoid list
                 if reported_prefix_network.subnet_of(ann_prefix_network) and \
-                    (not ann.invalid_by_roa and not (ann.roa_origin is None)) and \
+                    ann.valid_by_roa and \
                     self.trusted_server.rec_blackhole(reported_prefix, ann.as_path):
                     # Create Blackhole
                     # We need to create our own subprefix ann
