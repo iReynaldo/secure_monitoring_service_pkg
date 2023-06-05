@@ -250,9 +250,10 @@ def parse_args():
                         nargs='?',
                         default="V4SubprefixHijackScenario",
                         help='Attack Scenario',
-                        choices=['V4SubprefixHijackScenario',
-                                 'SubprefixAutoImmuneScenario',
-                                 'ArtemisSubprefixHijackScenario'])
+                        choices=[SUBPREFIX_HIJACK,
+                                 AUTOIMMUNE,
+                                 ARTEMIS_SUBPREFIX_HIJACK,
+                                 SUPERPREFIX_PLUS_PREFIX_HIJACK])
     parser.add_argument('--autoimmune_attack_type',
                         type=str,
                         nargs='?',
