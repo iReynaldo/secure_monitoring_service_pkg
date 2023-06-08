@@ -136,7 +136,7 @@ class V4Subgraph(Subgraph):
         """
 
         prefix_outcomes: Dict[str, Dict[AS, Outcomes]] = dict()
-        for attacker_ann in scenario.get_attacker_announcements():
+        for attacker_ann in scenario.get_attacker_announcements_for_origin():
             if not shared_data.get("set"):  # this gets set in __add_traceback_to_shared_data
                 if (scenario.relay_asns and attacker_ann.prefix not in scenario.relay_prefixes.values()) or \
                         (not scenario.relay_asns) or \
@@ -283,7 +283,7 @@ class V4Subgraph(Subgraph):
     def get_prefix_with_minimum_successful_connections(self, scenario, shared_data):
         min_prefix = ""
         min_percentage = sys.maxsize
-        for attacker_ann in scenario.get_attacker_announcements():
+        for attacker_ann in scenario.get_attacker_announcements_for_origin():
             if attacker_ann.prefix not in scenario.relay_prefixes.values():
                 # This string must match up to "_perc_" with the one in victim_success_all_subgraph.py
                 subgraph_key = f"all_{Outcomes.VICTIM_SUCCESS.name}_perc_{attacker_ann.prefix}"
