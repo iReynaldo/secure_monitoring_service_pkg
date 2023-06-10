@@ -137,41 +137,36 @@ class V4Subgraph(Subgraph):
 
         prefix_outcomes: Dict[str, Dict[AS, Outcomes]] = dict()
         for attacker_ann in scenario.get_attacker_announcements_for_origin():
-            if not shared_data.get("set"):  # this gets set in __add_traceback_to_shared_data
-                if (scenario.relay_asns and attacker_ann.prefix not in scenario.relay_prefixes.values()) or \
-                        (not scenario.relay_asns) or \
-                        isinstance(scenario, ArtemisSubprefixHijackScenario):
-                    # {as_obj: outcome}
-                    outcomes, traceback_asn_outcomes = \
-                        self._get_engine_outcomes(engine, scenario, attacker_ann)
-                    if scenario.relay_asns and (
-                            isinstance(scenario, SubprefixAutoImmuneScenario) or isinstance(scenario,
-                                                                                            V4SubprefixHijackScenario)):
-                        self._recalculate_outcomes_with_relays(scenario,
-                                                               engine,
-                                                               attacker_ann,
-                                                               outcomes,
-                                                               traceback_asn_outcomes,
-                                                               shared_data)
+            if not shared_data.get("set"):  # this gets set in __add_traceback_to_shared_data:
+                # {as_obj: outcome}
+                outcomes, traceback_asn_outcomes = \
+                    self._get_engine_outcomes(engine, scenario, attacker_ann)
+                if scenario.relay_asns and not isinstance(scenario, ArtemisSubprefixHijackScenario):
+                    self._recalculate_outcomes_with_relays(scenario,
+                                                           engine,
+                                                           attacker_ann,
+                                                           outcomes,
+                                                           traceback_asn_outcomes,
+                                                           shared_data)
 
-                    prefix_outcomes[attacker_ann.prefix] = outcomes
+                prefix_outcomes[attacker_ann.prefix] = outcomes
 
-                    # Verify the Avoid List
-                    if scenario.has_rovsms_ases:
-                        # Verify avoid list according to the scenario
-                        if isinstance(scenario, SubprefixAutoImmuneScenario):
-                            self.verify_avoid_list(engine,
-                                                   scenario,
-                                                   outcomes,
-                                                   shared_data,
-                                                   traceback_asn_outcomes,
-                                                   trigger_assert=False)
-                        elif isinstance(scenario, V4SubprefixHijackScenario):
-                            self.verify_avoid_list(engine,
-                                                   scenario,
-                                                   outcomes,
-                                                   shared_data,
-                                                   traceback_asn_outcomes)
+                # Verify the Avoid List
+                if scenario.has_rovsms_ases:
+                    # Verify avoid list according to the scenario
+                    if isinstance(scenario, SubprefixAutoImmuneScenario):
+                        self.verify_avoid_list(engine,
+                                               scenario,
+                                               outcomes,
+                                               shared_data,
+                                               traceback_asn_outcomes,
+                                               trigger_assert=False)
+                    elif isinstance(scenario, V4SubprefixHijackScenario):
+                        self.verify_avoid_list(engine,
+                                               scenario,
+                                               outcomes,
+                                               shared_data,
+                                               traceback_asn_outcomes)
         # Aggregate Outcomes
         self._add_traceback_to_shared_data(shared_data,
                                            engine,
