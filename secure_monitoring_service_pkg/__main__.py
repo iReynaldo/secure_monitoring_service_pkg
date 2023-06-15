@@ -112,6 +112,7 @@ def process_simulation_args(args):
         "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
         "parse_cpus": args.cpus,
         "python_hash_seed": args.python_hash_seed,
+        "caida_topology_date": args.caida_topology_date,
         "caida_kwargs": {"csv_path": Path("./aux_files/rov_adoption_real.csv")} if rov_setting else {}
     }
 
@@ -192,6 +193,11 @@ def parse_args():
                         help='ROV adoption setting. If given, '
                              'ROV ASes will be added to simulation.',
                         choices=['none', 'real'])
+    parser.add_argument('--caida_topology_date',
+                        type=str,
+                        nargs='?',
+                        default='2023.05.07',
+                        help='Date for caida topology data formatted as "yyyy.mm.dd"')
 
     # Scenario Args
     parser.add_argument('--num_attackers',
@@ -350,6 +356,7 @@ def main():
         raise f"Unknown scenario specified: {other_args['scenario']}"
 
     # collect experiment settings
+    other_args['experiment_start_time'] = datetime.now().isoformat()
     experiment_settings_to_save = process_experiment_settings(simulation_args, scenario_args, other_args)
 
     # Run Simulations
