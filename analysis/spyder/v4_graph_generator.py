@@ -13,37 +13,64 @@ from copy import deepcopy
 
 from statistics import mean, stdev
 
-# Colors and styles should be consistent!
-
-bgpsec_color = 'C1'  # purple
-bgpisec_color = 'C2'  # green
-path_end_color = 'C0'  # blue
+# Colors
 baseline_color = 'C7'  # grey
 
 one_attacker_color = 'C0'
 two_attacker_color = 'C1'
 five_attacker_color = 'C2'
 
-default_style = 'solid'
-akamai_style = 'solid'
-cloudflare_style = 'dotted'
+rov_color = 'C7'
+rovpp_v1_lite_color = 'C3'
+k2_color = 'C0'
+k5_color = 'C1'
+k10_color = 'C2'
+
+akamai_color = 'C0'
+cloudflare_color  = 'C4'
+verisign_color = 'C4'
+incapsula_color  = 'C9'
+neustar_color  =  'C4'
+rov_color  =  'C5'
+five_color  =  'C8'
+ten_color  =  'C8'
+twenty_color  =  'C8'
+
+
+# Line Styles
+solid_style = 'solid'
+dotted_style = 'dotted'
+dashed_style = 'dashed'
+dashdot_style = 'dashdot'
+loosely_dotted_style = (0, (1, 10))  # Loosely dotted
+
+
+default_style = 'dashed'
+akamai_style = 'dashed'
+cloudflare_style = 'dashed'
 verisign_style = 'dashed'
-incapsula_style = 'dashdot'
+incapsula_style = 'dashed'
 neustar_style = (0, (1, 10))  # Loosely dotted
 
+# Markers
 default_marker = '.'
-overhead_marker = 'P'
-aggressive_marker = '*'
-baseline_marker = ''
+plus_marker = 'P'
+pentagon_marker = 'p'
+star_marker = '*'
+triangle_marker = '^'
+square_marker = 's'
+x_marker = 'x'
+thin_diamond = 'd'
+x_filled_marker = 'X'
 
 
 linemap = {
-    'BGP': {'color': baseline_color, 'marker': baseline_marker, 'linestyle': default_style},
-    'BGP+100% ROV': {'color': baseline_color, 'marker': '', 'linestyle': default_style},
+    'BGP': {'color': baseline_color, 'marker': default_marker, 'linestyle': default_style},
+    'ROV adopting': {'color': rov_color, 'marker': default_marker, 'linestyle': default_style},
+      # ARTEMIS
     'ARTEMIS Verisign - 1 Attackers': {'color': one_attacker_color, 'marker': default_marker, 'linestyle': verisign_style},
     'ARTEMIS Verisign - 2 Attackers': {'color': two_attacker_color, 'marker': default_marker, 'linestyle': verisign_style},
     'ARTEMIS Verisign - 5 Attackers': {'color': five_attacker_color, 'marker': default_marker, 'linestyle': verisign_style},
-    # the transitive dropping part is incoherent with the rest
     'ARTEMIS Akamai - 1 Attackers': {'color': one_attacker_color, 'marker': default_marker, 'linestyle': akamai_style},
     'ARTEMIS Akamai - 2 Attackers': {'color': two_attacker_color, 'marker': default_marker, 'linestyle': akamai_style},
     'ARTEMIS Akamai - 5 Attackers': {'color': five_attacker_color, 'marker': default_marker, 'linestyle': akamai_style},
@@ -56,6 +83,58 @@ linemap = {
     'ARTEMIS Neustar - 1 Attackers': {'color': one_attacker_color, 'marker': default_marker, 'linestyle': neustar_style},
     'ARTEMIS Neustar - 2 Attackers': {'color': two_attacker_color, 'marker': default_marker, 'linestyle': neustar_style},
     'ARTEMIS Neustar - 5 Attackers': {'color': five_attacker_color, 'marker': default_marker, 'linestyle': neustar_style},
+    # Pheme
+    'Pheme adopting': {'color': k2_color, 'marker': triangle_marker, 'linestyle': dotted_style},
+    'Pheme k=2 adopting': {'color': k2_color, 'marker': triangle_marker, 'linestyle': dotted_style},
+    'Pheme k=5 adopting': {'color': k5_color, 'marker': star_marker, 'linestyle': dashed_style},
+    'Pheme k=10 adopting': {'color': k10_color, 'marker': pentagon_marker, 'linestyle': dashdot_style},
+        
+    'Pheme Verisign - k=2 adopting': {'color': verisign_color, 'marker': plus_marker, 'linestyle': verisign_style},
+    'Pheme Verisign - k=5 adopting': {'color': verisign_color, 'marker': plus_marker, 'linestyle': verisign_style},
+    'Pheme Verisign - k=10 adopting': {'color': verisign_color, 'marker': plus_marker, 'linestyle': verisign_style},
+    
+    'Pheme Akamai - k=2 adopting': {'color': akamai_color, 'marker': default_marker, 'linestyle': akamai_style},
+    'Pheme Akamai - k=5 adopting': {'color': akamai_color, 'marker': default_marker, 'linestyle': akamai_style},
+    'Pheme Akamai - k=10 adopting': {'color': akamai_color, 'marker': default_marker, 'linestyle': akamai_style},
+    
+    'Pheme Cloudflare - k=2 adopting': {'color': cloudflare_color, 'marker': star_marker, 'linestyle': cloudflare_style},
+    'Pheme Cloudflare - k=5 adopting': {'color': cloudflare_color, 'marker': star_marker, 'linestyle': cloudflare_style},
+    'Pheme Cloudflare - k=10 adopting': {'color': cloudflare_color, 'marker': star_marker, 'linestyle': cloudflare_style},
+    
+    'Pheme Incapsula - k=2 adopting': {'color': incapsula_color, 'marker': default_marker, 'linestyle': incapsula_style},
+    'Pheme Incapsula - k=5 adopting': {'color': incapsula_color, 'marker': default_marker, 'linestyle': incapsula_style},
+    'Pheme Incapsula - k=10 adopting': {'color': incapsula_color, 'marker': default_marker, 'linestyle': incapsula_style},
+    
+    'Pheme Neustar - k=2 adopting': {'color': neustar_color, 'marker': default_marker, 'linestyle': neustar_style},
+    'Pheme Neustar - k=5 adopting': {'color': neustar_color, 'marker': default_marker, 'linestyle': neustar_style},
+    'Pheme Neustar - k=10 adopting': {'color': neustar_color, 'marker': default_marker, 'linestyle': neustar_style},
+    
+    'Pheme Peer 5 - k=2 adopting': {'color': five_color, 'marker': square_marker, 'linestyle': dotted_style},
+    'Pheme Peer 5 - k=5 adopting': {'color': five_color, 'marker': square_marker, 'linestyle': dotted_style},
+    'Pheme Peer 5 - k=10 adopting': {'color': five_color, 'marker': square_marker, 'linestyle': dotted_style},
+    
+    'Pheme Peer 10 - k=2 adopting': {'color': ten_color, 'marker': thin_diamond, 'linestyle': dotted_style},
+    'Pheme Peer 10 - k=5 adopting': {'color': ten_color, 'marker': thin_diamond, 'linestyle': dotted_style},
+    'Pheme Peer 10 - k=10 adopting': {'color': ten_color, 'marker': thin_diamond, 'linestyle': dotted_style},
+    
+    'Pheme Peer 20 - k=2 adopting': {'color': twenty_color, 'marker': triangle_marker, 'linestyle': dotted_style},
+    'Pheme Peer 20 - k=5 adopting': {'color': twenty_color, 'marker': triangle_marker, 'linestyle': dotted_style},
+    'Pheme Peer 20 - k=10 adopting': {'color': twenty_color, 'marker': triangle_marker, 'linestyle': dotted_style},    
+    
+    # ROV++
+    'ROV++ V1 Lite adopting': {'color': rovpp_v1_lite_color, 'marker': x_marker, 'linestyle': loosely_dotted_style},
+}
+
+linemap_2 = {
+        
+    'Pheme Verisign - k=2 adopting': {'color': 'C0', 'marker': plus_marker, 'linestyle': verisign_style},
+    'Pheme Verisign - k=5 adopting': {'color': 'C1', 'marker': plus_marker, 'linestyle': verisign_style},
+    'Pheme Verisign - k=10 adopting': {'color': 'C2', 'marker': plus_marker, 'linestyle': verisign_style},
+    
+    'Pheme Peer 5 - k=2 adopting': {'color': 'C0', 'marker': pentagon_marker, 'linestyle': dotted_style},
+    'Pheme Peer 5 - k=5 adopting': {'color': 'C1', 'marker': pentagon_marker, 'linestyle': dotted_style},
+    'Pheme Peer 5 - k=10 adopting': {'color': 'C2', 'marker': pentagon_marker, 'linestyle': dotted_style},
+
 }
 
 
@@ -65,7 +144,6 @@ linemap = {
 #     'ARTEMIS Verisign - 1 Attackers': {'color': one_attacker_color, 'marker': default_marker, 'linestyle': verisign_style},
 #     'ARTEMIS Verisign - 2 Attackers': {'color': two_attacker_color, 'marker': default_marker, 'linestyle': verisign_style},
 #     'ARTEMIS Verisign - 5 Attackers': {'color': 'C0', 'marker': default_marker, 'linestyle': verisign_style},
-#     # the transitive dropping part is incoherent with the rest
 #     'ARTEMIS Akamai - 1 Attackers': {'color': one_attacker_color, 'marker': default_marker, 'linestyle': akamai_style},
 #     'ARTEMIS Akamai - 2 Attackers': {'color': two_attacker_color, 'marker': default_marker, 'linestyle': akamai_style},
 #     'ARTEMIS Akamai - 5 Attackers': {'color': 'C1', 'marker': default_marker, 'linestyle': akamai_style},
@@ -139,12 +217,12 @@ class ASType(Enum):
 
 class PolicyResult:
     def __init__(self, subgraph_name: str, propagation_round: int, base_policy_name: str, adopting_policy_name: str, json_data):
-        def parse(subgraph_name: str):
+        def parse(subgraph_name: str, adoption_setting='adopting'):
             result: {ASType: {int, [float]}} = {}
             temp: {ASType: [(int, [float])]} = {}
 
             for dataset in json_data:
-                rates = dataset[subgraph_name][propagation_round][f"{base_policy_name} ({adopting_policy_name} adopting)"]
+                rates = dataset[subgraph_name][propagation_round][f"{base_policy_name} ({adopting_policy_name} {adoption_setting})"]
                 for adoption_rate, success_rates in rates.items():
                     if subgraph_name not in temp:
                         temp[subgraph_name] = [(float(adoption_rate), success_rates)]
@@ -163,9 +241,9 @@ class PolicyResult:
                 result[subgraph_name] = temp_dict
 
             return result
-
-        #self.adopting = parse(adopting_name_prefix)
-        self.non_adopting = parse(subgraph_name)
+        
+        self.adopting = parse(subgraph_name, 'adopting')
+        # self.non_adopting = parse(subgraph_name, 'non-adopting')
 
 
 def generate_plot(lines: [Line], 
@@ -178,7 +256,8 @@ def generate_plot(lines: [Line],
                  text_replaces=None,
                  textwidth=30,
                  outcome_text=None,
-                 ylim=None):
+                 ylim=None,
+                 linemap=linemap):
     fig, ax = plt.subplots()
 
     # plt.xlim(0, 1.3)
@@ -211,7 +290,7 @@ def generate_plot(lines: [Line],
     # legend = plt.legend()
     # print(legend.get_texts()) #[0].set_text('make it short')
     plt.tight_layout()
-    plt.rcParams.update({"font.size": 14, "lines.markersize": 10})
+    plt.rcParams.update({"font.size": 12, "lines.markersize": 8})
     #matplotlib.use('Agg')
 
     # Anchor legend to right of graph

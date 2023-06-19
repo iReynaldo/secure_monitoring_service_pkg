@@ -3,12 +3,12 @@
 ./rename.sh
 
 declare -A dirs
-dirs=( ["V4SubprefixHijackScenario"]="subprefix" ["SubprefixAutoImmuneScenario_scenario_direct_type"]="autoimmune-direct" ["SubprefixAutoImmuneScenario_scenario_indirect_type"]="autoimmune-indirect" ["real"]="rov-real" ["none"]="rov-none" ["True"]="attack-relay" ["False"]="no-attack-relay" ["50"]="prelim" ["500"]="final" )
+dirs=( ["V4SuperprefixPrefixHijack"]="superprefix" ["V4SubprefixHijackScenario"]="subprefix" ["SubprefixAutoImmuneScenario_scenario_direct_type"]="autoimmune-direct" ["SubprefixAutoImmuneScenario_scenario_indirect_type"]="autoimmune-indirect" ["real"]="rov-real" ["none"]="rov-none" ["True"]="attack-relay" ["False"]="no-attack-relay" ["50"]="prelim" ["500"]="final" )
 
 for trials in 50 500
 do
 	# Create a Folder for each of the different settings
-	for attack in V4SubprefixHijackScenario SubprefixAutoImmuneScenario_scenario_direct_type SubprefixAutoImmuneScenario_scenario_indirect_type 
+	for attack in V4SubprefixHijackScenario SubprefixAutoImmuneScenario_scenario_direct_type SubprefixAutoImmuneScenario_scenario_indirect_type V4SuperprefixPrefixHijack
 	do
 		for rov_setting in real none
 		do
@@ -17,6 +17,7 @@ do
 			do
 				unzip -o $no_relay_zip_file -d "${dirs[$trials]}/${dirs[$attack]}/${dirs[$rov_setting]}/no-relay/"
 				unzip -o $no_relay_zip_file -d "mixed/${dirs[$attack]}/${dirs[$rov_setting]}/no-relay/"
+                ./extract_json.sh $no_relay_zip_file
 			done
 			
 			# Move the results that use relays
@@ -29,6 +30,7 @@ do
 					do
 						unzip -o $relay_zip_file -d "${dirs[$trials]}/${dirs[$attack]}/${dirs[$rov_setting]}/${dirs[$relay_attack]}/$relay/"
 						unzip -o $relay_zip_file -d "mixed/${dirs[$attack]}/${dirs[$rov_setting]}/${dirs[$relay_attack]}/$relay/"
+                        ./extract_json.sh $relay_zip_file 
 					done
 				done
 			done

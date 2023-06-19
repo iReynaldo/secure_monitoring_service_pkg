@@ -6,14 +6,6 @@ Created on Sun Apr 23 14:57:14 2023
 @author: Reynaldo Morillo
 """
 
-# import pandas as pd
-
-# with open('../../data/graphs/jsons/artemis_verisign_cdn_1_attacker_50_trials.json', encoding='utf-8') as inputfile:
-#     df = pd.read_json(inputfile)
-
-
-# df.to_csv('csvfile.csv', encoding='utf-8', index=False)
-
 import json
 from v4_graph_generator import PolicyResult, Line, generate_plot
 
