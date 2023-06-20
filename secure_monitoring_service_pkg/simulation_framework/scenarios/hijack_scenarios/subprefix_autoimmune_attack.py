@@ -6,7 +6,6 @@ from bgp_simulator_pkg import Announcement
 from bgp_simulator_pkg import Prefixes
 from bgp_simulator_pkg import Relationships
 from bgp_simulator_pkg import Timestamps
-from bgp_simulator_pkg import Outcomes
 
 from ..v4_scenario import V4Scenario
 from ....simulation_engine.report import Report
@@ -15,8 +14,8 @@ from secure_monitoring_service_pkg.simulation_framework.sim_logger \
     import sim_logger as logger
 from ....simulation_engine import ROVSMS
 
-class SubprefixAutoImmuneScenario(V4Scenario):
 
+class SubprefixAutoImmuneScenario(V4Scenario):
     __slots__ = ()
 
     def __init__(self, *args, fightback=False, relay_asns=None, indirect=True, **kwargs):
@@ -48,28 +47,13 @@ class SubprefixAutoImmuneScenario(V4Scenario):
         assert len(self.victim_asns) == 1, err
 
         # Setup Attacker Announcements
-        roa_origin: int = next(iter(self.victim_asns))
         engine = kwargs["engine"]
         victim_providers = engine.as_dict[next(iter(self.victim_asns))].providers
-        for i, provider in enumerate(victim_providers):
-            subprefix = f"1.2.{i+1}.0/24"
-            self.subprefixes[provider.asn] = subprefix
-            self.providers[subprefix] = provider.asn
-            for attacker_asn in self.attacker_asns:
-                if self.indirect:
-                    anns.append(self.AnnCls(prefix=subprefix,
-                                            as_path=(attacker_asn, provider.asn),
-                                            timestamp=Timestamps.ATTACKER.value,
-                                            seed_asn=attacker_asn,
-                                            roa_valid_length=False,
-                                            roa_origin=roa_origin,
-                                            recv_relationship=Relationships.ORIGIN))
-                else:
-                    if issubclass(self.AdoptASCls, ROVSMS):
-                        trusted_server_ref = self.AdoptASCls.trusted_server
-                        # Instead of sending announcements, submit malicious reports directly
-                        report = Report(reporting_asn=attacker_asn, prefix=subprefix, as_path=(attacker_asn, provider.asn))
-                        trusted_server_ref.receive_report(report)
+        if self.indirect:
+            anns.extend(self.generate_attacker_announcements(victim_providers))
+        else:
+            if issubclass(self.AdoptASCls, ROVSMS):
+                self.generate_malicious_reports(victim_providers)
 
         if self.fightback:
             anns.extend(self.generate_fightback_relay_announcements())
@@ -80,6 +64,36 @@ class SubprefixAutoImmuneScenario(V4Scenario):
             anns.extend(self.generate_relay_announcements(self.providers))
 
         return tuple(anns)
+
+    def generate_attacker_announcements(self, providers):
+        anns = list()
+        roa_origin: int = next(iter(self.victim_asns))
+
+        for i, provider in enumerate(providers):
+            subprefix = f"1.2.{i + 1}.0/24"
+            self.subprefixes[provider.asn] = subprefix
+            self.providers[subprefix] = provider.asn
+            for attacker_asn in self.attacker_asns:
+                anns.append(self.AnnCls(prefix=subprefix,
+                                        as_path=(attacker_asn, provider.asn),
+                                        timestamp=Timestamps.ATTACKER.value,
+                                        seed_asn=attacker_asn,
+                                        roa_valid_length=False,
+                                        roa_origin=roa_origin,
+                                        recv_relationship=Relationships.ORIGIN))
+        return anns
+
+    def generate_malicious_reports(self, providers):
+        subprefix = Prefixes.SUBPREFIX.value
+        for provider in providers:
+            self.subprefixes[provider.asn] = subprefix
+            self.providers[subprefix] = provider.asn
+            for attacker_asn in self.attacker_asns:
+                trusted_server_ref = self.AdoptASCls.trusted_server
+                # Instead of sending announcements, submit malicious reports directly
+                report = Report(reporting_asn=attacker_asn, prefix=subprefix,
+                                as_path=(attacker_asn, provider.asn))
+                trusted_server_ref.receive_report(report)
 
     def get_attacker_announcements(self):
         if self.indirect:

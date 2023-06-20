@@ -12,6 +12,7 @@ from .graph_062 import Graph062
 from .graph_063 import Graph063
 from .graph_064 import Graph064
 from .graph_065 import Graph065
+from .graph_066 import Graph066
 
 
 __all__ = [
@@ -28,5 +29,6 @@ __all__ = [
     "Graph062",
     "Graph063",
     "Graph064",
-    "Graph065"
+    "Graph065",
+    "Graph066"
 ]

@@ -66,8 +66,8 @@ from .config_164 import Config164
 from .config_165 import Config165
 from .config_166 import Config166
 from .config_167 import Config167
-# from .config_168 import Config168
-# from .config_169 import Config169
+from .config_168 import Config168
+from .config_169 import Config169
 # from .config_170 import Config170
 # from .config_171 import Config171
 # from .config_172 import Config172
@@ -144,8 +144,8 @@ __all__ = [
     "Config165",
     "Config166",
     "Config167",
-    # "Config168",
-    # "Config169",
+    "Config168",
+    "Config169",
     # "Config170",
     # "Config171",
     # "Config172",
