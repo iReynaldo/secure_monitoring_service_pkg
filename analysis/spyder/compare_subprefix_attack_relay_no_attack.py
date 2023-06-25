@@ -6,7 +6,7 @@ Created on May 16, 2023
 @author: Reynaldo Morillo
 """
 
-from v4_graph_generator import Line, generate_plot
+from v4_graph_generator import Line, generate_plot, create_compare_cdn_linemap
 import data_manager as dm
 
 
@@ -33,7 +33,7 @@ line_name_map = {
 # Args
 #-----------------------------------
 
-scenario = 'V4SuperprefixPrefixHijack'
+scenario = 'V4SubprefixHijackScenario'
 scenario_type = 'none'
 # rov_setting = 'real'
 rov_setting = 'none'
@@ -44,9 +44,9 @@ num_attackers = 5
 num_trials = 500
 
 metric = dm.victim_success
-k = 5
-relays = ['cloudflare', 'verisign', 'five', 'ten', 'twenty']
-policies = ['rov', 'rovppv1lite', f'v4k{k}']
+k = 2
+relay = 'verisign'
+policies = [f'v4k{k}']
 
 for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
     
@@ -60,29 +60,20 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
     # Load paths
     paths = list()
     
-    for relay in relays:
+    for attack_relay in [True, False]:
         paths.append(
                 dm.json_file(scenario, scenario_type, rov_setting, hash_seed, relay, attack_relay, num_attackers, num_trials)
             )
     
     # Load Results
-    rov_results = dm.get_results([paths[0]], subgraph, [dm.policy_name_map['rov']])
-    rovpp_results = dm.get_results([paths[0]], subgraph, [dm.policy_name_map['rovppv1lite']])
-    v4_results = dm.get_results(paths, subgraph, [dm.policy_name_map[f'v4k{k}']])
-    results = rov_results + rovpp_results + v4_results
+    results = dm.get_results(paths, subgraph, [dm.policy_name_map[f'v4k{k}']])
     
     # Generate Lines
     lines_map = dict()
     relay_filename = ""
-    for i, policy in enumerate(['rov', 'rovppv1lite'] + relays):        
-        if policy in dm.cdns:
-            lines_map[i] = f"Pheme {policy.capitalize()} - k={k} adopting"
-            relay_filename = "cdns"
-        elif policy in dm.peers:
-            lines_map[i] = f"Pheme Peer {dm.peer_map[policy]} - k={k} adopting"
-            relay_filename = "peers"
-        else:
-            lines_map[i] = line_name_map[policy]
+
+    lines_map[0] = f"Pheme {relay.capitalize()} - k={k} adopting"
+    lines_map[1] = f"Pheme {relay.capitalize()} Attacked - k={k} adopting"
     
     lines = []
     for i, result in enumerate(results):
@@ -96,4 +87,5 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
                   outcome_text=dm.metric_outcome[metric],
                   size_inches=(5, 4),
                   legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-                  fname=f"./paper_plots/superprefix/rov_{rov_setting}/superprefix_with_relay_k{k}_{dm.metric_filename_prefix[metric]}.pdf")
+                  linemap=create_compare_cdn_linemap(relay.capitalize()),
+                  fname=f"./plots/subprefix/compare_attackRelay_{dm.metric_filename_prefix[metric]}.pdf")

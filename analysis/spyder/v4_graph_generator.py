@@ -246,6 +246,19 @@ class PolicyResult:
         # self.non_adopting = parse(subgraph_name, 'non-adopting')
 
 
+def create_compare_cdn_linemap(cdn):
+    return {
+            
+        f'Pheme {cdn} - k=2 adopting': {'color': 'C0', 'marker': plus_marker, 'linestyle': verisign_style},
+        f'Pheme {cdn} - k=5 adopting': {'color': 'C1', 'marker': plus_marker, 'linestyle': verisign_style},
+        f'Pheme {cdn} - k=10 adopting': {'color': 'C2', 'marker': plus_marker, 'linestyle': verisign_style},
+        
+        f'Pheme {cdn} Attacked - k=2 adopting': {'color': 'C3', 'marker': default_marker, 'linestyle': solid_style},
+        f'Pheme {cdn} Attacked - k=5 adopting': {'color': 'C4', 'marker': default_marker, 'linestyle': solid_style},
+        f'Pheme {cdn} Attacked - k=10 adopting': {'color': 'C5', 'marker': default_marker, 'linestyle': solid_style},
+    }
+
+
 def generate_plot(lines: [Line], 
                  outcome="Attacker Success",
                  order=None,

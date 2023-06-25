@@ -39,7 +39,7 @@ scenario_type = 'none'
 rov_setting = 'none'
 hash_seed = 0
 # relay
-attack_relay = False
+attack_relay = True
 num_attackers = 5
 num_trials = 500
 
@@ -66,8 +66,8 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
             )
     
     # Load Results
-    rov_results = dm.get_results([paths[0]], subgraph, [dm.policy_name_map['rov']])
-    rovpp_results = dm.get_results([paths[0]], subgraph, [dm.policy_name_map['rovppv1lite']])
+    rov_results = dm.get_results([paths[2]], subgraph, [dm.policy_name_map['rov']])
+    rovpp_results = dm.get_results([paths[2]], subgraph, [dm.policy_name_map['rovppv1lite']])
     v4_results = dm.get_results(paths, subgraph, [dm.policy_name_map[f'v4k{k}']])
     results = rov_results + rovpp_results + v4_results
     
@@ -96,4 +96,4 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
                   outcome_text=dm.metric_outcome[metric],
                   size_inches=(5, 4),
                   legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-                  fname=f"./paper_plots/superprefix/rov_{rov_setting}/superprefix_with_relay_k{k}_{dm.metric_filename_prefix[metric]}.pdf")
+                  fname=f"./paper_plots/superprefix/rov_{rov_setting}/superprefix_attack_relay_k{k}_{dm.metric_filename_prefix[metric]}.pdf")

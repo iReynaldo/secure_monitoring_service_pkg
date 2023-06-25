@@ -65,9 +65,10 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
                 dm.json_file(scenario, scenario_type, rov_setting, hash_seed, relay, attack_relay, num_attackers, num_trials)
             )
     
+
     # Load Results
-    rov_results = dm.get_results([paths[0]], subgraph, [dm.policy_name_map['rov']])
-    rovpp_results = dm.get_results([paths[0]], subgraph, [dm.policy_name_map['rovppv1lite']])
+    rov_results = dm.get_results([paths[1]], subgraph, [dm.policy_name_map['rov']])
+    rovpp_results = dm.get_results([paths[1]], subgraph, [dm.policy_name_map['rovppv1lite']])
     v4_results = dm.get_results(paths, subgraph, [dm.policy_name_map[f'v4k{k}']])
     results = rov_results + rovpp_results + v4_results
     
@@ -86,7 +87,8 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
     
     lines = []
     for i, result in enumerate(results):
-        lines.append(Line(lines_map[i], False, result.adopting[subgraph]))
+        if result:
+            lines.append(Line(lines_map[i], False, result.adopting[subgraph]))
     
         
     # Plot Lines

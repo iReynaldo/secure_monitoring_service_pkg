@@ -6,7 +6,7 @@ Created on May 16, 2023
 @author: Reynaldo Morillo
 """
 
-from v4_graph_generator import Line, generate_plot, linemap_2
+from v4_graph_generator import Line, generate_plot
 import data_manager as dm
 
 
@@ -34,8 +34,8 @@ line_name_map = {
 #-----------------------------------
 
 scenario = 'SubprefixAutoImmuneScenario'
-scenario_type ='direct'
-rov_settings = ['real', 'none']
+scenario_type = 'indirect'
+rov_settings= ['real', 'none']
 # rov_setting = 'none'
 hash_seed = 0
 # relay
@@ -44,10 +44,9 @@ num_attackers = 5
 num_trials = 500
 
 metric = dm.victim_success
-relays = ['verisign', 'five']
-# relays = ['cloudflare', 'verisign', 'five', 'twenty']
-k_values = [2, 5, 10]
-policies = [ f'v4k{k}' for k in k_values ]
+# relays = ['cloudflare', 'verisign',]
+relay = 'None'
+policies = ['rov', 'rovppv1lite', 'v4k2', 'v4k5', 'v4k10']
 
 for rov_setting in rov_settings:
     for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
@@ -62,32 +61,27 @@ for rov_setting in rov_settings:
         # Load paths
         paths = list()
         
-        for relay in relays:
-            paths.append(
-                    dm.json_file(scenario, scenario_type, rov_setting, hash_seed, relay, attack_relay, num_attackers, num_trials)
-                )
+        paths.append(
+                dm.json_file(scenario, scenario_type, rov_setting, hash_seed, relay, attack_relay, num_attackers, num_trials)
+            )
         
         # Load Results
-        results = list()
-        for policy in policies:
-            results = results + (dm.get_results(paths, subgraph, [dm.policy_name_map[policy]]))
-    
+        policy_key_values = [dm.policy_name_map[x] for x in policies]
+        results = dm.get_results(paths, subgraph, policy_key_values)
+        
         
         # Generate Lines
         lines_map = dict()
         relay_filename = ""
-        i = 0
-        for k in k_values:
-            for relay in relays:        
-                if relay in dm.cdns:
-                    lines_map[i] = f"Pheme {relay.capitalize()} - k={k} adopting"
-                    relay_filename = "cdns"
-                elif relay in dm.peers:
-                    lines_map[i] = f"Pheme Peer {dm.peer_map[relay]} - k={k} adopting"
-                    relay_filename = "peers"
-                else:
-                    lines_map[i] = line_name_map[policy]
-                i += 1
+        for i, policy in enumerate(policies):
+            lines_map[i] = line_name_map[policy]
+        # for i, relay in enumerate(relays):
+        #     if relay in dm.cdns:
+        #         lines_map[i] = f"DAM {relay.capitalize()} - k={k} adopting"
+        #         relay_filename = "cdns"
+        #     elif relay in dm.peers:
+        #         lines_map[i] = f"DAM Peer {dm.peer_map[relay]} - k={k} adopting"
+        #         relay_filename = "peers"
         
         lines = []
         for i, result in enumerate(results):
@@ -100,5 +94,4 @@ for rov_setting in rov_settings:
                       outcome_text=dm.metric_outcome[metric],
                       size_inches=(5, 4),
                       legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-                      linemap=linemap_2,
-                      fname=f"./paper_plots/autoimmune_{scenario_type}/rov_{rov_setting}/autoimmune_{scenario_type}_with_relay_{dm.metric_filename_prefix[metric]}.pdf")
+                      fname=f"./paper_plots/autoimmune_{scenario_type}/rov_{rov_setting}/autoimmune_{scenario_type}_no_relay_{dm.metric_filename_prefix[metric]}.pdf")

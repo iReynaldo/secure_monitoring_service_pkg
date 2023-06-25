@@ -93,4 +93,4 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
                   outcome_text=dm.metric_outcome[metric],
                   size_inches=(5, 4),
                   legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-                  fname=f"./paper_plots/autoimmune_direct/rov_{rov_setting}/autoimmune_direct_no_relay_{dm.metric_filename_prefix[metric]}.pdf")
+                  fname=f"./paper_plots/autoimmune_{scenario_type}/rov_{rov_setting}/autoimmune_{scenario_type}_no_relay_{dm.metric_filename_prefix[metric]}.pdf")

@@ -35,8 +35,8 @@ line_name_map = {
 
 scenario = 'V4SubprefixHijackScenario'
 scenario_type = 'none'
-# rov_setting = 'real'
-rov_setting = 'none'
+rov_setting = 'real'
+# rov_setting = 'none'
 hash_seed = 0
 # relay
 attack_relay = False
@@ -86,7 +86,8 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
     
     lines = []
     for i, result in enumerate(results):
-        lines.append(Line(lines_map[i], False, result.adopting[subgraph]))
+        if result:
+            lines.append(Line(lines_map[i], False, result.adopting[subgraph]))
     
         
     # Plot Lines

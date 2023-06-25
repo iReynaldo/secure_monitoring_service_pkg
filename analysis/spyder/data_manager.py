@@ -91,5 +91,5 @@ def get_results(paths, subgraph, policies):
                     result = PolicyResult(subgraph, "0", "BGP Simple", policy, json_data)
                     results.append(result)
         except (FileNotFoundError, KeyError):
-            pass
+            results.append(None)
     return results
