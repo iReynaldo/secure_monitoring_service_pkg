@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Type, Set, Dict, List
+from typing import Tuple, Optional, Type, Set, Dict, List, Union
 from ipaddress import ip_network
 
 from caida_collector_pkg import AS
@@ -8,6 +8,8 @@ from bgp_simulator_pkg import Relationships
 from bgp_simulator_pkg import Scenario
 from bgp_simulator_pkg import Announcement
 from bgp_simulator_pkg import Timestamps
+from bgp_simulator_pkg import SimulationEngine
+from bgp_simulator_pkg import SpecialPercentAdoptions
 
 from .cdn import CDN
 from secure_monitoring_service_pkg.simulation_framework.sim_logger \
@@ -247,3 +249,43 @@ class V4Scenario(Scenario):
     def get_victim_asn(self, **kwargs):
         # Note: assumption there is 1 victim
         return next(iter(self.victim_asns))
+
+    def _get_possible_attacker_asns(
+            self,
+            engine: SimulationEngine,
+            percent_adoption: Union[float, SpecialPercentAdoptions],
+            prev_scenario: Optional["Scenario"]
+    ) -> Set[int]:
+        """
+        Returns possible attacker ASNs, defaulted from stubs_and_mh
+        This is a direct copy of the parent class with the addition of removing
+        the relay ASNs.
+        """
+
+        err = "Make mypy happy"
+        assert all(isinstance(x, int) for x in engine.stub_or_mh_asns), err
+        assert isinstance(engine.stub_or_mh_asns, set), err
+        if self.relay_asns:
+            return engine.stub_or_mh_asns - self.relay_asns
+        else:
+            return engine.stub_or_mh_asns
+
+    def _get_possible_victim_asns(
+            self,
+            engine: SimulationEngine,
+            percent_adoption: Union[float, SpecialPercentAdoptions],
+            prev_scenario: Optional["Scenario"]
+    ) -> Set[int]:
+        """
+        Returns possible victim ASNs, defaulted from stubs_and_mh
+        This is a direct copy of the parent class with the addition of removing
+        the relay ASNs.
+        """
+
+        err = "Make mypy happy"
+        assert all(isinstance(x, int) for x in engine.stub_or_mh_asns), err
+        assert isinstance(engine.stub_or_mh_asns, set), err
+        if self.relay_asns:
+            return engine.stub_or_mh_asns - self.relay_asns
+        else:
+            return engine.stub_or_mh_asns
