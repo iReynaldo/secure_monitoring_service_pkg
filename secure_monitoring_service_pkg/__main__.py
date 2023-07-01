@@ -74,9 +74,9 @@ def process_scenario_args(args):
     if overlay_setting_raw == None:
         overlay_setting = None
         assert args.attack_relays is False, "Cannot set attack_relays if relays is none"
-    elif overlay_setting_raw in ['akamai', 'cloudflare', 'verisign', 'incapsula', 'neustar']:
+    elif overlay_setting_raw in ['akamai', 'cloudflare', 'verisign', 'incapsula', 'neustar', 'conglomerate']:
         overlay_setting = CDN().__getattribute__(overlay_setting_raw)
-    elif overlay_setting_raw in ['five', 'ten', 'twenty', 'hundred']:
+    elif overlay_setting_raw in ['five', 'ten', 'twenty', 'fifty', 'hundred']:
         overlay_setting = Peer().__getattribute__(overlay_setting_raw)
     else:
         raise ValueError(f"Unknown Overlay setting given: {overlay_setting_raw}")
@@ -222,9 +222,11 @@ def parse_args():
                                  'verisign',
                                  'incapsula',
                                  'neustar',
+                                 'conglomerate',
                                  'five',
                                  'ten',
                                  'twenty',
+                                 'fifty',
                                  'hundred'])
     parser.add_argument('--attack_relays',
                         type=bool,
