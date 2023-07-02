@@ -219,21 +219,23 @@ class V4Subgraph(Subgraph):
         #  ------------------------------------------------------------------------------------------------------------
         # TODO: Why is prefix_outcomes sometime empty ......? -- Answer is because we don't need to outcomes recalculate between subgraphs
         if prefix_outcomes:
-            with open(self.AVOID_LIST_CSV_FILE_NAME, 'a') as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames=AVOID_LIST_CSV_FIELDNAMES, delimiter=CSV_FILE_DELIMITER)
-                avoid_list = scenario.trusted_server_ref._recommendations[prefix_with_minimum_successful_connections]
-                row = {
-                    'trial': trial,
-                    'percentage': percent_adopt,
-                    'propagation_round': propagation_round,
-                    'adoption_setting': scenario.AdoptASCls.name,
-                    'prefix_for_outcome': prefix_with_minimum_successful_connections,
-                    'attacker_asns': str(list(scenario.attacker_asns)),
-                    'victim_asn': next(iter(scenario.victim_asns)),
-                    'avoid_list_len': len(avoid_list),
-                    'avoid_list': str(avoid_list)
-                }
-                writer.writerow(row)
+            if scenario.trusted_server_ref:
+                with open(self.AVOID_LIST_CSV_FILE_NAME, 'a') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=AVOID_LIST_CSV_FIELDNAMES, delimiter=CSV_FILE_DELIMITER)
+                    avoid_list = scenario.trusted_server_ref._recommendations[prefix_with_minimum_successful_connections]
+                    row = {
+                        'trial': trial,
+                        'percentage': percent_adopt,
+                        'propagation_round': propagation_round,
+                        'adoption_setting': scenario.AdoptASCls.name,
+                        'prefix_for_outcome': prefix_with_minimum_successful_connections,
+                        'attacker_asns': str(list(scenario.attacker_asns)),
+                        'victim_asn': next(iter(scenario.victim_asns)),
+                        'avoid_list_len': len(avoid_list),
+                        'avoid_list': str(avoid_list)
+                    }
+                    writer.writerow(row)
+                    csvfile.flush()
             if scenario.relay_asns:
                 for relay_asn in scenario.relay_asns:
                     with open(self.RELAY_OUTCOMES_CSV_FILE_NAME, 'a') as csvfile:
@@ -257,6 +259,7 @@ class V4Subgraph(Subgraph):
                                 scenario.trusted_server_ref._recommendations[prefix_with_minimum_successful_connections])
                         }
                         writer.writerow(row)
+                        csvfile.flush()
         # -------------------------------------------------------------------------------------------------------------
 
         key = self._get_subgraph_key(scenario)
