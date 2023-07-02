@@ -1,6 +1,7 @@
 from typing import Dict, Any, Type, Tuple, List, Optional
 import ipaddress
 import sys
+import csv
 
 from caida_collector_pkg import AS
 
@@ -18,8 +19,30 @@ from secure_monitoring_service_pkg.simulation_framework.scenarios import V4Subpr
 from secure_monitoring_service_pkg.simulation_framework.scenarios import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg.simulation_framework.scenarios.v4_scenario import CDN_RELAY_SETTING
 
-# TODO: Re-introduce metadata_collector
-# from secure_monitoring_service_pkg.simulation_framework import metadata_collector
+# from secure_monitoring_service_pkg.simulation_framework.sim_logger import metadata_logger
+from secure_monitoring_service_pkg.simulation_framework import metadata_collector
+
+
+# TODO: Delete after debugging is done
+#  --------------------------------------------------------------------
+def write_csv_file_header(csv_file_name, fieldnames, delimeter):
+    # Write Header of CSV Files
+    with open(csv_file_name, 'w') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=delimeter)
+        writer.writeheader()
+
+# Fieldnames
+AVOID_LIST_CSV_FIELDNAMES = ['trial', 'percentage', 'propagation_round',
+                             'adoption_setting', 'prefix_for_outcome',
+                             'attacker_asns', 'victim_asn', 'avoid_list_len', 'avoid_list']
+RELAY_OUTCOMES_CSV_FIELDNAMES = ['trial', 'percentage', 'propagation_round',
+                                 'adoption_setting', 'relay', 'relay_asn',
+                                 'prefix_for_outcome', 'outcome_before_relay',
+                                 'outcome_after_relay', 'available', 'victim_asn',
+                                 'attacker_asns', 'tunneled_with', 'avoid_list']
+CSV_FILE_DELIMITER = '\t'
+HEADERS_WRITTEN = False
+#  --------------------------------------------------------------------
 
 
 class V4Subgraph(Subgraph):
@@ -37,10 +60,15 @@ class V4Subgraph(Subgraph):
 
     def __init__(self):
         super(V4Subgraph, self).__init__()
-
-    # TODO: Move this percentage and trial capturing somewhere
-    # metadata_collector.cur_percent_adoption = percent_adopt
-    # metadata_collector.cur_trial = trial
+        # Metadata filenames
+        self.AVOID_LIST_CSV_FILE_NAME = metadata_collector.base_path + '/' + metadata_collector.output_filename + '_avoid_list_metadata.csv'
+        self.RELAY_OUTCOMES_CSV_FILE_NAME = metadata_collector.base_path + '/' + metadata_collector.output_filename + '_relay_outcomes_metadata.csv'
+        global HEADERS_WRITTEN
+        if not HEADERS_WRITTEN:
+            # Write their headers
+            write_csv_file_header(self.AVOID_LIST_CSV_FILE_NAME, AVOID_LIST_CSV_FIELDNAMES, CSV_FILE_DELIMITER)
+            write_csv_file_header(self.RELAY_OUTCOMES_CSV_FILE_NAME, RELAY_OUTCOMES_CSV_FIELDNAMES, CSV_FILE_DELIMITER)
+            HEADERS_WRITTEN = True
 
     def verify_avoid_list(self,
                           engine,
@@ -134,6 +162,13 @@ class V4Subgraph(Subgraph):
         self.data ex:
         {scenario_label: {percent_adopt: [percents]}}
         """
+        # TODO: Remove after done collecting metadata
+        # -----------------------------------------------------
+        available_relays_by_prefix_outcomes = dict()
+        disconnected_relays_by_prefix_outcomes = dict()
+        relay_usage_by_prefix_outcomes = dict()
+        before_relay_usage_outcome_by_prefix_outcomes = dict()
+        # -----------------------------------------------------
 
         prefix_outcomes: Dict[str, Dict[AS, Outcomes]] = dict()
         for attacker_ann in scenario.get_attacker_announcements_for_origin():
@@ -147,7 +182,11 @@ class V4Subgraph(Subgraph):
                                                            attacker_ann,
                                                            outcomes,
                                                            traceback_asn_outcomes,
-                                                           shared_data)
+                                                           shared_data,
+                                                           available_relays_by_prefix_outcomes,
+                                                           disconnected_relays_by_prefix_outcomes,
+                                                           relay_usage_by_prefix_outcomes,
+                                                           before_relay_usage_outcome_by_prefix_outcomes)
 
                 prefix_outcomes[attacker_ann.prefix] = outcomes
 
@@ -175,6 +214,51 @@ class V4Subgraph(Subgraph):
 
         prefix_with_minimum_successful_connections = self.get_prefix_with_minimum_successful_connections(scenario,
                                                                                                          shared_data)
+
+        # TODO: Delete after done debugging
+        #  ------------------------------------------------------------------------------------------------------------
+        # TODO: Why is prefix_outcomes sometime empty ......? -- Answer is because we don't need to outcomes recalculate between subgraphs
+        if prefix_outcomes:
+            with open(self.AVOID_LIST_CSV_FILE_NAME, 'a') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=AVOID_LIST_CSV_FIELDNAMES, delimiter=CSV_FILE_DELIMITER)
+                avoid_list = scenario.trusted_server_ref._recommendations[prefix_with_minimum_successful_connections]
+                row = {
+                    'trial': trial,
+                    'percentage': percent_adopt,
+                    'propagation_round': propagation_round,
+                    'adoption_setting': scenario.AdoptASCls.name,
+                    'prefix_for_outcome': prefix_with_minimum_successful_connections,
+                    'attacker_asns': str(list(scenario.attacker_asns)),
+                    'victim_asn': next(iter(scenario.victim_asns)),
+                    'avoid_list_len': len(avoid_list),
+                    'avoid_list': str(avoid_list)
+                }
+                writer.writerow(row)
+            if scenario.relay_asns:
+                for relay_asn in scenario.relay_asns:
+                    with open(self.RELAY_OUTCOMES_CSV_FILE_NAME, 'a') as csvfile:
+                        writer = csv.DictWriter(csvfile, fieldnames=RELAY_OUTCOMES_CSV_FIELDNAMES, delimiter=CSV_FILE_DELIMITER)
+                        key = f"{prefix_with_minimum_successful_connections}+{relay_asn}"
+                        row = {
+                            'trial': trial,
+                            'percentage': percent_adopt,
+                            'propagation_round': propagation_round,
+                            'adoption_setting': scenario.AdoptASCls.name,
+                            'prefix_for_outcome': prefix_with_minimum_successful_connections,
+                            'attacker_asns': str(list(scenario.attacker_asns)),
+                            'victim_asn': next(iter(scenario.victim_asns)),
+                            'relay': scenario.relay_name,
+                            'relay_asn': relay_asn,
+                            'outcome_before_relay': before_relay_usage_outcome_by_prefix_outcomes[key],
+                            'outcome_after_relay': prefix_outcomes[prefix_with_minimum_successful_connections][engine.as_dict[relay_asn]],
+                            'available': relay_asn in available_relays_by_prefix_outcomes[prefix_with_minimum_successful_connections],
+                            'tunneled_with': relay_usage_by_prefix_outcomes.get(key, None),
+                            'avoid_list': str(
+                                scenario.trusted_server_ref._recommendations[prefix_with_minimum_successful_connections])
+                        }
+                        writer.writerow(row)
+        # -------------------------------------------------------------------------------------------------------------
+
         key = self._get_subgraph_key(scenario)
         shared_data[key] = shared_data.get(key + f"_{prefix_with_minimum_successful_connections}", 0)
         self.data[propagation_round][scenario.graph_label][percent_adopt
@@ -216,8 +300,14 @@ class V4Subgraph(Subgraph):
         else:
             return False
 
-    def _recalculate_outcomes_with_relays(self, scenario, engine, attacker_ann, outcomes, traceback_asn_outcomes,
-                                          shared_data, track_relay_usage=False):
+    def _recalculate_outcomes_with_relays(self, scenario, engine, attacker_ann,
+                                          outcomes, traceback_asn_outcomes,
+                                          shared_data,
+                                          available_relays_by_prefix_outcomes,
+                                          disconnected_relays_by_prefix_outcomes,
+                                          relay_usage_by_prefix_outcomes,
+                                          before_relay_usage_outcome_by_prefix_outcomes,
+                                          track_relay_usage=False):
         """Mutate outcomes and traceback_asn_outcomes with potential reconnections
         from relays."""
         # This flag will indicate if re-computation of outcomes is necessary
@@ -227,6 +317,10 @@ class V4Subgraph(Subgraph):
         for relay_asn in scenario.relay_asns:
             if self._relay_is_available(engine, scenario, attacker_ann.prefix, relay_asn):
                 connected_relays.add(relay_asn)
+            before_relay_usage_outcome_by_prefix_outcomes[f"{attacker_ann.prefix}+{relay_asn}"] = outcomes[engine.as_dict[relay_asn]]
+
+        available_relays_by_prefix_outcomes[attacker_ann.prefix] = connected_relays
+        disconnected_relays_by_prefix_outcomes[attacker_ann.prefix] = scenario.relay_asns - connected_relays
         
         if len(connected_relays) > 0:
             # If the relay_setting is CDN, then if any one of the
@@ -252,6 +346,7 @@ class V4Subgraph(Subgraph):
                                                                   scenario.relay_prefixes,
                                                                   True)
                         if selected_relay_asn:
+                            relay_usage_by_prefix_outcomes[f"{attacker_ann.prefix}+{as_obj.asn}"] = selected_relay_asn
                             # Update outcome for asn to outcome of the Relay that was selected
                             outcomes[as_obj] = outcomes[engine.as_dict[selected_relay_asn]]
                             # Update traceback_asn_outcome to victim asn

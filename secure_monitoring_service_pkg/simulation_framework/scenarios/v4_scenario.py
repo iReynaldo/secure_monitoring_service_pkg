@@ -49,6 +49,7 @@ class V4Scenario(Scenario):
                 self.relay_setting = CDN_RELAY_SETTING
             else:
                 self.relay_setting = PEER_RELAY_SETTING
+            self.relay_name = CDN().reverse_mapping[self.relay_asns]
         else:
             self.relay_setting = NO_RELAY_SETTING
     def _is_using_cdn(self, relay_asns):

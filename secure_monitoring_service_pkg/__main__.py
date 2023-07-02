@@ -23,12 +23,14 @@ from secure_monitoring_service_pkg import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg import V4SuperprefixPrefixHijack
 from secure_monitoring_service_pkg import CDN
 from secure_monitoring_service_pkg import Peer
+from secure_monitoring_service_pkg import metadata_collector
 
 ############################
 # Constants
 ############################
 
 BASE_PATH = Path("~/Desktop/graphs/").expanduser()
+metadata_collector.base_path = str(BASE_PATH)
 
 # Adopting settings
 adoption_settings = {
@@ -134,6 +136,7 @@ def process_other_args(args):
                           f"_{args.num_trials}_trials" + \
                           f"_{percentages_str}_percentages"
 
+    metadata_collector.output_filename = output_filename
     settings = {
         "scenario": args.scenario,
         "output_filename": output_filename
@@ -146,12 +149,12 @@ def process_other_args(args):
 #############################
 
 def process_args(args):
+    # Processes Other Args
+    other_args = process_other_args(args)
     # Processes Scenario Args
     scenario_args = process_scenario_args(args)
     # Processes Simulation Args
     simulation_args = process_simulation_args(args)
-    # Processes Other Args
-    other_args = process_other_args(args)
 
     return args, scenario_args, simulation_args, other_args
 
