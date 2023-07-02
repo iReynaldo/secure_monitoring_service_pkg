@@ -12,6 +12,7 @@ from bgp_simulator_pkg import SimulationEngine
 from bgp_simulator_pkg import SpecialPercentAdoptions
 
 from .cdn import CDN
+from peer import Peer
 from secure_monitoring_service_pkg.simulation_framework.sim_logger \
     import sim_logger as logger
 
@@ -47,9 +48,10 @@ class V4Scenario(Scenario):
         if relay_asns:
             if self._is_using_cdn(relay_asns):
                 self.relay_setting = CDN_RELAY_SETTING
+                self.relay_name = CDN().reverse_mapping[self.relay_asns]
             else:
                 self.relay_setting = PEER_RELAY_SETTING
-            self.relay_name = CDN().reverse_mapping[self.relay_asns]
+                self.relay_name = Peer().reverse_mapping[self.relay_asns]
         else:
             self.relay_setting = NO_RELAY_SETTING
     def _is_using_cdn(self, relay_asns):

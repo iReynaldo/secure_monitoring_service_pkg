@@ -236,7 +236,7 @@ class V4Subgraph(Subgraph):
                     }
                     writer.writerow(row)
                     csvfile.flush()
-            if scenario.relay_asns:
+            if scenario.relay_asns and scenario.trusted_server_ref:
                 for relay_asn in scenario.relay_asns:
                     with open(self.RELAY_OUTCOMES_CSV_FILE_NAME, 'a') as csvfile:
                         writer = csv.DictWriter(csvfile, fieldnames=RELAY_OUTCOMES_CSV_FIELDNAMES, delimiter=CSV_FILE_DELIMITER)
