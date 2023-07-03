@@ -197,3 +197,21 @@ rsconnect/
 
 # UConn HPC SLURM
 *.out
+<<<<<<< 022315c2d277958f5fe058e8b9ae668509b29474
+=======
+
+data/as_metadata/
+
+analysis/spyder/plots/
+
+analysis/spyder/paper_plots/
+
+data/graphs/final/
+
+data/graphs/prelim/
+
+data/graphs/mixed/
+
+data/graphs/*.zip
+data/graphs/jsons/
+>>>>>>> Cleaned up the tracking of large files
