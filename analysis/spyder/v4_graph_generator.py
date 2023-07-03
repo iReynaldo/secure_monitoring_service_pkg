@@ -126,7 +126,11 @@ linemap = {
 }
 
 linemap_2 = {
-        
+    # ROV
+    'ROV adopting': {'color': rov_color, 'marker': default_marker, 'linestyle': default_style},
+    # ROV++
+    'ROV++ V1 Lite adopting': {'color': rovpp_v1_lite_color, 'marker': x_marker, 'linestyle': loosely_dotted_style},
+    # Pheme
     'Pheme Verisign - k=2 adopting': {'color': 'C0', 'marker': plus_marker, 'linestyle': verisign_style},
     'Pheme Verisign - k=5 adopting': {'color': 'C1', 'marker': plus_marker, 'linestyle': verisign_style},
     'Pheme Verisign - k=10 adopting': {'color': 'C2', 'marker': plus_marker, 'linestyle': verisign_style},
@@ -137,7 +141,56 @@ linemap_2 = {
 
 }
 
+compare_relays_linemap = {
+    # Pheme
+        
+    'Pheme Verisign - k=2 adopting': {'color': 'C0', 'marker': default_marker, 'linestyle': 'dashed'},
+    'Pheme Verisign - k=5 adopting': {'color': 'C0', 'marker': default_marker, 'linestyle': 'dashed'},
+    'Pheme Verisign - k=10 adopting': {'color': 'C0', 'marker': default_marker, 'linestyle': 'dashed'},
+    
+    'Pheme Akamai - k=2 adopting': {'color': 'C1', 'marker': default_marker, 'linestyle': 'dashed'},
+    'Pheme Akamai - k=5 adopting': {'color': 'C1', 'marker': default_marker, 'linestyle': 'dashed'},
+    'Pheme Akamai - k=10 adopting': {'color': 'C1', 'marker': default_marker, 'linestyle': 'dashed'},
+    
+    'Pheme Cloudflare - k=2 adopting': {'color': 'C2', 'marker': default_marker, 'linestyle': 'dashed'},
+    'Pheme Cloudflare - k=5 adopting': {'color': 'C2', 'marker': default_marker, 'linestyle': 'dashed'},
+    'Pheme Cloudflare - k=10 adopting': {'color': 'C2', 'marker': default_marker, 'linestyle': 'dashed'},
+    
+    'Pheme Incapsula - k=2 adopting': {'color': 'C3', 'marker': default_marker, 'linestyle': 'dashed'},
+    'Pheme Incapsula - k=5 adopting': {'color': 'C3', 'marker': default_marker, 'linestyle': 'dashed'},
+    'Pheme Incapsula - k=10 adopting': {'color': 'C3', 'marker': default_marker, 'linestyle': 'dashed'},
+    
+    'Pheme Neustar - k=2 adopting': {'color': 'C4', 'marker': default_marker, 'linestyle': 'dashed'},
+    'Pheme Neustar - k=5 adopting': {'color': 'C4', 'marker': default_marker, 'linestyle': 'dashed'},
+    'Pheme Neustar - k=10 adopting': {'color': 'C4', 'marker': default_marker, 'linestyle': 'dashed'},
+    
+    'Pheme Peer 5 - k=2 adopting': {'color': 'C5', 'marker': default_marker, 'linestyle': dotted_style},
+    'Pheme Peer 5 - k=5 adopting': {'color': 'C5', 'marker': default_marker, 'linestyle': dotted_style},
+    'Pheme Peer 5 - k=10 adopting': {'color': 'C5', 'marker': default_marker, 'linestyle': dotted_style},
+    
+    'Pheme Peer 10 - k=2 adopting': {'color': 'C6', 'marker': default_marker, 'linestyle': dotted_style},
+    'Pheme Peer 10 - k=5 adopting': {'color': 'C6', 'marker': default_marker, 'linestyle': dotted_style},
+    'Pheme Peer 10 - k=10 adopting': {'color': 'C6', 'marker': default_marker, 'linestyle': dotted_style},
+    
+    'Pheme Peer 20 - k=2 adopting': {'color': 'C7', 'marker': default_marker, 'linestyle': dotted_style},
+    'Pheme Peer 20 - k=5 adopting': {'color': 'C7', 'marker': default_marker, 'linestyle': dotted_style},
+    'Pheme Peer 20 - k=10 adopting': {'color': 'C7', 'marker': default_marker, 'linestyle': dotted_style},
+}
 
+def create_compare_cdn_linemap(cdn):
+    return {
+            
+        f'Pheme {cdn} - k=2 adopting': {'color': 'C0', 'marker': plus_marker, 'linestyle': verisign_style},
+        f'Pheme {cdn} - k=5 adopting': {'color': 'C1', 'marker': plus_marker, 'linestyle': verisign_style},
+        f'Pheme {cdn} - k=10 adopting': {'color': 'C2', 'marker': plus_marker, 'linestyle': verisign_style},
+        
+        f'Pheme {cdn} Attacked - k=2 adopting': {'color': 'C3', 'marker': default_marker, 'linestyle': solid_style},
+        f'Pheme {cdn} Attacked - k=5 adopting': {'color': 'C4', 'marker': default_marker, 'linestyle': solid_style},
+        f'Pheme {cdn} Attacked - k=10 adopting': {'color': 'C5', 'marker': default_marker, 'linestyle': solid_style},
+    }
+
+
+# For ARTEMIS Plots
 # linemap = {
 #     'BGP': {'color': baseline_color, 'marker': baseline_marker, 'linestyle': default_style},
 #     'BGP+100% ROV': {'color': baseline_color, 'marker': '', 'linestyle': default_style},
@@ -244,19 +297,6 @@ class PolicyResult:
         
         self.adopting = parse(subgraph_name, 'adopting')
         # self.non_adopting = parse(subgraph_name, 'non-adopting')
-
-
-def create_compare_cdn_linemap(cdn):
-    return {
-            
-        f'Pheme {cdn} - k=2 adopting': {'color': 'C0', 'marker': plus_marker, 'linestyle': verisign_style},
-        f'Pheme {cdn} - k=5 adopting': {'color': 'C1', 'marker': plus_marker, 'linestyle': verisign_style},
-        f'Pheme {cdn} - k=10 adopting': {'color': 'C2', 'marker': plus_marker, 'linestyle': verisign_style},
-        
-        f'Pheme {cdn} Attacked - k=2 adopting': {'color': 'C3', 'marker': default_marker, 'linestyle': solid_style},
-        f'Pheme {cdn} Attacked - k=5 adopting': {'color': 'C4', 'marker': default_marker, 'linestyle': solid_style},
-        f'Pheme {cdn} Attacked - k=10 adopting': {'color': 'C5', 'marker': default_marker, 'linestyle': solid_style},
-    }
 
 
 def generate_plot(lines: [Line], 

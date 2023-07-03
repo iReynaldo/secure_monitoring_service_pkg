@@ -34,6 +34,7 @@ line_name_map = {
 #-----------------------------------
 
 scenario = 'V4SubprefixHijackScenario'
+# scenario = 'V4SuperprefixPrefixHijack'
 scenario_type = 'none'
 # rov_setting = 'real'
 rov_setting = 'none'
@@ -44,7 +45,7 @@ num_attackers = 5
 num_trials = 500
 
 metric = dm.victim_success
-k = 2
+k = 5
 relay = 'verisign'
 policies = [f'v4k{k}']
 
@@ -60,7 +61,7 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
     # Load paths
     paths = list()
     
-    for attack_relay in [True, False]:
+    for attack_relay in [False, True]:
         paths.append(
                 dm.json_file(scenario, scenario_type, rov_setting, hash_seed, relay, attack_relay, num_attackers, num_trials)
             )

@@ -84,7 +84,8 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
     
     lines = []
     for i, result in enumerate(results):
-        lines.append(Line(lines_map[i], False, result.adopting[subgraph]))
+        if result:
+            lines.append(Line(lines_map[i], False, result.adopting[subgraph]))
     
         
     # Plot Lines

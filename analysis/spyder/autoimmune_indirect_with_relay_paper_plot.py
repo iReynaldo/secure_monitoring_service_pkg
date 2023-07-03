@@ -35,8 +35,8 @@ line_name_map = {
 
 scenario = 'SubprefixAutoImmuneScenario'
 scenario_type ='indirect'
-# rov_setting = 'real'
-rov_setting = 'none'
+rov_settings = ['real', 'none']
+# rov_setting = 'none'
 hash_seed = 0
 # relay
 attack_relay = False
@@ -47,58 +47,69 @@ metric = dm.victim_success
 relays = ['verisign', 'five']
 # relays = ['cloudflare', 'verisign', 'five', 'twenty']
 k_values = [2, 5, 10]
-policies = [ f'v4k{k}' for k in k_values ]
+reference_policies = ['rov', 'rovppv1lite']
+v4_policies = [ f'v4k{k}' for k in k_values ]
 
 
-for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
-    
-    #-----------------------------------
-    # Plot Generation
-    #-----------------------------------
-    
-    subgraph = dm.metric_subgraph[metric]
-    
-    
-    # Load paths
-    paths = list()
-    
-    for relay in relays:
-        paths.append(
-                dm.json_file(scenario, scenario_type, rov_setting, hash_seed, relay, attack_relay, num_attackers, num_trials)
-            )
-    
-    # Load Results
-    results = list()
-    for policy in policies:
-        results = results + (dm.get_results(paths, subgraph, [dm.policy_name_map[policy]]))
-
-    
-    # Generate Lines
-    lines_map = dict()
-    relay_filename = ""
-    i = 0
-    for k in k_values:
-        for relay in relays:        
-            if relay in dm.cdns:
-                lines_map[i] = f"Pheme {relay.capitalize()} - k={k} adopting"
-                relay_filename = "cdns"
-            elif relay in dm.peers:
-                lines_map[i] = f"Pheme Peer {dm.peer_map[relay]} - k={k} adopting"
-                relay_filename = "peers"
-            else:
-                lines_map[i] = line_name_map[policy]
-            i += 1
-    
-    lines = []
-    for i, result in enumerate(results):
-        lines.append(Line(lines_map[i], False, result.adopting[subgraph]))
+for rov_setting in rov_settings:
+    for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
+        
+        #-----------------------------------
+        # Plot Generation
+        #-----------------------------------
+        
+        subgraph = dm.metric_subgraph[metric]
+        
+        
+        # Load paths
+        paths = list()
+        
+        for relay in relays:
+            paths.append(
+                    dm.json_file(scenario, scenario_type, rov_setting, hash_seed, relay, attack_relay, num_attackers, num_trials)
+                )
+        
+        # Load Results
+        rov_results = dm.get_results([paths[0]], subgraph, [dm.policy_name_map['rov']])
+        rovpp_results = dm.get_results([paths[0]], subgraph, [dm.policy_name_map['rovppv1lite']])
+        v4_results = dm.get_results(paths, subgraph, v4_policies)
+        results = rov_results + rovpp_results
+        
+        for policy in v4_policies:
+            results = results + (dm.get_results(paths, subgraph, [dm.policy_name_map[policy]]))
     
         
-    # Plot Lines
-    generate_plot(lines,
-                  ylim=100,
-                  outcome_text=dm.metric_outcome[metric],
-                  size_inches=(5, 4),
-                  legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-                  linemap=linemap_2,
-                  fname=f"./paper_plots/autoimmune_{scenario_type}/rov_{rov_setting}/autoimmune_{scenario_type}_with_relay_{dm.metric_filename_prefix[metric]}.pdf")
+        # Generate Lines
+        lines_map = dict()
+        relay_filename = ""
+        i = 0
+        
+        # Add the reference policies first 
+        for policy in reference_policies:
+            lines_map[i] = line_name_map[policy]
+            i += 1
+            
+        # Add the Pheme policies (with the different settings of k)
+        for k in k_values:
+            for relay in relays:        
+                if relay in dm.cdns:
+                    lines_map[i] = f"Pheme {relay.capitalize()} - k={k} adopting"
+                    relay_filename = "cdns"
+                elif relay in dm.peers:
+                    lines_map[i] = f"Pheme Peer {dm.peer_map[relay]} - k={k} adopting"
+                    relay_filename = "peers"
+                i += 1
+        
+        lines = []
+        for i, result in enumerate(results):
+            lines.append(Line(lines_map[i], False, result.adopting[subgraph]))
+        
+            
+        # Plot Lines
+        generate_plot(lines,
+                      ylim=100,
+                      outcome_text=dm.metric_outcome[metric],
+                      size_inches=(5, 4),
+                      legend_kwargs={'loc':'best', 'prop':{'size': 11}},
+                      linemap=linemap_2,
+                      fname=f"./paper_plots/autoimmune_{scenario_type}/rov_{rov_setting}/autoimmune_{scenario_type}_with_relay_{dm.metric_filename_prefix[metric]}.pdf")
