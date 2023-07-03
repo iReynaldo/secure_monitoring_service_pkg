@@ -27,6 +27,7 @@ class Peer:
     reverse_mapping = {
         five: 'five',
         ten: 'ten',
+        twenty: 'twenty',
         fifty: 'fifty',
         hundred: 'hundred'
     }

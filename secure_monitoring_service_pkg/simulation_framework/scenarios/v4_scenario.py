@@ -12,7 +12,7 @@ from bgp_simulator_pkg import SimulationEngine
 from bgp_simulator_pkg import SpecialPercentAdoptions
 
 from .cdn import CDN
-from peer import Peer
+from .peer import Peer
 from secure_monitoring_service_pkg.simulation_framework.sim_logger \
     import sim_logger as logger
 
