@@ -204,7 +204,10 @@ data/graphs/final/
 data/graphs/prelim/
 data/graphs/mixed/
 data/graphs/*.zip
-data/graphs/jsons/
+data/graphs/jsons/*.json
+data.graphs/metadata/*.csv
 
 analysis/spyder/plots/
 analysis/spyder/paper_plots/
+
+

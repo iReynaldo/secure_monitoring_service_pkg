@@ -13,7 +13,7 @@ do
 		for rov_setting in real none
 		do
 			# Move the no-relay setting
-			for no_relay_zip_file in $( ls | grep ${trials}_trials| grep $attack | grep $rov_setting | grep None_relay )
+			for no_relay_zip_file in $( ls | grep ${trials}_trials| grep $attack | grep $rov_setting | grep None_relay | grep zip )
 			do
 				unzip -o $no_relay_zip_file -d "${dirs[$trials]}/${dirs[$attack]}/${dirs[$rov_setting]}/no-relay/"
 				unzip -o $no_relay_zip_file -d "mixed/${dirs[$attack]}/${dirs[$rov_setting]}/no-relay/"
@@ -26,7 +26,7 @@ do
 				for relay in akamai cloudflare verisign incapsula neustar five ten twenty
 				do
 					# First write out the 50 trial versions
-					for relay_zip_file in $( ls | grep ${trials}_trials | grep $attack | grep ${rov_setting}_rov | grep ${relay_attack}_attackRelay | grep ${relay}_relay )
+					for relay_zip_file in $( ls | grep ${trials}_trials | grep $attack | grep ${rov_setting}_rov | grep ${relay_attack}_attackRelay | grep ${relay}_relay | grep zip )
 					do
 						unzip -o $relay_zip_file -d "${dirs[$trials]}/${dirs[$attack]}/${dirs[$rov_setting]}/${dirs[$relay_attack]}/$relay/"
 						unzip -o $relay_zip_file -d "mixed/${dirs[$attack]}/${dirs[$rov_setting]}/${dirs[$relay_attack]}/$relay/"
@@ -37,3 +37,9 @@ do
 		done
 	done
 done
+
+# 07/05/2023: This part of the script was disabled because the metadata needs manual processing that if overriden will result in a significant of lost work time.
+# Organize CSV Files
+#echo "Organizing Metadata"
+#./move_metadata.sh  # This script was also disabled from within
+

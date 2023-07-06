@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Create directories for JSONs and CSVs
+mkdir metadata
+mkdir jsons
+
 # Create a Folder for each of the different settings
 for stage in prelim final mixed
 do

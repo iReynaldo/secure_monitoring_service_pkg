@@ -45,7 +45,7 @@ num_trials = 500
 
 metric = dm.victim_success
 k = 5
-relays = ['cloudflare', 'verisign', 'five', 'ten']
+relays = ['cloudflare', 'verisign', 'five', 'ten', 'twenty']
 policies = ['rov', 'rovppv1lite', f'v4k{k}']
 
 for rov_setting in rov_settings:
