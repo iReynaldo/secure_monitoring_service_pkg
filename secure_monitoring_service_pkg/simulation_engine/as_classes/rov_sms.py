@@ -73,7 +73,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
 
     def use_relay(self, relay_asns, relay_prefix_dict, assume_relays_are_reachable):
         """return the relay that it would use"""
-        # TODO: Future enhancement: Consider picking prefence with
+        # TODO: Future enhancement: Consider picking preference with
         #   1. Relationship preference
         #   2. Shortest path
         # Check if Relays are assumed to be reachable

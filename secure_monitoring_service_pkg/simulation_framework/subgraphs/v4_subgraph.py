@@ -18,6 +18,7 @@ from secure_monitoring_service_pkg.simulation_framework.scenarios import V4Subpr
 from secure_monitoring_service_pkg.simulation_framework.scenarios import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg.simulation_framework.scenarios.v4_scenario import CDN_RELAY_SETTING
 
+
 # TODO: Re-introduce metadata_collector
 # from secure_monitoring_service_pkg.simulation_framework import metadata_collector
 
@@ -187,7 +188,7 @@ class V4Subgraph(Subgraph):
             return True
         return False
 
-    def _relay_is_available(self, engine, scenario, attacker_prefix, relay_asn):
+    def _relay_is_available(self, engine, scenario, outcomes, attacker_prefix, relay_asn):
         """
         Checks if the relay ASN has a path to the legit origin
         AND
@@ -198,20 +199,30 @@ class V4Subgraph(Subgraph):
         :param relay_asn:
         :return: bool
         """
-        as_obj = engine.as_dict[relay_asn]
-        origin_prefix = next(iter(scenario.get_victim_announcements())).prefix
-        # Check if relay has path to origin AND
-        # does not have a blackhole for attacker's attack on the origin
-        origin_ann = as_obj._local_rib.get_ann(origin_prefix)
-        if origin_ann and \
-                not self._as_has_blackhole_for_attack_on_origin_prefix(as_obj, attacker_prefix):
-            if scenario.trusted_server_ref:
-                # Check that the AS path for the origin prefix does not have any ASes that have blackholes
-                ases_with_blackholes = scenario.trusted_server_ref.adopters_with_blackhole.get(attacker_prefix, None)
-                if ases_with_blackholes:
-                    for asn in origin_ann.as_path:
-                        if asn in ases_with_blackholes:
-                            return False
+        if scenario.probe_data_plane:
+            return outcomes[engine.as_dict[relay_asn]] == Outcomes.VICTIM_SUCCESS
+        else:
+            as_obj = engine.as_dict[relay_asn]
+            origin_prefix = next(iter(scenario.get_victim_announcements())).prefix
+            # Check if relay has path to origin AND
+            # does not have a blackhole for attacker's attack on the origin
+            origin_ann = as_obj._local_rib.get_ann(origin_prefix)
+            if origin_ann and \
+                    not self._as_has_blackhole_for_attack_on_origin_prefix(as_obj, attacker_prefix):
+                if scenario.trusted_server_ref:
+                    # Check that the AS path for the origin prefix does not have any ASes that have blackholes
+                    ases_with_blackholes = scenario.trusted_server_ref.adopters_with_blackhole.get(attacker_prefix, None)
+                    if ases_with_blackholes:
+                        for asn in origin_ann.as_path:
+                            if asn in ases_with_blackholes:
+                                return False
+                return True
+            else:
+                return False
+
+    def has_access_to_relay_service(self, as_obj) -> bool:
+        """Returns a boolean stating if a AS Object has access to the relay service"""
+        if "ROV V4 Lite" in as_obj.name or as_obj.name == "ROV++ V1 Lite Simple Overlayed":
             return True
         else:
             return False
@@ -222,33 +233,40 @@ class V4Subgraph(Subgraph):
         from relays."""
         # This flag will indicate if re-computation of outcomes is necessary
         changes_made_flag = False
+
         # Create a set of relays that have successful connections to origin
-        connected_relays = set()
-        for relay_asn in scenario.relay_asns:
-            if self._relay_is_available(engine, scenario, attacker_ann.prefix, relay_asn):
-                connected_relays.add(relay_asn)
+        available_relays = set()
+        if scenario.AdoptASCls.__name__ == "ROV++ V1 Lite Simple Overlayed" and not scenario.probe_data_plane:
+            # If the adopting ASes are running ROV++ Overlay
+            # without the ability to probe the dataplane, then there is
+            # no way to filter the available Relays. So simply say all
+            # relays are available to use.
+            available_relays = scenario.relay_asns
+        else:
+            for relay_asn in scenario.relay_asns:
+                if self._relay_is_available(engine, scenario, outcomes, attacker_ann.prefix, relay_asn):
+                    available_relays.add(relay_asn)
         
-        if len(connected_relays) > 0:
+        if len(available_relays) > 0:
             # If the relay_setting is CDN, then if any one of the
             # the relay ASNs is avaialable, then all corresponding relay
             # ASNs are also available, as we can assume they can tunnel to each other
             not_connected_relay_as_obj = list()
             if scenario.relay_setting == CDN_RELAY_SETTING:
-                for asn in scenario.relay_asns - connected_relays:
+                for asn in scenario.relay_asns - available_relays:
                     not_connected_relay_as_obj.append(engine.as_dict[asn])
             # For each adopting ASN (except relay), check if it's disconnected
             for as_obj_iterator in [not_connected_relay_as_obj, outcomes]:
                 for as_obj in as_obj_iterator:
-                    # TODO: Why doesn't issubclass(as_obj, ROVSMS) work here for Config150?
-                    if hasattr(as_obj, "trusted_server") and \
+                    if self.has_access_to_relay_service(as_obj) and \
                             outcomes[as_obj] == Outcomes.DISCONNECTED and \
-                            as_obj.asn not in connected_relays:
+                            as_obj.asn not in available_relays:
                         if scenario.relay_setting != CDN_RELAY_SETTING:
-                            selected_relay_asn = as_obj.use_relay(connected_relays,
+                            selected_relay_asn = as_obj.use_relay(available_relays,
                                                                   scenario.relay_prefixes,
                                                                   scenario.assume_relays_are_reachable)
                         else:
-                            selected_relay_asn = as_obj.use_relay(connected_relays,
+                            selected_relay_asn = as_obj.use_relay(available_relays,
                                                                   scenario.relay_prefixes,
                                                                   True)
                         if selected_relay_asn:
@@ -271,7 +289,7 @@ class V4Subgraph(Subgraph):
                     # After the first time through the inner loop,
                     # all the relays should be considered
                     # available, because their evaluated first.
-                    connected_relays = scenario.relay_asns
+                    available_relays = scenario.relay_asns
             if scenario.tunnel_customer_traffic and changes_made_flag:
                 self._get_engine_outcomes(engine, scenario, attacker_ann, outcomes, traceback_asn_outcomes, True)
 

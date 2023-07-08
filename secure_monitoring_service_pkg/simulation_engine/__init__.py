@@ -8,6 +8,7 @@ __all__ = [
     "Report",
     "mvdp",
     "Artermis",
+    "ROVPPO",
     "ROVSMS",
     "ROVSMSK1",
     "ROVSMSK2",

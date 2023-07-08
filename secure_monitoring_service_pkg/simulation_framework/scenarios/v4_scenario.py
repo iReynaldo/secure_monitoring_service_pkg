@@ -33,7 +33,8 @@ RELAY_PREFIX = "7.7.7.0/24"
 class V4Scenario(Scenario):
 
     def __init__(self, *args, relay_asns=None, attack_relays=False,
-                 assume_relays_are_reachable=False, tunnel_customer_traffic=False, **kwargs):
+                 assume_relays_are_reachable=False, tunnel_customer_traffic=False,
+                 probe_data_plane=False, **kwargs):
         super(V4Scenario, self).__init__(*args, **kwargs)
         self.has_rovsms_ases = False
         self.trusted_server_ref = None
@@ -44,6 +45,7 @@ class V4Scenario(Scenario):
         self.tunnel_customer_traffic = tunnel_customer_traffic
         self.assume_relays_are_reachable = assume_relays_are_reachable
         self.attack_relays = attack_relays
+        self.probe_data_plane = probe_data_plane
         if relay_asns:
             if self._is_using_cdn(relay_asns):
                 self.relay_setting = CDN_RELAY_SETTING
@@ -51,6 +53,7 @@ class V4Scenario(Scenario):
                 self.relay_setting = PEER_RELAY_SETTING
         else:
             self.relay_setting = NO_RELAY_SETTING
+
     def _is_using_cdn(self, relay_asns):
         if relay_asns == CDN().akamai or relay_asns == CDN().cloudflare or \
             relay_asns == CDN().verisign or relay_asns == CDN().incapsula or \

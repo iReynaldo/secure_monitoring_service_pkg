@@ -14,6 +14,7 @@ from rovpp_pkg import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg import V4Subgraph
 from secure_monitoring_service_pkg import V4Simulation
+from secure_monitoring_service_pkg import ROVPPO
 from secure_monitoring_service_pkg import ROVSMS, ROVSMSK1, ROVSMSK2
 from secure_monitoring_service_pkg import ROVSMSK3, ROVSMSK5, ROVSMSK6
 from secure_monitoring_service_pkg import ROVSMSK10
@@ -48,6 +49,7 @@ ALL_PERCENTAGES = [0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99]
 POLICIES = {
     'rov': ROVSimpleAS,
     'v1lite': ROVPPV1LiteSimpleAS,
+    'rovppo': ROVPPO,
     'v4': ROVSMS,
     'v4k1': ROVSMSK1,
     'v4k2': ROVSMSK2,
@@ -89,6 +91,7 @@ def process_scenario_args(args):
         "attack_relays": args.attack_relays,
         "assume_relays_are_reachable": args.assume_relays_are_reachable,
         "tunnel_customer_traffic": args.tunnel_customer_traffic,
+        "probe_data_plane": args.probe_data_plane,
     }
     # Set for AutoImmune attack indirect/direct
     if args.scenario == AUTOIMMUNE:
@@ -247,6 +250,12 @@ def parse_args():
                         default=False,
                         help='Whether or not to allow adopters to tunnel '
                              'reconnected traffic.')
+    parser.add_argument('--probe_data_plane',
+                        type=bool,
+                        nargs='?',
+                        default=False,
+                        help='This enables the overlays to check the dataplane '
+                             'result to determine its availability.')
     parser.add_argument('--policy',
                         type=str,
                         nargs='*',
