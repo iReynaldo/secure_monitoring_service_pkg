@@ -131,6 +131,7 @@ def process_other_args(args):
                           f"_{args.autoimmune_attack_type}_type" + \
                           f"_{args.rov_adoption}_rov" + \
                           f"_{args.python_hash_seed}_hash" + \
+                          f"_{args.probe_data_plane}_probe" + \
                           f"_{args.relay_asns[0]}_relay" + \
                           f"_{args.attack_relays}_attackRelay" + \
                           f"_{args.num_attackers}_attacker" + \
