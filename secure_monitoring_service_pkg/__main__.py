@@ -369,6 +369,7 @@ def main():
 
     # collect experiment settings
     other_args['experiment_start_time'] = datetime.now().isoformat()
+    other_args['policies'] = [x.__name__ for x in adoption_classes]
     experiment_settings_to_save = process_experiment_settings(simulation_args, scenario_args, other_args)
 
     # Run Simulations

@@ -1,0 +1,30 @@
+all_ATTACKER_SUCCESS_1.2.3.0/24: 2
+all_ATTACKER_SUCCESS_perc_1.2.3.0/24: 25.0
+all_VICTIM_SUCCESS_1.2.3.0/24: 6
+all_VICTIM_SUCCESS_perc_1.2.3.0/24: 75.0
+etc_BGP Simple: 1
+etc_BGP Simple_ATTACKER_SUCCESS_1.2.3.0/24: 1
+etc_BGP Simple_ATTACKER_SUCCESS_percent_1.2.3.0/24: 100.0
+etc_ROV++ V1 Lite Simple Overlayed: 4
+etc_ROV++ V1 Lite Simple Overlayed_VICTIM_SUCCESS_1.2.3.0/24: 4
+etc_ROV++ V1 Lite Simple Overlayed_VICTIM_SUCCESS_percent_1.2.3.0/24: 100.0
+relay_prefixes:
+  7786: 7.7.7.0/24
+  12008: 7.7.7.0/24
+  19905: 7.7.7.0/24
+relay_usage:
+  12008: !!set
+    4: null
+  19905: !!set
+    1: null
+    7786: null
+    12008: null
+set: true
+stubs_or_mh_BGP Simple: 2
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_1.2.3.0/24: 1
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_percent_1.2.3.0/24: 50.0
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_1.2.3.0/24: 1
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_percent_1.2.3.0/24: 50.0
+stubs_or_mh_ROV++ V1 Lite Simple Overlayed: 1
+stubs_or_mh_ROV++ V1 Lite Simple Overlayed_VICTIM_SUCCESS_1.2.3.0/24: 1
+stubs_or_mh_ROV++ V1 Lite Simple Overlayed_VICTIM_SUCCESS_percent_1.2.3.0/24: 100.0

@@ -222,7 +222,7 @@ class V4Subgraph(Subgraph):
 
     def has_access_to_relay_service(self, as_obj) -> bool:
         """Returns a boolean stating if a AS Object has access to the relay service"""
-        if "ROV V4 Lite" in as_obj.name or as_obj.name == "ROV++ V1 Lite Simple Overlayed":
+        if "ROV V4 Lite" in as_obj.name or "Overlayed" in as_obj.name:
             return True
         else:
             return False
@@ -236,7 +236,7 @@ class V4Subgraph(Subgraph):
 
         # Create a set of relays that have successful connections to origin
         available_relays = set()
-        if scenario.AdoptASCls.__name__ == "ROV++ V1 Lite Simple Overlayed" and not scenario.probe_data_plane:
+        if "Overlayed" in scenario.AdoptASCls.__name__ and not scenario.probe_data_plane:
             # If the adopting ASes are running ROV++ Overlay
             # without the ability to probe the dataplane, then there is
             # no way to filter the available Relays. So simply say all
@@ -246,20 +246,21 @@ class V4Subgraph(Subgraph):
             for relay_asn in scenario.relay_asns:
                 if self._relay_is_available(engine, scenario, outcomes, attacker_ann.prefix, relay_asn):
                     available_relays.add(relay_asn)
-        
+
+        # If the relay_setting is CDN, then if any one of the
+        # relay ASNs is available, then all corresponding relay
+        # ASNs are also available, as we can assume they can tunnel to each other
+        not_connected_relay_as_obj = list()
+        if scenario.relay_setting == CDN_RELAY_SETTING:
+            for asn in scenario.relay_asns - available_relays:
+                not_connected_relay_as_obj.append(engine.as_dict[asn])
+
         if len(available_relays) > 0:
-            # If the relay_setting is CDN, then if any one of the
-            # the relay ASNs is avaialable, then all corresponding relay
-            # ASNs are also available, as we can assume they can tunnel to each other
-            not_connected_relay_as_obj = list()
-            if scenario.relay_setting == CDN_RELAY_SETTING:
-                for asn in scenario.relay_asns - available_relays:
-                    not_connected_relay_as_obj.append(engine.as_dict[asn])
             # For each adopting ASN (except relay), check if it's disconnected
             for as_obj_iterator in [not_connected_relay_as_obj, outcomes]:
                 for as_obj in as_obj_iterator:
                     if self.has_access_to_relay_service(as_obj) and \
-                            outcomes[as_obj] == Outcomes.DISCONNECTED and \
+                            outcomes[as_obj] != Outcomes.VICTIM_SUCCESS and \
                             as_obj.asn not in available_relays:
                         if scenario.relay_setting != CDN_RELAY_SETTING:
                             selected_relay_asn = as_obj.use_relay(available_relays,
@@ -292,6 +293,18 @@ class V4Subgraph(Subgraph):
                     available_relays = scenario.relay_asns
             if scenario.tunnel_customer_traffic and changes_made_flag:
                 self._get_engine_outcomes(engine, scenario, attacker_ann, outcomes, traceback_asn_outcomes, True)
+        else:
+            # If there's no option to connect to relay and the ASes outcome is
+            # ATTAKCER_SUCCESS, then the AS should simply disconnect
+            for as_obj_iterator in [not_connected_relay_as_obj, outcomes]:
+                for as_obj in as_obj_iterator:
+                    if self.has_access_to_relay_service(as_obj) and \
+                            outcomes[as_obj] == Outcomes.ATTACKER_SUCCESS and \
+                            as_obj.asn not in available_relays and \
+                            scenario.probe_data_plane:
+                        # TODO: Add Blackholes in LocalRIBs for this
+                        outcomes[as_obj] = Outcomes.DISCONNECTED
+
 
     def get_prefix_with_minimum_successful_connections(self, scenario, shared_data):
         min_prefix = ""
