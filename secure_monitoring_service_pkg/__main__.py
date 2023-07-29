@@ -92,6 +92,7 @@ def process_scenario_args(args):
         "assume_relays_are_reachable": args.assume_relays_are_reachable,
         "tunnel_customer_traffic": args.tunnel_customer_traffic,
         "probe_data_plane": args.probe_data_plane,
+        "special_static_as_class": None if not args.replace_rov_ases_with else POLICIES.get(args.replace_rov_ases_with[0])
     }
     # Set for AutoImmune attack indirect/direct
     if args.scenario == AUTOIMMUNE:
@@ -103,6 +104,8 @@ def process_scenario_args(args):
 def process_simulation_args(args):
     rov_setting_raw = args.rov_adoption  # none / real
     if rov_setting_raw == 'none':
+        if args.replace_rov_ases_with:
+            raise ValueError(f"If `replace_rov_ases_with` (e.g. {args.replace_rov_ases_with}) is set, then `rov_adoption` setting must be set (i.e. NOT None)")
         rov_setting = False
     elif rov_setting_raw == 'real':
         rov_setting = True
@@ -126,10 +129,14 @@ def process_other_args(args):
         output_filename = args.output
     else:
         percentages_str = 'full' if args.percentages == ALL_PERCENTAGES else str(args.percentages).replace(' ', '')
+        if args.replace_rov_ases_with:
+            mixed_adoption_setting = args.replace_rov_ases_with[0]
+        else:
+            mixed_adoption_setting = args.rov_adoption
         # Auto Generate Filename
         output_filename = f"{args.scenario}_scenario" + \
                           f"_{args.autoimmune_attack_type}_type" + \
-                          f"_{args.rov_adoption}_rov" + \
+                          f"_{mixed_adoption_setting}_rov" + \
                           f"_{args.python_hash_seed}_hash" + \
                           f"_{args.probe_data_plane}_probe" + \
                           f"_{args.relay_asns[0]}_relay" + \
@@ -232,6 +239,12 @@ def parse_args():
                                  'twenty',
                                  'fifty',
                                  'hundred'])
+    parser.add_argument('--replace_rov_ases_with',
+                        type=str,
+                        nargs=1,
+                        default=None,
+                        help='Adopting ASes that can be set as special adopting ASes when the ROV adopting is set to real',
+                        choices=POLICIES.keys())
     parser.add_argument('--attack_relays',
                         type=bool,
                         nargs='?',
@@ -304,9 +317,11 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
     simulation_kwargs["caida_kwargs"] = str(simulation_kwargs["caida_kwargs"])
     settings.update(simulation_kwargs)
     scenario_kwargs["relay_asns"] = str(scenario_kwargs["relay_asns"])
+    scenario_kwargs["special_static_as_class"] = str(scenario_kwargs["special_static_as_class"])
     settings.update(scenario_kwargs)
     settings["git_hash"] = get_git_revision_hash()
     settings["git_short_hash"] = get_git_short_revision_hash()
+
     return settings
 
 

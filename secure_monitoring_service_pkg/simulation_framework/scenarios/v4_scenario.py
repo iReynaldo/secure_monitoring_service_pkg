@@ -1,3 +1,6 @@
+import random
+import math
+
 from typing import Tuple, Optional, Type, Set, Dict, List, Union
 from ipaddress import ip_network
 
@@ -10,6 +13,7 @@ from bgp_simulator_pkg import Announcement
 from bgp_simulator_pkg import Timestamps
 from bgp_simulator_pkg import SimulationEngine
 from bgp_simulator_pkg import SpecialPercentAdoptions
+from bgp_simulator_pkg import RealROVSimpleAS
 
 from .cdn import CDN
 from secure_monitoring_service_pkg.simulation_framework.sim_logger \
@@ -34,7 +38,7 @@ class V4Scenario(Scenario):
 
     def __init__(self, *args, relay_asns=None, attack_relays=False,
                  assume_relays_are_reachable=False, tunnel_customer_traffic=False,
-                 probe_data_plane=False, **kwargs):
+                 probe_data_plane=False, special_static_as_class=None, **kwargs):
         super(V4Scenario, self).__init__(*args, **kwargs)
         self.has_rovsms_ases = False
         self.trusted_server_ref = None
@@ -46,6 +50,7 @@ class V4Scenario(Scenario):
         self.assume_relays_are_reachable = assume_relays_are_reachable
         self.attack_relays = attack_relays
         self.probe_data_plane = probe_data_plane
+        self.special_static_as_class = special_static_as_class if special_static_as_class else RealROVSimpleAS
         if relay_asns:
             if self._is_using_cdn(relay_asns):
                 self.relay_setting = CDN_RELAY_SETTING
@@ -95,6 +100,60 @@ class V4Scenario(Scenario):
                     self.has_rovsms_ases = True
 
                 as_obj._force_add_blackholes_from_avoid_list(self.ordered_prefix_subprefix_dict)
+
+    def _get_adopting_asns_dict(
+            self,
+            engine: SimulationEngine,
+            percent_adopt: Union[float, SpecialPercentAdoptions]
+            ) -> Dict[int, Type[AS]]:
+        """
+        This is a copy of the one in the super class with a single variable change
+        to allow different ASes to be set instead of just ROV for these special mixed
+        adoption setting
+        """
+
+        asn_cls_dict = dict()
+        for subcategory in self.adoption_subcategory_attrs:
+            ases = getattr(engine, subcategory)
+            real_rov_ases = set()
+            # If we are including ROV nodes
+            # Don't always run this to save on time
+            if self.min_rov_confidence <= 1:
+                for as_ in ases:
+                    if as_.rov_confidence >= self.min_rov_confidence:
+                        asn_cls_dict[as_.asn] = self.special_static_as_class  # Change made here
+                        real_rov_ases.add(as_)
+            # Remove ASes that are already pre-set
+            # Ex: Attacker and victim
+            # Ex: ROV Nodes (in certain situations)
+            possible_adopters = ases.difference(self._preset_asns)
+            possible_adopters = possible_adopters.difference(real_rov_ases)
+
+            # Get how many ASes should be adopting
+
+            # Round for the start and end of the graph
+            # (if 0 ASes would be adopting, have 1 as adopt)
+            # (If all ASes would be adopting, have all -1 adopt)
+            # This was a feature request, but it's not supported
+            if percent_adopt == SpecialPercentAdoptions.ONLY_ONE:
+                k = 1
+            elif percent_adopt == SpecialPercentAdoptions.ALL_BUT_ONE:
+                k = len(possible_adopters) - 1
+            else:
+                assert isinstance(percent_adopt, float), "Make mypy happy"
+                k = math.ceil(len(possible_adopters) * percent_adopt)
+
+            # https://stackoverflow.com/a/15837796/8903959
+            possible_adopters = tuple(possible_adopters)
+            try:
+                for as_ in random.sample(possible_adopters, k):
+                    asn_cls_dict[as_.asn] = self.AdoptASCls
+            except ValueError:
+                raise ValueError(
+                    f"{k} can't be sampled from {len(possible_adopters)}")
+            for asn in self._default_adopters:
+                asn_cls_dict[asn] = self.AdoptASCls
+        return asn_cls_dict
 
     def _get_ordered_prefix_subprefix_dict(self):
         """Saves a dict of prefix to subprefixes
