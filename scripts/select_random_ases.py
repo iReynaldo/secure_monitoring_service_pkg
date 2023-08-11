@@ -17,7 +17,7 @@ engine = CaidaCollector(BaseASCls=BGPSimpleAS,
 possible_ases = list(engine.stub_or_mh_asns)
 
 previous_set = None
-for k in [5, 10, 20, 50, 100]:
+for k in [5, 10, 20, 40, 50, 100]:
     random.seed(0)
     print(f"Set of {k}")
     new_set = random.choices(possible_ases, k=k)

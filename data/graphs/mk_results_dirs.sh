@@ -9,12 +9,12 @@ for stage in prelim final mixed
 do
     for attack in autoimmune-direct autoimmune-indirect subprefix superprefix
     do
-        for rov_setting in rov-real rov-none
+        for rov_setting in rov-real rov-none v4-mixed
         do
             mkdir -p $stage/$attack/$rov_setting/no-relay
             for relay_attack in attack-relay no-attack-relay
             do
-                for relay in akamai cloudflare verisign incapsula neustar five ten twenty
+                for relay in akamai cloudflare verisign incapsula neustar conglomerate five ten twenty forty fifty hundred
                 do
                     mkdir -p $stage/$attack/$rov_setting/$relay_attack/$relay
                 done
