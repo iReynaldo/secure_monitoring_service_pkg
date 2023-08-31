@@ -46,9 +46,12 @@ SUPERPREFIX_PLUS_PREFIX_HIJACK = "V4SuperprefixPrefixHijack"
 
 ALL_PERCENTAGES = [0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99]
 
-POLICIES = {
+STANDARD_POLICIES = {
     'rov': ROVSimpleAS,
-    'v1lite': ROVPPV1LiteSimpleAS,
+    'v1lite': ROVPPV1LiteSimpleAS
+}
+
+POLICIES = {
     'rovppo': ROVPPO,
     'v4': ROVSMS,
     'v4k1': ROVSMSK1,
@@ -58,6 +61,9 @@ POLICIES = {
     'v4k6': ROVSMSK6,
     'v4k10': ROVSMSK10
 }
+
+# Add the STANDARD_POLICIES to list of POLICIES 
+POLICIES.update(STANDARD_POLICIES)
 
 
 #############################
@@ -123,19 +129,33 @@ def process_simulation_args(args):
     }
 
 
+def only_using_standard_policies(policies):
+    standard_policies_list = STANDARD_POLICIES.keys()
+    num_standard_policies = len(standard_policies_list)
+    if len(policies) != num_standard_policies:
+        return False
+    for policy in policies:
+        if policy not in standard_policies_list:
+           return False
+    return True
+
+
 def process_other_args(args):
     # If output filename given, use it
     if args.output:
         output_filename = args.output
     else:
+        policies_used_str = "standard" if only_using_standard_policies(args.policy) else "others"
         percentages_str = 'full' if args.percentages == ALL_PERCENTAGES else str(args.percentages).replace(' ', '')
         if args.replace_rov_ases_with:
             mixed_adoption_setting = args.replace_rov_ases_with[0]
         else:
             mixed_adoption_setting = args.rov_adoption
+        
         # Auto Generate Filename
         output_filename = f"{args.scenario}_scenario" + \
                           f"_{args.autoimmune_attack_type}_type" + \
+                          f"_{policies_used_str}_policies" + \
                           f"_{mixed_adoption_setting}_rov" + \
                           f"_{args.python_hash_seed}_hash" + \
                           f"_{args.probe_data_plane}_probe" + \
