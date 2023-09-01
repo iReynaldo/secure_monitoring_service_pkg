@@ -8,6 +8,7 @@ import random
 from copy import deepcopy
 
 
+
 from caida_collector_pkg import CaidaCollector
 
 from bgp_simulator_pkg import Simulation
@@ -19,6 +20,12 @@ from bgp_simulator_pkg import SubprefixHijack
 from bgp_simulator_pkg import SimulationEngine
 from bgp_simulator_pkg import BGPSimpleAS
 
+####################
+# Constants
+####################
+
+CAIDA_CACHE_DIR = "~/tmp/caida_collector_cache"
+CAIDA_CACHE_TSV = "~/tmp/caida_collector.tsv"
 
 class V4Simulation(Simulation):
 
@@ -74,14 +81,20 @@ class V4Simulation(Simulation):
             dl_time = datetime.strptime(caida_topology_date, '%Y.%m.%d')
             dl_time.replace(hour=0, minute=0, second=0, microsecond=0)
             self.caida_download_time = dl_time
-            CaidaCollector().run(dl_time=dl_time)
+            CaidaCollector().run(dl_time=dl_time,
+                                 cache_dir=Path(CAIDA_CACHE_DIR),
+                                 tsv_path=Path(CAIDA_CACHE_TSV))
         else:
-            CaidaCollector().run()
+            CaidaCollector().run(cache_dir=Path(CAIDA_CACHE_DIR),
+                                 tsv_path=Path(CAIDA_CACHE_TSV))
 
     def run(self, experiment_settings_to_save=None):
         """Runs the simulation and write the data"""
-
+        start = datetime.now()
         self._get_data()
+        elapsed_time = (datetime.now() - start).total_seconds()
+        if experiment_settings_to_save:
+            experiment_settings_to_save["runtime_seconds"] = elapsed_time
         self._write_data(experiment_settings_to_save)
 
     def _write_data(self, experiment_settings_to_save=None):
