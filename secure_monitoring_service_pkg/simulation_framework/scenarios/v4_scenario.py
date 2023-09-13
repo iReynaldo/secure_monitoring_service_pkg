@@ -19,7 +19,6 @@ from .cdn import CDN
 from secure_monitoring_service_pkg.simulation_framework.sim_logger \
     import sim_logger as logger
 
-
 ################################
 # Constants
 ################################
@@ -30,13 +29,31 @@ NO_RELAY_SETTING = "no_relay"
 
 RELAY_PREFIX = "7.7.7.0/24"
 
+
+################################
+# Functions
+################################
+
+def select_fraction_from_set(iterable_obj, fraction):
+    """
+
+    :param iterable_obj:
+    :param fraction: a float between 0 and 1 (all-inclusive)
+    :return:
+    """
+    # Calculate number of items to select, where at least 1 is chosen.
+    fraction_to_select = max(round(len(iterable_obj) * fraction), 1)
+    # Recommended from python error message to use sorted for set and dict objects
+    return random.sample(sorted(iterable_obj), fraction_to_select)
+
+
 ################################
 # Main Scenario Class
 ################################
 
 class V4Scenario(Scenario):
 
-    def __init__(self, *args, relay_asns=None, attack_relays=False,
+    def __init__(self, *args, relay_asns=None, attack_relays=False, fraction_of_peer_ases_to_attack=0.5,
                  assume_relays_are_reachable=False, tunnel_customer_traffic=False,
                  probe_data_plane=False, special_static_as_class=None, **kwargs):
         super(V4Scenario, self).__init__(*args, **kwargs)
@@ -49,6 +66,7 @@ class V4Scenario(Scenario):
         self.tunnel_customer_traffic = tunnel_customer_traffic
         self.assume_relays_are_reachable = assume_relays_are_reachable
         self.attack_relays = attack_relays
+        self.fraction_of_peer_ases_to_attack = fraction_of_peer_ases_to_attack
         self.probe_data_plane = probe_data_plane
         self.special_static_as_class = special_static_as_class if special_static_as_class else RealROVSimpleAS
         if relay_asns:
@@ -61,7 +79,7 @@ class V4Scenario(Scenario):
 
     def _is_using_cdn(self, relay_asns):
         if relay_asns == CDN().akamai or relay_asns == CDN().cloudflare or \
-            relay_asns == CDN().verisign or relay_asns == CDN().incapsula or \
+                relay_asns == CDN().verisign or relay_asns == CDN().incapsula or \
                 relay_asns == CDN().neustar:
             return True
         else:
@@ -105,7 +123,7 @@ class V4Scenario(Scenario):
             self,
             engine: SimulationEngine,
             percent_adopt: Union[float, SpecialPercentAdoptions]
-            ) -> Dict[int, Type[AS]]:
+    ) -> Dict[int, Type[AS]]:
         """
         This is a copy of the one in the super class with a single variable change
         to allow different ASes to be set instead of just ROV for these special mixed
@@ -304,7 +322,7 @@ class V4Scenario(Scenario):
                         anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
                 else:
                     for attacker_asn in self.attacker_asns:
-                        for relay_prefix in set(self.relay_prefixes.values()):  # Converted to set to remove duplicates
+                        for relay_prefix in select_fraction_from_set(self.relay_prefixes.values(), self.fraction_of_peer_ases_to_attack):
                             anns.append(self.create_attacker_relay_announcement(relay_prefix, attacker_asn, roa_origin))
         return anns
 

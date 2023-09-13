@@ -95,6 +95,7 @@ def process_scenario_args(args):
         "adoption_subcategory_attrs": args.adoption_subcategory,
         "relay_asns": overlay_setting,
         "attack_relays": args.attack_relays,
+        "fraction_of_peer_ases_to_attack": args.fraction_of_peer_ases_to_attack,
         "assume_relays_are_reachable": args.assume_relays_are_reachable,
         "tunnel_customer_traffic": args.tunnel_customer_traffic,
         "probe_data_plane": args.probe_data_plane,
@@ -264,13 +265,20 @@ def parse_args():
                         type=str,
                         nargs=1,
                         default=None,
-                        help='Adopting ASes that can be set as special adopting ASes when the ROV adopting is set to real',
+                        help='Adopting ASes that can be set as special adopting '
+                             'ASes when the ROV adopting is set to real',
                         choices=POLICIES.keys())
     parser.add_argument('--attack_relays',
                         type=bool,
                         nargs='?',
                         default=False,
                         help='Whether or not to attack relays.')
+    parser.add_argument('--fraction_of_peer_ases_to_attack',
+                        type=float,
+                        nargs='?',
+                        default=0.5,
+                        help='A float representing the fraction peers to be '
+                             'attacker when the "attack_relays" flag is set')
     parser.add_argument('--assume_relays_are_reachable',
                         type=bool,
                         nargs='?',
