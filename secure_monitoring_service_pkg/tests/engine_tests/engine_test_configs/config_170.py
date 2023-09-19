@@ -32,7 +32,7 @@ class Config170(EngineTestConfig):
                                          BaseASCls=BGPSimpleAS,
                                          AnnCls=ROVPPAnn,
                                          relay_asns=relay_asns,
-                                         probe_data_plane=True,
+                                         probe_data_plane=False,
                                          attack_relays=False,
                                          assume_relays_are_reachable=False)
 

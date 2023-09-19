@@ -16,10 +16,11 @@ relay_prefixes:
   12008: 7.7.7.0/24
   19905: 7.7.7.0/24
 relay_usage:
+  7786: !!set
+    1: null
   12008: !!set
     4: null
   19905: !!set
-    1: null
     7786: null
     12008: null
 set: true

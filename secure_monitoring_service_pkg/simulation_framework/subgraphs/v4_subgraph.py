@@ -17,7 +17,7 @@ from secure_monitoring_service_pkg.simulation_framework.scenarios import Subpref
 from secure_monitoring_service_pkg.simulation_framework.scenarios import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg.simulation_framework.scenarios import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg.simulation_framework.scenarios.v4_scenario import CDN_RELAY_SETTING
-
+from secure_monitoring_service_pkg.simulation_engine.as_classes import ROVPPO
 
 # TODO: Re-introduce metadata_collector
 # from secure_monitoring_service_pkg.simulation_framework import metadata_collector
@@ -236,7 +236,7 @@ class V4Subgraph(Subgraph):
 
         # Create a set of relays that have successful connections to origin
         available_relays = set()
-        if "Overlayed" in scenario.AdoptASCls.__name__ and not scenario.probe_data_plane:
+        if ROVPPO.__name__ == scenario.AdoptASCls.__name__ and not scenario.probe_data_plane:
             # If the adopting ASes are running ROV++ Overlay
             # without the ability to probe the dataplane, then there is
             # no way to filter the available Relays. So simply say all
@@ -262,14 +262,14 @@ class V4Subgraph(Subgraph):
                     if self.has_access_to_relay_service(as_obj) and \
                             outcomes[as_obj] != Outcomes.VICTIM_SUCCESS and \
                             as_obj.asn not in available_relays:
-                        if scenario.relay_setting != CDN_RELAY_SETTING:
-                            selected_relay_asn = as_obj.use_relay(available_relays,
-                                                                  scenario.relay_prefixes,
-                                                                  scenario.assume_relays_are_reachable)
-                        else:
+                        if as_obj.asn in scenario.relay_asns and scenario.relay_setting == CDN_RELAY_SETTING:
                             selected_relay_asn = as_obj.use_relay(available_relays,
                                                                   scenario.relay_prefixes,
                                                                   True)
+                        else:
+                            selected_relay_asn = as_obj.use_relay(available_relays,
+                                                                  scenario.relay_prefixes,
+                                                                  scenario.assume_relays_are_reachable)
                         if selected_relay_asn:
                             # Update outcome for asn to outcome of the Relay that was selected
                             outcomes[as_obj] = outcomes[engine.as_dict[selected_relay_asn]]

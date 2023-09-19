@@ -31,6 +31,7 @@ class Config163(EngineTestConfig):
                                          BaseASCls=BGPSimpleAS,
                                          AnnCls=ROVPPAnn,
                                          relay_asns=relay_asns,
+                                         fraction_of_peer_ases_to_attack=1.0,
                                          attack_relays=True,
                                          assume_relays_are_reachable=False)
 
