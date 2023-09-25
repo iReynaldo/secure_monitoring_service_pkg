@@ -1,6 +1,9 @@
 from typing import Dict, Any, Type, Tuple, List, Optional
 import ipaddress
 import sys
+import csv
+
+from filelock import FileLock
 
 from caida_collector_pkg import AS
 
@@ -18,10 +21,7 @@ from secure_monitoring_service_pkg.simulation_framework.scenarios import V4Subpr
 from secure_monitoring_service_pkg.simulation_framework.scenarios import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg.simulation_framework.scenarios.v4_scenario import CDN_RELAY_SETTING
 from secure_monitoring_service_pkg.simulation_engine.as_classes import ROVPPO
-
-# TODO: Re-introduce metadata_collector
-# from secure_monitoring_service_pkg.simulation_framework import metadata_collector
-
+from secure_monitoring_service_pkg.simulation_framework import metadata_collector
 
 class V4Subgraph(Subgraph):
     v4_subclasses = []
@@ -36,12 +36,13 @@ class V4Subgraph(Subgraph):
         names = [x.name for x in cls.v4_subclasses if x.name]
         assert len(set(names)) == len(names), f"Duplicate subgraph class names {names}"
 
-    def __init__(self):
+    def __init__(self, metadata_collection_args=None):
         super(V4Subgraph, self).__init__()
-
-    # TODO: Move this percentage and trial capturing somewhere
-    # metadata_collector.cur_percent_adoption = percent_adopt
-    # metadata_collector.cur_trial = trial
+        # Variables for metadata collection
+        self.collect_avoid_list_metadata = metadata_collector.collect_avoid_list_metadata
+        self.avoid_list_csv_filename = metadata_collector.avoid_list_csv_filename
+        self.avoid_list_fieldnames = metadata_collector.AVOID_LIST_CSV_FIELDNAMES
+        self.csv_file_delimiter = metadata_collector.CSV_FILE_DELIMITER
 
     def verify_avoid_list(self,
                           engine,
@@ -176,6 +177,28 @@ class V4Subgraph(Subgraph):
 
         prefix_with_minimum_successful_connections = self.get_prefix_with_minimum_successful_connections(scenario,
                                                                                                          shared_data)
+
+        # Why is prefix_outcomes sometime empty? -- Answer is because we don't need to outcomes recalculate between subgraphs
+        if self.collect_avoid_list_metadata and prefix_outcomes:
+            if scenario.trusted_server_ref:
+                with metadata_collector.avoid_list_csv_flock:
+                    with open(self.avoid_list_csv_filename, 'a') as csvfile:
+                        writer = csv.DictWriter(csvfile, fieldnames=self.avoid_list_fieldnames, delimiter=self.csv_file_delimiter)
+                        avoid_list = scenario.trusted_server_ref._recommendations[
+                            prefix_with_minimum_successful_connections]
+                        row = {
+                            'trial': trial,
+                            'percentage': percent_adopt,
+                            'propagation_round': propagation_round,
+                            'adoption_setting': scenario.AdoptASCls.name,
+                            'prefix_for_outcome': prefix_with_minimum_successful_connections,
+                            'attacker_asns': str(list(scenario.attacker_asns)),
+                            'victim_asn': next(iter(scenario.victim_asns)),
+                            'avoid_list_len': len(avoid_list),
+                            'avoid_list': str(avoid_list) if len(avoid_list) else '{}'
+                        }
+                        writer.writerow(row)
+
         key = self._get_subgraph_key(scenario)
         shared_data[key] = shared_data.get(key + f"_{prefix_with_minimum_successful_connections}", 0)
         self.data[propagation_round][scenario.graph_label][percent_adopt
@@ -211,7 +234,8 @@ class V4Subgraph(Subgraph):
                     not self._as_has_blackhole_for_attack_on_origin_prefix(as_obj, attacker_prefix):
                 if scenario.trusted_server_ref:
                     # Check that the AS path for the origin prefix does not have any ASes that have blackholes
-                    ases_with_blackholes = scenario.trusted_server_ref.adopters_with_blackhole.get(attacker_prefix, None)
+                    ases_with_blackholes = scenario.trusted_server_ref.adopters_with_blackhole.get(attacker_prefix,
+                                                                                                   None)
                     if ases_with_blackholes:
                         for asn in origin_ann.as_path:
                             if asn in ases_with_blackholes:
@@ -304,7 +328,6 @@ class V4Subgraph(Subgraph):
                             scenario.probe_data_plane:
                         # TODO: Add Blackholes in LocalRIBs for this
                         outcomes[as_obj] = Outcomes.DISCONNECTED
-
 
     def get_prefix_with_minimum_successful_connections(self, scenario, shared_data):
         min_prefix = ""

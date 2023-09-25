@@ -24,6 +24,7 @@ from secure_monitoring_service_pkg import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg import V4SuperprefixPrefixHijack
 from secure_monitoring_service_pkg import CDN
 from secure_monitoring_service_pkg import Peer
+from secure_monitoring_service_pkg import metadata_collector
 
 ############################
 # Constants
@@ -99,7 +100,8 @@ def process_scenario_args(args):
         "assume_relays_are_reachable": args.assume_relays_are_reachable,
         "tunnel_customer_traffic": args.tunnel_customer_traffic,
         "probe_data_plane": args.probe_data_plane,
-        "special_static_as_class": None if not args.replace_rov_ases_with else POLICIES.get(args.replace_rov_ases_with[0])
+        "special_static_as_class": None if not args.replace_rov_ases_with else POLICIES.get(
+            args.replace_rov_ases_with[0])
     }
     # Set for AutoImmune attack indirect/direct
     if args.scenario == AUTOIMMUNE:
@@ -112,7 +114,8 @@ def process_simulation_args(args):
     rov_setting_raw = args.rov_adoption  # none / real
     if rov_setting_raw == 'none':
         if args.replace_rov_ases_with:
-            raise ValueError(f"If `replace_rov_ases_with` (e.g. {args.replace_rov_ases_with}) is set, then `rov_adoption` setting must be set (i.e. NOT None)")
+            raise ValueError(
+                f"If `replace_rov_ases_with` (e.g. {args.replace_rov_ases_with}) is set, then `rov_adoption` setting must be set (i.e. NOT None)")
         rov_setting = False
     elif rov_setting_raw == 'real':
         rov_setting = True
@@ -137,7 +140,7 @@ def only_using_standard_policies(policies):
         return False
     for policy in policies:
         if policy not in standard_policies_list:
-           return False
+            return False
     return True
 
 
@@ -152,7 +155,7 @@ def process_other_args(args):
             mixed_adoption_setting = args.replace_rov_ases_with[0]
         else:
             mixed_adoption_setting = args.rov_adoption
-        
+
         # Auto Generate Filename
         output_filename = f"{args.scenario}_scenario" + \
                           f"_{args.autoimmune_attack_type}_type" + \
@@ -168,8 +171,16 @@ def process_other_args(args):
 
     settings = {
         "scenario": args.scenario,
-        "output_filename": output_filename
+        "output_filename": output_filename,
+        "collect_avoid_list_metadata": args.collect_avoid_list_metadata
     }
+    # Update Metadata collector
+    # Save output filename to metadata_collector
+    metadata_collector.output_filename = output_filename
+    metadata_collector.base_path = str(BASE_PATH)
+    if args.collect_avoid_list_metadata:
+        metadata_collector.collect_avoid_list_metadata = args.collect_avoid_list_metadata
+        metadata_collector.write_avoid_list_csv_header()
     return settings
 
 
@@ -178,12 +189,13 @@ def process_other_args(args):
 #############################
 
 def process_args(args):
+    # NOTE: Processing Other Args needs to be first to allow metadata_collector to know output filename
+    # Processes Other Args
+    other_args = process_other_args(args)
     # Processes Scenario Args
     scenario_args = process_scenario_args(args)
     # Processes Simulation Args
     simulation_args = process_simulation_args(args)
-    # Processes Other Args
-    other_args = process_other_args(args)
 
     return args, scenario_args, simulation_args, other_args
 
@@ -322,6 +334,12 @@ def parse_args():
                              'SubprefixAutoImmuneScenario, to indicate '
                              'if it is direct/indirect.',
                         choices=['none', 'direct', 'indirect'])
+    # Other Args
+    parser.add_argument('--collect_avoid_list_metadata',
+                        type=bool,
+                        nargs='?',
+                        default=False,
+                        help='Whether or not to collect metadata.')
     return process_args(parser.parse_args())
 
 
@@ -429,6 +447,7 @@ if __name__ == "__main__":
     try:
         main()
     finally:
+        metadata_collector.clean_up_lock_files()
         end_time = time.perf_counter()
         print("End Time", time.ctime())
         print("Elasped Time: ", end_time - start_time)
