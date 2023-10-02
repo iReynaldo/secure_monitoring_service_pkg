@@ -13,7 +13,17 @@ HEADERS_WRITTEN = False
 # Fieldnames
 AVOID_LIST_CSV_FIELDNAMES = ['trial', 'percentage', 'propagation_round',
                              'adoption_setting', 'prefix_for_outcome',
-                             'attacker_asns', 'victim_asn', 'avoid_list_len', 'avoid_list']
+                             'attacker_asns', 'victim_asn',
+                             'relay_name', 'num_relays',
+                             'before_relay_num_relays_hijacked',
+                             'before_relay_num_relays_victim_success',
+                             'before_relay_num_relays_disconnected',
+                             'before_relay_num_relays_available',
+                             'after_relay_num_relays_hijacked',
+                             'after_relay_num_relays_victim_success',
+                             'after_relay_num_relays_disconnected',
+                             'after_relay_num_relays_available',
+                             'avoid_list_len', 'avoid_list']
 
 #########################################################
 # Variables that need to be updated from __main__

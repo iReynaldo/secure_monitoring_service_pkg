@@ -2,6 +2,7 @@ from typing import Dict, Any, Type, Tuple, List, Optional
 import ipaddress
 import sys
 import csv
+from collections import Counter
 
 from filelock import FileLock
 
@@ -25,6 +26,7 @@ from secure_monitoring_service_pkg.simulation_framework import metadata_collecto
 
 class V4Subgraph(Subgraph):
     v4_subclasses = []
+    available_relay_counter_key = 'available'
 
     def __init_subclass__(cls, *args, **kwargs):
         """This method essentially creates a list of all subclasses
@@ -137,6 +139,10 @@ class V4Subgraph(Subgraph):
         {scenario_label: {percent_adopt: [percents]}}
         """
 
+        # Metadata tracking variables
+        before_relay_usage = Counter()
+        after_relay_usage = Counter()
+
         prefix_outcomes: Dict[str, Dict[AS, Outcomes]] = dict()
         for attacker_ann in scenario.get_attacker_announcements_for_origin():
             if not shared_data.get("set"):  # this gets set in __add_traceback_to_shared_data:
@@ -144,12 +150,10 @@ class V4Subgraph(Subgraph):
                 outcomes, traceback_asn_outcomes = \
                     self._get_engine_outcomes(engine, scenario, attacker_ann)
                 if scenario.relay_asns and not isinstance(scenario, ArtemisSubprefixHijackScenario):
-                    self._recalculate_outcomes_with_relays(scenario,
-                                                           engine,
-                                                           attacker_ann,
-                                                           outcomes,
-                                                           traceback_asn_outcomes,
-                                                           shared_data)
+                    self._recalculate_outcomes_with_relays(scenario, engine, attacker_ann, outcomes,
+                                                           traceback_asn_outcomes, shared_data,
+                                                           before_relay_usage=before_relay_usage,
+                                                           after_relay_usage=after_relay_usage)
 
                 prefix_outcomes[attacker_ann.prefix] = outcomes
 
@@ -194,6 +198,16 @@ class V4Subgraph(Subgraph):
                             'prefix_for_outcome': prefix_with_minimum_successful_connections,
                             'attacker_asns': str(list(scenario.attacker_asns)),
                             'victim_asn': next(iter(scenario.victim_asns)),
+                            'relay_name': scenario.relay_name,
+                            'num_relays': len(scenario.relay_asns),
+                            'before_relay_num_relays_hijacked': before_relay_usage[Outcomes.ATTACKER_SUCCESS],
+                            'before_relay_num_relays_victim_success': before_relay_usage[Outcomes.VICTIM_SUCCESS],
+                            'before_relay_num_relays_disconnected': before_relay_usage[Outcomes.DISCONNECTED],
+                            'before_relay_num_relays_available': before_relay_usage[self.available_relay_counter_key],
+                            'after_relay_num_relays_hijacked': after_relay_usage[Outcomes.ATTACKER_SUCCESS],
+                            'after_relay_num_relays_victim_success': after_relay_usage[Outcomes.VICTIM_SUCCESS],
+                            'after_relay_num_relays_disconnected': after_relay_usage[Outcomes.DISCONNECTED],
+                            'after_relay_num_relays_available': after_relay_usage[self.available_relay_counter_key],
                             'avoid_list_len': len(avoid_list),
                             'avoid_list': str(avoid_list) if len(avoid_list) else '{}'
                         }
@@ -252,9 +266,18 @@ class V4Subgraph(Subgraph):
             return False
 
     def _recalculate_outcomes_with_relays(self, scenario, engine, attacker_ann, outcomes, traceback_asn_outcomes,
-                                          shared_data, track_relay_usage=False):
+                                          shared_data,
+                                          before_relay_usage=None,
+                                          after_relay_usage=None,
+                                          track_relay_usage=False):
         """Mutate outcomes and traceback_asn_outcomes with potential reconnections
         from relays."""
+        # Create Bogus Counters in the case their not specified
+        if before_relay_usage is None:
+            before_relay_usage = Counter()
+        if after_relay_usage is None:
+            after_relay_usage = Counter()
+
         # This flag will indicate if re-computation of outcomes is necessary
         changes_made_flag = False
 
@@ -266,10 +289,14 @@ class V4Subgraph(Subgraph):
             # no way to filter the available Relays. So simply say all
             # relays are available to use.
             available_relays = scenario.relay_asns
+            # Update Metadata tracking variable
+            before_relay_usage.update((self.available_relay_counter_key, )*len(available_relays))
         else:
             for relay_asn in scenario.relay_asns:
                 if self._relay_is_available(engine, scenario, outcomes, attacker_ann.prefix, relay_asn):
                     available_relays.add(relay_asn)
+            # Update Metadata tracking variable
+            before_relay_usage.update((self.available_relay_counter_key, )*len(available_relays))
 
         # If the relay_setting is CDN, then if any one of the
         # relay ASNs is available, then all corresponding relay
@@ -279,10 +306,15 @@ class V4Subgraph(Subgraph):
             for asn in scenario.relay_asns - available_relays:
                 not_connected_relay_as_obj.append(engine.as_dict[asn])
 
+        seen_relay_ases = set()
+
         if len(available_relays) > 0:
             # For each adopting ASN (except relay), check if it's disconnected
             for as_obj_iterator in [not_connected_relay_as_obj, outcomes]:
                 for as_obj in as_obj_iterator:
+                    # Update Metadata tracking variable
+                    if as_obj.asn in scenario.relay_asns and as_obj.asn not in seen_relay_ases:
+                        before_relay_usage.update((outcomes[as_obj], ))
                     if self.has_access_to_relay_service(as_obj) and \
                             outcomes[as_obj] != Outcomes.VICTIM_SUCCESS and \
                             as_obj.asn not in available_relays:
@@ -309,6 +341,11 @@ class V4Subgraph(Subgraph):
                                 relay_users.add(as_obj.asn)
                                 relay_usage[selected_relay_asn] = relay_users
                                 shared_data["relay_usage"] = relay_usage
+                    # Update Metadata tracking variable
+                    if as_obj.asn in scenario.relay_asns and as_obj.asn not in seen_relay_ases:
+                        after_relay_usage.update((outcomes[as_obj], ))
+                        # Update seen relay ASNs
+                        seen_relay_ases.add(as_obj.asn)
                 # If relay setting is CDN, then they can tunnel between each other
                 if scenario.relay_setting == CDN_RELAY_SETTING:
                     # After the first time through the inner loop,
@@ -318,8 +355,9 @@ class V4Subgraph(Subgraph):
             if scenario.tunnel_customer_traffic and changes_made_flag:
                 self._get_engine_outcomes(engine, scenario, attacker_ann, outcomes, traceback_asn_outcomes, True)
         else:
+            # TODO: Review, this. Is this correct? I think something is wrong here
             # If there's no option to connect to relay and the ASes outcome is
-            # ATTAKCER_SUCCESS, then the AS should simply disconnect
+            # ATTAKCER_SUCCESS, then the AS should simply disconnect if probing is enabled
             for as_obj_iterator in [not_connected_relay_as_obj, outcomes]:
                 for as_obj in as_obj_iterator:
                     if self.has_access_to_relay_service(as_obj) and \
@@ -328,6 +366,12 @@ class V4Subgraph(Subgraph):
                             scenario.probe_data_plane:
                         # TODO: Add Blackholes in LocalRIBs for this
                         outcomes[as_obj] = Outcomes.DISCONNECTED
+            # Update Metadata tracking variables
+            for relay_asn in scenario.relay_asns:
+                before_relay_usage.update((outcomes[engine.as_dict[relay_asn]], ))
+                after_relay_usage.update((outcomes[engine.as_dict[relay_asn]], ))
+        # Update Metadata tracking variable
+        after_relay_usage.update((self.available_relay_counter_key, )*len(available_relays))
 
     def get_prefix_with_minimum_successful_connections(self, scenario, shared_data):
         min_prefix = ""

@@ -26,6 +26,7 @@ from secure_monitoring_service_pkg.simulation_framework.sim_logger \
 
 CDN_RELAY_SETTING = "cdn"
 PEER_RELAY_SETTING = "peer"
+CUSTOM_RELAY_SETTING = "custom"
 NO_RELAY_SETTING = "no_relay"
 
 RELAY_PREFIX = "7.7.7.0/24"
@@ -74,9 +75,12 @@ class V4Scenario(Scenario):
             if self._is_using_cdn(relay_asns):
                 self.relay_setting = CDN_RELAY_SETTING
                 self.relay_name = CDN().reverse_mapping[self.relay_asns]
-            else:
+            elif self._is_using_peer(relay_asns):
                 self.relay_setting = PEER_RELAY_SETTING
                 self.relay_name = Peer().reverse_mapping[self.relay_asns]
+            else:
+                self.relay_setting = CUSTOM_RELAY_SETTING
+                self.relay_name = CUSTOM_RELAY_SETTING
         else:
             self.relay_setting = NO_RELAY_SETTING
 
@@ -84,6 +88,14 @@ class V4Scenario(Scenario):
         if relay_asns == CDN().akamai or relay_asns == CDN().cloudflare or \
                 relay_asns == CDN().verisign or relay_asns == CDN().incapsula or \
                 relay_asns == CDN().neustar or relay_asns == CDN().conglomerate:
+            return True
+        else:
+            return False
+
+    def _is_using_peer(self, relay_asns):
+        if relay_asns == Peer().five or relay_asns == Peer().ten or \
+                relay_asns == Peer().twenty or relay_asns == Peer().forty or \
+                relay_asns == Peer().fifty or relay_asns == Peer().hundred:
             return True
         else:
             return False
