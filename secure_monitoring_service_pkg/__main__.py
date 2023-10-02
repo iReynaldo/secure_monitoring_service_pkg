@@ -22,6 +22,7 @@ from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
 from secure_monitoring_service_pkg import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg import V4SuperprefixPrefixHijack
+from secure_monitoring_service_pkg import V4PrefixHijackScenario
 from secure_monitoring_service_pkg import CDN
 from secure_monitoring_service_pkg import Peer
 from secure_monitoring_service_pkg import metadata_collector
@@ -42,6 +43,7 @@ adoption_settings = {
 # Scenario options
 AUTOIMMUNE = "SubprefixAutoImmuneScenario"
 SUBPREFIX_HIJACK = "V4SubprefixHijackScenario"
+PREFIX_HIJACK = "V4PrefixHijackScenario"
 ARTEMIS_SUBPREFIX_HIJACK = "ArtemisSubprefixHijackScenario"
 SUPERPREFIX_PLUS_PREFIX_HIJACK = "V4SuperprefixPrefixHijack"
 
@@ -323,6 +325,7 @@ def parse_args():
                         default="V4SubprefixHijackScenario",
                         help='Attack Scenario',
                         choices=[SUBPREFIX_HIJACK,
+                                 PREFIX_HIJACK,
                                  AUTOIMMUNE,
                                  ARTEMIS_SUBPREFIX_HIJACK,
                                  SUPERPREFIX_PLUS_PREFIX_HIJACK])
@@ -396,6 +399,16 @@ def main():
                          output_path=BASE_PATH / other_args["output_filename"],
                          **simulation_args),
         ]
+    elif other_args["scenario"] == PREFIX_HIJACK:
+        sims = [
+            V4Simulation(scenarios=[V4PrefixHijackScenario(AdoptASCls=Cls,
+                                                           AnnCls=ROVPPAnn,
+                                                           **scenario_args)
+                                    for Cls in adoption_classes
+                                    ],
+                         output_path=BASE_PATH / other_args["output_filename"],
+                         **simulation_args),
+            ]
     elif other_args["scenario"] == AUTOIMMUNE:
         sims = [
             V4Simulation(scenarios=[SubprefixAutoImmuneScenario(AdoptASCls=Cls,
