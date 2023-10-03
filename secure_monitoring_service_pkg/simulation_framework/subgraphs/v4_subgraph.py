@@ -26,7 +26,12 @@ from secure_monitoring_service_pkg.simulation_framework import metadata_collecto
 
 class V4Subgraph(Subgraph):
     v4_subclasses = []
+
+    # metadata collection variables
     available_relay_counter_key = 'available'
+    relay_usage_edge_counter_key = 'edge_usage'
+    relay_usage_etc_counter_key = 'etc_usage'
+    relay_usage_clique_counter_key = 'clique_usage'
 
     def __init_subclass__(cls, *args, **kwargs):
         """This method essentially creates a list of all subclasses
@@ -200,6 +205,9 @@ class V4Subgraph(Subgraph):
                             'victim_asn': next(iter(scenario.victim_asns)),
                             'relay_name': scenario.relay_name,
                             'num_relays': len(scenario.relay_asns),
+                            'edge_using_relay': after_relay_usage[self.relay_usage_edge_counter_key],
+                            'etc_using_relay': after_relay_usage[self.relay_usage_etc_counter_key],
+                            'input_clique_using_relay': after_relay_usage[self.relay_usage_clique_counter_key],
                             'before_relay_num_relays_hijacked': before_relay_usage[Outcomes.ATTACKER_SUCCESS],
                             'before_relay_num_relays_victim_success': before_relay_usage[Outcomes.VICTIM_SUCCESS],
                             'before_relay_num_relays_disconnected': before_relay_usage[Outcomes.DISCONNECTED],
@@ -333,6 +341,13 @@ class V4Subgraph(Subgraph):
                             traceback_asn_outcomes[as_obj.asn] = traceback_asn_outcomes[selected_relay_asn]
                             # Update flag to signal re-computation of outcomes
                             changes_made_flag = True
+                            # Update Metadata tracking variables
+                            if as_obj.stub or as_obj.multihomed:
+                                after_relay_usage.update((self.relay_usage_edge_counter_key, ))
+                            elif as_obj.input_clique:
+                                after_relay_usage.update((self.relay_usage_clique_counter_key, ))
+                            else:
+                                after_relay_usage.update((self.relay_usage_etc_counter_key, ))
                             # Track which relays are being used
                             if track_relay_usage:
                                 # Add ASN to set of ASes using the relay to shared_data
