@@ -165,6 +165,7 @@ def process_other_args(args):
                           f"_{mixed_adoption_setting}_rov" + \
                           f"_{args.python_hash_seed}_hash" + \
                           f"_{args.probe_data_plane}_probe" + \
+                          f"_{args.tunnel_others_traffic}_tunnel" + \
                           f"_{args.relay_asns[0]}_relay" + \
                           f"_{args.attack_relays}_attackRelay" + \
                           f"_{args.num_attackers}_attacker" + \
