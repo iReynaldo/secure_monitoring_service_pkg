@@ -100,7 +100,7 @@ def process_scenario_args(args):
         "attack_relays": args.attack_relays,
         "fraction_of_peer_ases_to_attack": args.fraction_of_peer_ases_to_attack,
         "assume_relays_are_reachable": args.assume_relays_are_reachable,
-        "tunnel_customer_traffic": args.tunnel_customer_traffic,
+        "tunnel_others_traffic": args.tunnel_others_traffic,
         "probe_data_plane": args.probe_data_plane,
         "special_static_as_class": None if not args.replace_rov_ases_with else POLICIES.get(
             args.replace_rov_ases_with[0])
@@ -301,7 +301,7 @@ def parse_args():
                              'out a relay prefix. If set to True, then the '
                              'relay prefixes are not sent, and relays are'
                              ' assumed to be reachable to any adopting AS.')
-    parser.add_argument('--tunnel_customer_traffic',
+    parser.add_argument('--tunnel_others_traffic',
                         type=bool,
                         nargs='?',
                         default=False,

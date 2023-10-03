@@ -367,7 +367,7 @@ class V4Subgraph(Subgraph):
                     # all the relays should be considered
                     # available, because their evaluated first.
                     available_relays = scenario.relay_asns
-            if scenario.tunnel_customer_traffic and changes_made_flag:
+            if scenario.tunnel_others_traffic and changes_made_flag:
                 self._get_engine_outcomes(engine, scenario, attacker_ann, outcomes, traceback_asn_outcomes, True)
         else:
             # TODO: Review, this. Is this correct? I think something is wrong here
