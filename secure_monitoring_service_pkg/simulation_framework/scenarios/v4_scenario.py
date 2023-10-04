@@ -71,6 +71,8 @@ class V4Scenario(Scenario):
         self.fraction_of_peer_ases_to_attack = fraction_of_peer_ases_to_attack
         self.probe_data_plane = probe_data_plane
         self.special_static_as_class = special_static_as_class if special_static_as_class else RealROVSimpleAS
+        self.relay_setting = None
+        self.relay_name = None
         if relay_asns:
             if self._is_using_cdn(relay_asns):
                 self.relay_setting = CDN_RELAY_SETTING

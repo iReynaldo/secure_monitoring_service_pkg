@@ -195,6 +195,9 @@ class V4Subgraph(Subgraph):
                         writer = csv.DictWriter(csvfile, fieldnames=self.avoid_list_fieldnames, delimiter=self.csv_file_delimiter)
                         avoid_list = scenario.trusted_server_ref._recommendations[
                             prefix_with_minimum_successful_connections]
+                        # Calculate some CSV features
+                        num_relay_asns = 0 if not scenario.relay_asns else len(scenario.relay_asns)
+                        # Create new row
                         row = {
                             'trial': trial,
                             'percentage': percent_adopt,
@@ -204,7 +207,7 @@ class V4Subgraph(Subgraph):
                             'attacker_asns': str(list(scenario.attacker_asns)),
                             'victim_asn': next(iter(scenario.victim_asns)),
                             'relay_name': scenario.relay_name,
-                            'num_relays': len(scenario.relay_asns),
+                            'num_relays': num_relay_asns,
                             'edge_using_relay': after_relay_usage[self.relay_usage_edge_counter_key],
                             'etc_using_relay': after_relay_usage[self.relay_usage_etc_counter_key],
                             'input_clique_using_relay': after_relay_usage[self.relay_usage_clique_counter_key],
