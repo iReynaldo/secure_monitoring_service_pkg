@@ -9,6 +9,9 @@ class ROVPPO(ROVPPV1LiteSimpleAS):
     def __init__(self, *args, **kwargs):
         """Just ROV++ V1 Lite Simple with access to relay service."""
         super(ROVPPO, self).__init__(*args, **kwargs)
+        # The following variable indicates if the AS used a relay
+        # and it's updated in the V4Subgraph method _recalculate_outcomes_with_relays
+        self.used_relay = False
 
     def use_relay(self, relay_asns, relay_prefix_dict, assume_relays_are_reachable):
         """return the relay that it would use"""

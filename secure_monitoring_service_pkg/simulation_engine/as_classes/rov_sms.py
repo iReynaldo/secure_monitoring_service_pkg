@@ -21,6 +21,9 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
         if reset_trusted_server:
             self.trusted_server.__init__()
         super(ROVSMS, self).__init__(*args, **kwargs)
+        # The following variable indicates if the AS used a relay
+        # and it's updated in the V4Subgraph method _recalculate_outcomes_with_relays
+        self.used_relay = False
 
     def receive_ann(self, ann, *args, **kwargs):
         """Recieves ann and reports it"""

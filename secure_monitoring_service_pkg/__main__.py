@@ -175,7 +175,8 @@ def process_other_args(args):
     settings = {
         "scenario": args.scenario,
         "output_filename": output_filename,
-        "collect_avoid_list_metadata": args.collect_avoid_list_metadata
+        "collect_avoid_list_metadata": args.collect_avoid_list_metadata,
+        "collect_as_metadata": args.collect_as_metadata
     }
     # Update Metadata collector
     # Save output filename to metadata_collector
@@ -184,6 +185,9 @@ def process_other_args(args):
     if args.collect_avoid_list_metadata:
         metadata_collector.collect_avoid_list_metadata = args.collect_avoid_list_metadata
         metadata_collector.write_avoid_list_csv_header()
+    if args.collect_as_metadata:
+        metadata_collector.collect_as_metadata = args.collect_as_metadata
+        metadata_collector.write_as_csv_header()
     return settings
 
 
@@ -343,7 +347,12 @@ def parse_args():
                         type=bool,
                         nargs='?',
                         default=False,
-                        help='Whether or not to collect metadata.')
+                        help='Whether or not to collect avoid list metadata.')
+    parser.add_argument('--collect_as_metadata',
+                        type=bool,
+                        nargs='?',
+                        default=False,
+                        help='Whether or not to collect AS metadata.')
     return process_args(parser.parse_args())
 
 
