@@ -325,6 +325,9 @@ class V4Subgraph(Subgraph):
                     outcome = self.outcome_map[outcome]
                     counts['_'.join([adoption_setting, provider_setting,
                                     using_adopting_provider_setting, topology_section, outcome])] += 1
+                    # For any topology section (i.e. all) add to it
+                    counts['_'.join([adoption_setting, provider_setting,
+                                     using_adopting_provider_setting, 'all', outcome])] += 1
                 # Create new row
                 row = {
                     'trial': trial,
