@@ -100,7 +100,7 @@ def process_scenario_args(args):
         "attack_relays": args.attack_relays,
         "fraction_of_peer_ases_to_attack": args.fraction_of_peer_ases_to_attack,
         "assume_relays_are_reachable": args.assume_relays_are_reachable,
-        "tunnel_others_traffic": args.tunnel_others_traffic,
+        "tunnel_customers_traffic": args.tunnel_customers_traffic,
         "probe_data_plane": args.probe_data_plane,
         "special_static_as_class": None if not args.replace_rov_ases_with else POLICIES.get(
             args.replace_rov_ases_with[0])
@@ -165,7 +165,7 @@ def process_other_args(args):
                           f"_{mixed_adoption_setting}_rov" + \
                           f"_{args.python_hash_seed}_hash" + \
                           f"_{args.probe_data_plane}_probe" + \
-                          f"_{args.tunnel_others_traffic}_tunnel" + \
+                          f"_{args.tunnel_customers_traffic}_tunnel" + \
                           f"_{args.relay_asns[0]}_relay" + \
                           f"_{args.attack_relays}_attackRelay" + \
                           f"_{args.num_attackers}_attacker" + \
@@ -309,7 +309,7 @@ def parse_args():
                              'out a relay prefix. If set to True, then the '
                              'relay prefixes are not sent, and relays are'
                              ' assumed to be reachable to any adopting AS.')
-    parser.add_argument('--tunnel_others_traffic',
+    parser.add_argument('--tunnel_customers_traffic',
                         type=bool,
                         nargs='?',
                         default=False,

@@ -17,6 +17,7 @@ class Graph068(GraphInfo):
             peer_links=set([
 
                 PeerLink(3, 12),
+                PeerLink(5, 15),
             ]),
             customer_provider_links=set(
                 [

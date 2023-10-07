@@ -35,7 +35,7 @@ class Config172(EngineTestConfig):
                                          relay_asns=relay_asns,
                                          fraction_of_peer_ases_to_attack=1.0,
                                          attack_relays=True,
-                                         tunnel_others_traffic=True,
+                                         tunnel_customers_traffic=True,
                                          assume_relays_are_reachable=False)
 
     non_default_as_cls_dict: Dict[int, Type[AS]] = {3: ROVSMS}

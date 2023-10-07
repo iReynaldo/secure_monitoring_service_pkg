@@ -529,7 +529,7 @@ class V4Subgraph(Subgraph):
                     # all the relays should be considered
                     # available, because their evaluated first.
                     available_relays = scenario.relay_asns
-            if scenario.tunnel_others_traffic and changes_made_flag:
+            if scenario.tunnel_customers_traffic and changes_made_flag:
                 self._get_engine_outcomes(engine, scenario, attacker_ann, outcomes, traceback_asn_outcomes, True)
         else:
             # If there's no option to connect to relay and the ASes outcome is
@@ -579,7 +579,7 @@ class V4Subgraph(Subgraph):
         else:
             # Get the most specific announcement in the rib
             most_specific_ann = self._get_most_specific_ann(
-                as_obj, scenario.ordered_prefix_subprefix_dict, attacker_ann.prefix)
+                as_obj, scenario.ordered_prefix_subprefix_dict, attacker_ann.prefix, force_recompute=force_recompute)
             # This has to be done in the scenario
             # Because only the scenario knows attacker/victim
             # And it's possible for scenario's to have multiple attackers
@@ -609,7 +609,8 @@ class V4Subgraph(Subgraph):
     def _get_most_specific_ann(self,
                                as_obj: AS,
                                ordered_prefixes: Dict[str, List[str]],
-                               attacker_ann_prefix: str
+                               attacker_ann_prefix: str,
+                               force_recompute: bool = False
                                ) -> Optional[Ann]:
         """Returns the most specific announcement that exists in a rib
 
@@ -622,8 +623,14 @@ class V4Subgraph(Subgraph):
             if attacker_ann_prefix.subnet_of(ipaddress.ip_network(prefix)):
                 most_specific_ann = as_obj._local_rib.get_ann(prefix)
                 if most_specific_ann:
-                    # Mypy doesn't recognize that this is always an annoucnement
-                    return most_specific_ann  # type: ignore
+                    if not force_recompute:
+                        # Mypy doesn't recognize that this is always an annoucnement
+                        return most_specific_ann  # type: ignore
+                    # Check if announcement traces back to a provider
+                    provider_asns = tuple([x.asn for x in as_obj.providers])
+                    if most_specific_ann.as_path[1] in provider_asns:
+                        # Mypy doesn't recognize that this is always an annoucnement
+                        return most_specific_ann  # type: ignore
         return None
 
     # MARK: New

@@ -56,7 +56,7 @@ def select_fraction_from_set(iterable_obj, fraction):
 class V4Scenario(Scenario):
 
     def __init__(self, *args, relay_asns=None, attack_relays=False, fraction_of_peer_ases_to_attack=0.5,
-                 assume_relays_are_reachable=False, tunnel_others_traffic=False,
+                 assume_relays_are_reachable=False, tunnel_customers_traffic=False,
                  probe_data_plane=False, special_static_as_class=None, **kwargs):
         super(V4Scenario, self).__init__(*args, **kwargs)
         self.has_rovsms_ases = False
@@ -65,7 +65,7 @@ class V4Scenario(Scenario):
         self.name = "V4Scenario"
         self.relay_prefixes: Dict[int, str] = dict()
         self.relay_asns = relay_asns
-        self.tunnel_others_traffic = tunnel_others_traffic
+        self.tunnel_customers_traffic = tunnel_customers_traffic
         self.assume_relays_are_reachable = assume_relays_are_reachable
         self.attack_relays = attack_relays
         self.fraction_of_peer_ases_to_attack = fraction_of_peer_ases_to_attack
