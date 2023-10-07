@@ -188,6 +188,9 @@ def process_other_args(args):
     if args.collect_as_metadata:
         metadata_collector.collect_as_metadata = args.collect_as_metadata
         metadata_collector.write_as_csv_header()
+    if args.collect_agg_as_metadata:
+        metadata_collector.collect_agg_as_metadata = args.collect_agg_as_metadata
+        metadata_collector.write_agg_as_csv_header()
     return settings
 
 
@@ -352,7 +355,12 @@ def parse_args():
                         type=bool,
                         nargs='?',
                         default=False,
-                        help='Whether or not to collect AS metadata.')
+                        help='Whether or not to collect individual AS metadata.')
+    parser.add_argument('--collect_agg_as_metadata',
+                        type=bool,
+                        nargs='?',
+                        default=False,
+                        help='Whether or not to collect aggregated AS metadata.')
     return process_args(parser.parse_args())
 
 

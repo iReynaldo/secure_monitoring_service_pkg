@@ -34,6 +34,12 @@ class V4Subgraph(Subgraph):
     relay_usage_edge_counter_key = 'edge_usage'
     relay_usage_etc_counter_key = 'etc_usage'
     relay_usage_clique_counter_key = 'clique_usage'
+    outcome_map = {
+        Outcomes.ATTACKER_SUCCESS: 'hijacked',
+        Outcomes.VICTIM_SUCCESS: 'successful',
+        Outcomes.DISCONNECTED: 'disconnected',
+        Outcomes.UNDETERMINED: 'undetermined'
+    }
 
     def __init_subclass__(cls, *args, **kwargs):
         """This method essentially creates a list of all subclasses
@@ -45,7 +51,7 @@ class V4Subgraph(Subgraph):
         names = [x.name for x in cls.v4_subclasses if x.name]
         assert len(set(names)) == len(names), f"Duplicate subgraph class names {names}"
 
-    def __init__(self, metadata_collection_args=None):
+    def __init__(self):
         super(V4Subgraph, self).__init__()
         # Variables for metadata collection
         self.csv_file_delimiter = metadata_collector.CSV_FILE_DELIMITER
@@ -53,10 +59,14 @@ class V4Subgraph(Subgraph):
         self.collect_avoid_list_metadata = metadata_collector.collect_avoid_list_metadata
         self.avoid_list_csv_filename = metadata_collector.avoid_list_csv_filename
         self.avoid_list_metadata_fieldnames = metadata_collector.AVOID_LIST_CSV_FIELDNAMES
-        # Avoid list metadata variables
+        # AS metadata variables
         self.collect_as_metadata = metadata_collector.collect_as_metadata
         self.as_csv_filename = metadata_collector.as_csv_filename
         self.as_metadata_fieldnames = metadata_collector.AS_CSV_FIELDNAMES
+        # Aggregate AS metadata variables
+        self.collect_agg_as_metadata = metadata_collector.collect_agg_as_metadata
+        self.agg_as_csv_filename = metadata_collector.agg_as_csv_filename
+        self.agg_as_metadata_fieldnames = metadata_collector.AGG_AS_CSV_FIELDNAMES
 
 
     def verify_avoid_list(self,
@@ -211,6 +221,14 @@ class V4Subgraph(Subgraph):
                     prefix_with_minimum_successful_connections,
                     prefix_outcomes[prefix_with_minimum_successful_connections])
 
+        if self.collect_agg_as_metadata and prefix_outcomes:
+            if scenario.trusted_server_ref:
+                self.write_agg_as_metadata(
+                     trial, percent_adopt, propagation_round,
+                     scenario,
+                     prefix_with_minimum_successful_connections,
+                     prefix_outcomes[prefix_with_minimum_successful_connections])
+
         key = self._get_subgraph_key(scenario)
         shared_data[key] = shared_data.get(key + f"_{prefix_with_minimum_successful_connections}", 0)
         self.data[propagation_round][scenario.graph_label][percent_adopt
@@ -256,33 +274,20 @@ class V4Subgraph(Subgraph):
                 writer.writerow(row)
 
     def write_as_metadata(self, trial, percent_adopt, propagation_round,
-                            scenario, prefix, outcomes):
+                          scenario, prefix, outcomes):
         with metadata_collector.as_csv_flock:
             with open(self.as_csv_filename, 'a') as csvfile:
                 writer = csv.DictWriter(csvfile,
                                         fieldnames=self.as_metadata_fieldnames,
                                         delimiter=self.csv_file_delimiter)
                 # Calculate some CSV features
-                num_relay_asns = 0 if not scenario.relay_asns else len(scenario.relay_asns)
                 for as_obj, outcome in outcomes.items():
                     # Get values for features
                     # Used Relay feature
-                    used_relay = None
-                    if isinstance(as_obj, ROVPPO) or isinstance(as_obj, ROVSMS):
-                        used_relay = as_obj.used_relay
-                    # Numer of Adopting Providers & Using Adopting Provider
-                    most_specific_ann = self._get_most_specific_ann(
-                        as_obj, scenario.ordered_prefix_subprefix_dict, prefix)
-                    most_specific_ann_as_path = None
-                    if most_specific_ann:
-                        most_specific_ann_as_path = most_specific_ann.as_path
-                    using_adopting_provider = False
-                    num_adopting_providers = 0
-                    for provider_as_obj in as_obj.providers:
-                        if isinstance(provider_as_obj, scenario.AdoptASCls):
-                            num_adopting_providers += 1
-                            if most_specific_ann_as_path and provider_as_obj.asn in most_specific_ann_as_path:
-                                using_adopting_provider = True
+                    used_relay = self._calc_used_relay(as_obj)
+                    # Number of Adopting Providers & Using Adopting Provider
+                    num_adopting_providers, using_adopting_provider = \
+                        self._calc_adopting_provider_features(as_obj, scenario, prefix)
                     # Create new row
                     row = {
                         'trial': trial,
@@ -293,7 +298,6 @@ class V4Subgraph(Subgraph):
                         'attacker_asns': str(list(scenario.attacker_asns)),
                         'victim_asn': next(iter(scenario.victim_asns)),
                         'relay_name': scenario.relay_name,
-                        'num_relays': num_relay_asns,
                         'asn': as_obj.asn,
                         'policy': as_obj.name,
                         'num_providers': len(as_obj.providers),
@@ -303,6 +307,81 @@ class V4Subgraph(Subgraph):
                         'using_relay': used_relay
                     }
                     writer.writerow(row)
+
+    def write_agg_as_metadata(self, trial, percent_adopt, propagation_round,
+                              scenario, prefix, outcomes):
+        with metadata_collector.agg_as_csv_flock:
+            with open(self.agg_as_csv_filename, 'a') as csvfile:
+                writer = csv.DictWriter(csvfile,
+                                        fieldnames=self.agg_as_metadata_fieldnames,
+                                        delimiter=self.csv_file_delimiter)
+                # Calculate features
+                # Get counts
+                counts = Counter()
+                for as_obj, outcome in outcomes.items():
+                    adoption_setting = 'ad' if as_obj.name == scenario.AdoptASCls.name else 'nonad'
+                    provider_setting, using_adopting_provider_setting = self._provider_setting(as_obj, scenario, prefix)
+                    topology_section = self._topology_section(as_obj)
+                    outcome = self.outcome_map[outcome]
+                    counts['_'.join([adoption_setting, provider_setting,
+                                    using_adopting_provider_setting, topology_section, outcome])] += 1
+                # Create new row
+                row = {
+                    'trial': trial,
+                    'percentage': percent_adopt,
+                    'propagation_round': propagation_round,
+                    'adoption_setting': scenario.AdoptASCls.name,
+                    'prefix_for_outcome': prefix,
+                    'attacker_asns': str(list(scenario.attacker_asns)),
+                    'victim_asn': next(iter(scenario.victim_asns)),
+                    'relay_name': scenario.relay_name
+                }
+                row.update(counts)
+                writer.writerow(row)
+
+    def _provider_setting(self, as_obj, scenario, prefix):
+        # Used Relay feature
+        used_relay = self._calc_used_relay(as_obj)
+        # Numer of Adopting Providers & Using Adopting Provider
+        num_adopting_providers, using_adopting_provider = \
+            self._calc_adopting_provider_features(as_obj, scenario, prefix)
+        using_adopting_provider_setting = 'using' if using_adopting_provider else 'notusing'
+        num_proivders = len(as_obj.providers)
+        if num_adopting_providers == 0:
+            return 'noad', using_adopting_provider_setting
+        elif 0 < num_adopting_providers < num_proivders:
+            return 'al1ad', using_adopting_provider_setting
+        elif num_adopting_providers == num_proivders:
+            return 'allad', using_adopting_provider_setting
+
+    def _topology_section(self, as_obj):
+        if as_obj.stub or as_obj.multihomed:
+            return 'edge'
+        elif as_obj.input_clique:
+            return 'clique'
+        else:
+            return 'etc'
+
+    def _calc_used_relay(self, as_obj):
+        used_relay = None
+        if isinstance(as_obj, ROVPPO) or isinstance(as_obj, ROVSMS):
+            used_relay = as_obj.used_relay
+        return used_relay
+
+    def _calc_adopting_provider_features(self, as_obj, scenario, prefix):
+        most_specific_ann = self._get_most_specific_ann(
+            as_obj, scenario.ordered_prefix_subprefix_dict, prefix)
+        most_specific_ann_as_path = None
+        if most_specific_ann:
+            most_specific_ann_as_path = most_specific_ann.as_path
+        using_adopting_provider = False
+        num_adopting_providers = 0
+        for provider_as_obj in as_obj.providers:
+            if isinstance(provider_as_obj, scenario.AdoptASCls):
+                num_adopting_providers += 1
+                if most_specific_ann_as_path and provider_as_obj.asn in most_specific_ann_as_path:
+                    using_adopting_provider = True
+        return num_adopting_providers, using_adopting_provider
 
     def _as_has_blackhole_for_attack_on_origin_prefix(self, as_obj, attacker_prefix):
         # Check if created a blackhole
