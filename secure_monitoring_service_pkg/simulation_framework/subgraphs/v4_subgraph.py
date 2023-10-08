@@ -628,7 +628,7 @@ class V4Subgraph(Subgraph):
                         return most_specific_ann  # type: ignore
                     # Check if announcement traces back to a provider
                     provider_asns = tuple([x.asn for x in as_obj.providers])
-                    if most_specific_ann.as_path[1] in provider_asns:
+                    if len(most_specific_ann.as_path) > 1 and most_specific_ann.as_path[1] in provider_asns:
                         # Mypy doesn't recognize that this is always an annoucnement
                         return most_specific_ann  # type: ignore
         return None
