@@ -291,8 +291,7 @@ def parse_args():
                              'ASes when the ROV adopting is set to real',
                         choices=POLICIES.keys())
     parser.add_argument('--attack_relays',
-                        type=bool,
-                        nargs='?',
+                        action="store_true",
                         default=False,
                         help='Whether or not to attack relays.')
     parser.add_argument('--fraction_of_peer_ases_to_attack',
@@ -302,22 +301,19 @@ def parse_args():
                         help='A float representing the fraction peers to be '
                              'attacker when the "attack_relays" flag is set')
     parser.add_argument('--assume_relays_are_reachable',
-                        type=bool,
-                        nargs='?',
+                        action="store_true",
                         default=False,
                         help='This will enable/disable relays from sending '
                              'out a relay prefix. If set to True, then the '
                              'relay prefixes are not sent, and relays are'
                              ' assumed to be reachable to any adopting AS.')
     parser.add_argument('--tunnel_customers_traffic',
-                        type=bool,
-                        nargs='?',
+                        action="store_true",
                         default=False,
                         help='Whether or not to allow adopters to tunnel '
                              'reconnected traffic.')
     parser.add_argument('--probe_data_plane',
-                        type=bool,
-                        nargs='?',
+                        action="store_true",
                         default=False,
                         help='This enables the overlays to check the dataplane '
                              'result to determine its availability.')
@@ -347,18 +343,15 @@ def parse_args():
                         choices=['none', 'direct', 'indirect'])
     # Other Args
     parser.add_argument('--collect_avoid_list_metadata',
-                        type=bool,
-                        nargs='?',
+                        action="store_true",
                         default=False,
                         help='Whether or not to collect avoid list metadata.')
     parser.add_argument('--collect_as_metadata',
-                        type=bool,
-                        nargs='?',
+                        action="store_true",
                         default=False,
                         help='Whether or not to collect individual AS metadata.')
     parser.add_argument('--collect_agg_as_metadata',
-                        type=bool,
-                        nargs='?',
+                        action="store_true",
                         default=False,
                         help='Whether or not to collect aggregated AS metadata.')
     return process_args(parser.parse_args())
