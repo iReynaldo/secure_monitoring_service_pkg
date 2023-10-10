@@ -17,7 +17,7 @@ class Graph068(GraphInfo):
             peer_links=set([
 
                 PeerLink(3, 12),
-                PeerLink(5, 15),
+                PeerLink(5, 16),
             ]),
             customer_provider_links=set(
                 [
@@ -28,8 +28,10 @@ class Graph068(GraphInfo):
                     CPLink(provider_asn=20940, customer_asn=1),
                     CPLink(provider_asn=9, customer_asn=666),  # Attacker
                     CPLink(provider_asn=13, customer_asn=3),
+                    CPLink(provider_asn=13, customer_asn=15),
                     CPLink(provider_asn=3, customer_asn=5),
                     CPLink(provider_asn=5, customer_asn=14),
+                    CPLink(provider_asn=14, customer_asn=15),
                     CPLink(provider_asn=16625, customer_asn=ASNs.VICTIM.value),
                     CPLink(provider_asn=16625, customer_asn=6),
                 ]

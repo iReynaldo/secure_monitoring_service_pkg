@@ -629,6 +629,9 @@ class V4Subgraph(Subgraph):
                     if len(most_specific_ann.as_path) > 1 and most_specific_ann.as_path[1] in provider_asns:
                         # Mypy doesn't recognize that this is always an annoucnement
                         return most_specific_ann  # type: ignore
+                    else:
+                        # TODO: generate a test case for this block
+                        return None
         return None
 
     # MARK: New
