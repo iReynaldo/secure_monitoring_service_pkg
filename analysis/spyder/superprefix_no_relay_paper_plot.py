@@ -35,8 +35,8 @@ line_name_map = {
 
 scenario = 'V4SuperprefixPrefixHijack'
 scenario_type = 'none'
-rov_setting = 'real'
-# rov_setting = 'none'
+# rov_setting = 'real'
+rov_setting = 'none'
 hash_seed = 0
 # relay
 attack_relay = False

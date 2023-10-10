@@ -5,9 +5,9 @@ mkdir metadata
 mkdir jsons
 
 # Create a Folder for each of the different settings
-for stage in prelim final mixed
+for stage in prealpha alpha beta final mixed
 do
-    for attack in autoimmune-direct autoimmune-indirect subprefix superprefix
+    for attack in autoimmune-direct autoimmune-indirect subprefix superprefix prefix
     do
         for rov_setting in rov-real rov-none v4-mixed
         do

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-tree ${1} --filelimit 10
+tree ${1} --filelimit 12

@@ -49,6 +49,7 @@ scenario_type = 'none'
 # rov_setting = 'real'
 rov_setting = 'none'
 hash_seed = 0
+probe = False
 # relay
 attack_relay = False
 num_attackers = 1
@@ -72,7 +73,7 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
     paths = list()
     
     paths.append(
-            dm.json_file(scenario, scenario_type, rov_setting, hash_seed, relay, attack_relay, num_attackers, num_trials)
+            dm.json_file(scenario, scenario_type, rov_setting, hash_seed, probe, relay, attack_relay, num_attackers, num_trials)
         )
     
     # Load Results

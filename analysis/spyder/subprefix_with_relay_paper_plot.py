@@ -6,7 +6,7 @@ Created on May 16, 2023
 @author: Reynaldo Morillo
 """
 
-from v4_graph_generator import Line, generate_plot
+from v4_graph_generator import Line, generate_plot, generate_plotly
 import data_manager as dm
 
 
@@ -21,80 +21,84 @@ import data_manager as dm
 # Constants
 #-----------------------------------
 
-line_name_map = {
-        "rov": 'ROV adopting',
-        "rovppv1lite": "ROV++ V1 Lite adopting",
-        "v4k2": "Pheme k=2 adopting",
-        "v4k5": "Pheme k=5 adopting",
-        "v4k10": "Pheme k=10 adopting",
-    }
+
 
 #-----------------------------------
 # Args
 #-----------------------------------
 
-scenario = 'V4SubprefixHijackScenario'
+scenario = 'V4SubprefixHijackScenario' # 'V4PrefixHijackScenario'
 scenario_type = 'none'
-rov_settings = ['real', 'none']
-# rov_setting = 'none'
+rov_settings = ['none', 'real']
 hash_seed = 0
+probe = False
+tunnel=True
 # relay
 attack_relay = False
-num_attackers = 5
-num_trials = 500
+num_attackers = 1
+num_trials = 8000
+adoption_setting = dm.adopting_setting
 
 metric = dm.victim_success
-k = 5
-relays = ['cloudflare', 'verisign', 'five', 'ten', 'twenty']
-policies = ['rov', 'rovppv1lite', f'v4k{k}']
+relays = ['incapsula', 'neustar', 'five', 'twenty']
+bgp_immunity_policy = 'rovppo'
+policies = ['rov', 'rovppv1lite'].append(bgp_immunity_policy)
 
-for rov_setting in rov_settings:
-    for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
-        
-        #-----------------------------------
-        # Plot Generation
-        #-----------------------------------
-        
-        subgraph = dm.metric_subgraph[metric]
-        
-        
-        # Load paths
-        paths = list()
-        
-        for relay in relays:
-            paths.append(
-                    dm.json_file(scenario, scenario_type, rov_setting, hash_seed, relay, attack_relay, num_attackers, num_trials)
-                )
-        
-        # Load Results
-        rov_results = dm.get_results([paths[0]], subgraph, [dm.policy_name_map['rov']])
-        rovpp_results = dm.get_results([paths[0]], subgraph, [dm.policy_name_map['rovppv1lite']])
-        v4_results = dm.get_results(paths, subgraph, [dm.policy_name_map[f'v4k{k}']])
-        results = rov_results + rovpp_results + v4_results
-        
-        # Generate Lines
-        lines_map = dict()
-        relay_filename = ""
-        for i, policy in enumerate(['rov', 'rovppv1lite'] + relays):        
-            if policy in dm.cdns:
-                lines_map[i] = f"Pheme {policy.capitalize()} - k={k} adopting"
-                relay_filename = "cdns"
-            elif policy in dm.peers:
-                lines_map[i] = f"Pheme Peer {dm.peer_map[policy]} - k={k} adopting"
-                relay_filename = "peers"
-            else:
-                lines_map[i] = line_name_map[policy]
-        
-        lines = []
-        for i, result in enumerate(results):
-            if result:
-                lines.append(Line(lines_map[i], False, result.adopting[subgraph]))
-        
-            
-        # Plot Lines
-        generate_plot(lines,
-                      ylim=100,
-                      outcome_text=dm.metric_outcome[metric],
-                      size_inches=(5, 4),
-                      legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-                      fname=f"./paper_plots/subprefix/rov_{rov_setting}/subprefix_with_relay_k{k}_{dm.metric_filename_prefix[metric]}.pdf")
+for bgp_immunity_policy in ['v4', 'rovppo']:
+    for adoption_setting in [dm.adopting_setting, dm.non_adopting_setting]:
+        for rov_setting in rov_settings:
+            for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
+                
+                #-----------------------------------
+                # Plot Generation
+                #-----------------------------------
+                
+                subgraph = dm.get_metric_subgraph(metric, adoption_setting)
+                
+                
+                # Load paths
+                paths = list()
+                # Standard policies path list
+                standard_policy_paths = [dm.json_file(scenario, scenario_type, 'standard', rov_setting, hash_seed, probe, 'None', False, num_attackers, num_trials)]
+                # Overlay policies path list
+                for relay in relays:
+                    paths.append(
+                            dm.json_file(scenario, scenario_type, 'others', rov_setting, hash_seed, probe, relay, attack_relay, num_attackers, num_trials, tunnel=tunnel)
+                        )
+                
+                # Load Results
+                rov_results = dm.get_results(standard_policy_paths, subgraph, [dm.policy_name_map['rov']])
+                rovpp_results = dm.get_results(standard_policy_paths, subgraph, [dm.policy_name_map['rovppv1lite']])
+                v4_results = dm.get_results(paths, subgraph, [dm.policy_name_map[bgp_immunity_policy]])
+                results = rov_results + rovpp_results + v4_results
+                
+                # Generate Lines
+                line_styles_map = dict()
+                policy_lines = dm.standard_policies + tuple(relays)
+                for i, policy in enumerate(policy_lines):
+                    if policy in dm.standard_policies:
+                        line_styles_map[i] = dm.lines_style_mapper(policy, policy)
+                    else:
+                        line_styles_map[i] = dm.lines_style_mapper(bgp_immunity_policy, policy)
+                
+                lines = []
+                for i, result in enumerate(results):
+                    if result:
+                        lines.append(Line(line_styles_map[i], False, result.adopting[subgraph]))
+                
+                # Set which policy directory the result is saved too
+                policy_dir = 'immunity' if bgp_immunity_policy == 'rovppo' else 'pheme'
+                # Set the mixed adoption setting
+                mixed_setting = f'rov_{rov_setting}' if rov_setting != 'v4' else 'policy_mixed'
+                adoption_setting_str = 'non_adopting_' if adoption_setting == dm.non_adopting_setting else '' 
+                attack_relay_str = 'attack' if attack_relay else 'with'
+                scenario_str = 'prefix' if scenario == 'V4PrefixHijackScenario' else 'subprefix'
+                
+                # Plot Lines
+                # generate_plotly(lines, metric)
+                generate_plot(lines,
+                              ylim=100,
+                              outcome_text=dm.metric_outcome[metric],
+                              size_inches=(5, 4),
+                              legend_kwargs={'loc':'best', 'prop':{'size': 11}},
+                              fname=f"./immunity_paper_plots/{policy_dir}/{scenario_str}/{mixed_setting}/{adoption_setting_str}{scenario_str}_{attack_relay_str}_relay{'_with_probing'if probe else ''}_{dm.metric_filename_prefix[metric]}.pdf")

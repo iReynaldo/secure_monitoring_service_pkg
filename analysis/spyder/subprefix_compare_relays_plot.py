@@ -15,19 +15,13 @@ import data_manager as dm
 ####################################
 
 # Example file name
-# V4SubprefixHijackScenario_scenario_none_type_real_rov_0_hash_incapsula_relay_False_attackRelay_5_attacker_500_trials_full_percentages
+# V4SubprefixHijackScenario_scenario_none_type_others_policies_real_rov_0_hash_False_probe_twenty_relay_False_attackRelay_1_attacker_2000_trials_full_percentages
 
 #-----------------------------------
 # Constants
 #-----------------------------------
 
-line_name_map = {
-        "rov": 'ROV adopting',
-        "rovppv1lite": "ROV++ V1 Lite adopting",
-        "v4k2": "Pheme k=2 adopting",
-        "v4k5": "Pheme k=5 adopting",
-        "v4k10": "Pheme k=10 adopting",
-    }
+
 
 #-----------------------------------
 # Args
@@ -35,68 +29,64 @@ line_name_map = {
 
 scenario = 'V4SubprefixHijackScenario'
 scenario_type = 'none'
+simulated_policies = 'others' # standard
 # rov_setting = 'real'
 rov_setting = 'none'
 hash_seed = 0
+probe = False
 # relay
 attack_relay = False
-num_attackers = 5
-num_trials = 500
+num_attackers = 1
+num_trials = 8000
+adoption_setting = dm.adopting_setting
 
 metric = dm.victim_success
-# relays = ['akamai', 'cloudflare', 'verisign', 'incapsula', 'neustar']
-relays = ['five', 'ten', 'twenty']
+# relays = ['akamai', 'cloudflare', 'verisign', 'incapsula', 'neustar', 'conglomerate']
+relays = ['five', 'ten', 'twenty', 'forty']
+policy = 'rovppo'
+# policy = 'v4'
 
-relay = 'None'
-# policies = []
-k_settings = [2, 5, 10]
 
-for k in k_settings:
-    for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
-        
-        #-----------------------------------
-        # Plot Generation
-        #-----------------------------------
-        
-        subgraph = dm.metric_subgraph[metric]
-        
-        
-        # Load paths
-        paths = list()
-        
-        for relay in relays:
-            paths.append(
-                    dm.json_file(scenario, scenario_type, rov_setting, hash_seed, relay, attack_relay, num_attackers, num_trials)
-                )
-        
-        # Load Results
-        results = dm.get_results(paths, subgraph, [dm.policy_name_map[f'v4k{k}']])
-        
-        
-        # Generate Lines
-        lines_map = dict()
-        relay_filename = ""
+for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
+    
+    #-----------------------------------
+    # Plot Generation
+    #-----------------------------------
+    
+    # Load paths
+    paths = list()
+    
+    for relay in relays:
+        paths.append(
+                dm.json_file(scenario, scenario_type, simulated_policies, rov_setting, hash_seed, probe, relay, attack_relay, num_attackers, num_trials)
+            )
+    
+    # Load Results
+    subgraph = dm.get_metric_subgraph(metric, adoption_setting)
+    results = dm.get_results(paths, subgraph, [dm.policy_name_map[policy]])
+    
+    
+    # Generate Lines
+    line_styles_map = dict()
+    for i, relay in enumerate(relays):
+        line_styles_map[i] = dm.lines_style_mapper(policy, relay)
+
+    lines = []
+    for i, result in enumerate(results):
+        if result:
+            lines.append(Line(line_styles_map[i], False, result.adopting[subgraph]))
             
-        for i, relay in enumerate(relays):
-            if relay in dm.cdns:
-                lines_map[i] = f"Pheme {relay.capitalize()} - k={k} adopting"
-                relay_filename = "cdns"
-            elif relay in dm.peers:
-                lines_map[i] = f"Pheme Peer {dm.peer_map[relay]} - k={k} adopting"
-                relay_filename = "peers"
 
+    # Set which policy directory the result is saved too
+    policy_dir = 'immunity' if policy == 'rovppo' else 'pheme'
+    # Set overlay type
+    relay_filename = 'cdns' if relays[0] in dm.cdns else 'peers'
         
-        lines = []
-        for i, result in enumerate(results):
-            if result:
-                lines.append(Line(lines_map[i], False, result.adopting[subgraph]))
-        
-            
-        # Plot Lines
-        generate_plot(lines,
-                      ylim=100,
-                      outcome_text=dm.metric_outcome[metric],
-                      size_inches=(5, 4),
-                      linemap=compare_relays_linemap,
-                      legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-                      fname=f"./paper_plots/subprefix/rov_{rov_setting}/subprefix_{relay_filename}_relay_k_{k}_{dm.metric_filename_prefix[metric]}.pdf")
+    # Plot Lines
+    generate_plot(lines,
+                  ylim=100,
+                  outcome_text=dm.metric_outcome[metric],
+                  size_inches=(5, 4),
+                  linemap=compare_relays_linemap,
+                  legend_kwargs={'loc':'best', 'prop':{'size': 11}},
+                  fname=f"./immunity_paper_plots/{policy_dir}/subprefix/rov_{rov_setting}/subprefix_{relay_filename}_relay_{dm.metric_filename_prefix[metric]}.pdf")

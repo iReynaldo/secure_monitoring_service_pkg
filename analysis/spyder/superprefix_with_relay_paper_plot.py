@@ -24,6 +24,8 @@ import data_manager as dm
 line_name_map = {
         "rov": 'ROV adopting',
         "rovppv1lite": "ROV++ V1 Lite adopting",
+        "rovppo": "BGP Immunity",
+        "v4": "Pheme adopting",
         "v4k2": "Pheme k=2 adopting",
         "v4k5": "Pheme k=5 adopting",
         "v4k10": "Pheme k=10 adopting",
@@ -36,17 +38,21 @@ line_name_map = {
 scenario = 'V4SuperprefixPrefixHijack'
 scenario_type = 'none'
 # rov_setting = 'real'
-rov_setting = 'none'
+# rov_setting = 'none'
+rov_setting = 'v4'
 hash_seed = 0
+probe = True
 # relay
 attack_relay = False
-num_attackers = 5
+num_attackers = 1
 num_trials = 500
 
 metric = dm.victim_success
-k = 5
+# k = 5
 relays = ['cloudflare', 'verisign', 'five', 'ten', 'twenty']
-policies = ['rov', 'rovppv1lite', f'v4k{k}']
+# policies = ['rov', 'rovppv1lite', f'v4k{k}']
+bgp_immunity_policies = ['rovppo']
+policies = ['rov', 'rovppv1lite'].extend(bgp_immunity_policies)
 
 for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
     
@@ -62,24 +68,31 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
     
     for relay in relays:
         paths.append(
-                dm.json_file(scenario, scenario_type, rov_setting, hash_seed, relay, attack_relay, num_attackers, num_trials)
+                dm.json_file(scenario, scenario_type, rov_setting, hash_seed, probe, relay, attack_relay, num_attackers, num_trials)
             )
     
     # Load Results
-    rov_results = dm.get_results([paths[0]], subgraph, [dm.policy_name_map['rov']])
-    rovpp_results = dm.get_results([paths[0]], subgraph, [dm.policy_name_map['rovppv1lite']])
-    v4_results = dm.get_results(paths, subgraph, [dm.policy_name_map[f'v4k{k}']])
+    rov_results = dm.get_results([paths[1]], subgraph, [dm.policy_name_map['rov']])
+    rovpp_results = dm.get_results([paths[1]], subgraph, [dm.policy_name_map['rovppv1lite']])
+    v4_results = dm.get_results(paths, subgraph, [dm.policy_name_map[x] for x in bgp_immunity_policies])
     results = rov_results + rovpp_results + v4_results
     
     # Generate Lines
     lines_map = dict()
     relay_filename = ""
+    if bgp_immunity_policies[0] == 'rovppo':
+        policy_legend_prefix = 'BGP Immunity'
+    else:
+        policy_legend_prefix = 'Pheme'
+    
     for i, policy in enumerate(['rov', 'rovppv1lite'] + relays):        
         if policy in dm.cdns:
-            lines_map[i] = f"Pheme {policy.capitalize()} - k={k} adopting"
+            # lines_map[i] = f"Pheme {policy.capitalize()} - k={k} adopting"
+            lines_map[i] = f"{policy_legend_prefix} {policy.capitalize()} - adopting"
             relay_filename = "cdns"
         elif policy in dm.peers:
-            lines_map[i] = f"Pheme Peer {dm.peer_map[policy]} - k={k} adopting"
+            # lines_map[i] = f"Pheme Peer {dm.peer_map[policy]} - k={k} adopting"
+            lines_map[i] = f"{policy_legend_prefix} Peer {dm.peer_map[policy]} - adopting"
             relay_filename = "peers"
         else:
             lines_map[i] = line_name_map[policy]
@@ -89,6 +102,8 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
         if result:
             lines.append(Line(lines_map[i], False, result.adopting[subgraph]))
     
+    # Set which policy directory the result is saved too
+    policy_dir = 'immunity' if bgp_immunity_policies[0] == 'rovppo' else 'pheme'
         
     # Plot Lines
     generate_plot(lines,
@@ -96,4 +111,4 @@ for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
                   outcome_text=dm.metric_outcome[metric],
                   size_inches=(5, 4),
                   legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-                  fname=f"./paper_plots/superprefix/rov_{rov_setting}/superprefix_with_relay_k{k}_{dm.metric_filename_prefix[metric]}.pdf")
+                  fname=f"./immunity_paper_plots/{policy_dir}/superprefix/rov_{rov_setting}/superprefix_with_relay{'_with_probing'if probe else ''}_{dm.metric_filename_prefix[metric]}.pdf")

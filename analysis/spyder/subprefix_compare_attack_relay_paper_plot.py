@@ -6,7 +6,7 @@ Created on May 16, 2023
 @author: Reynaldo Morillo
 """
 
-from v4_graph_generator import Line, generate_plot, generate_plotly
+from v4_graph_generator import Line, generate_plot, compare_policies_by_attack_relay_linemap, generate_plotly
 import data_manager as dm
 
 
@@ -33,16 +33,14 @@ rov_settings = ['none', 'real']
 hash_seed = 0
 probe = False
 # relay
-attack_relay = False
+# attack_relay = False
 num_attackers = 1
 num_trials = 8000
 adoption_setting = dm.adopting_setting
 
 metric = dm.victim_success
-relay = 'None'
-bgp_immunity_policy = 'v4'
-policies = ['rov', 'rovppv1lite'].append(bgp_immunity_policy)
-
+relays = ['incapsula', 'neustar', 'twenty']
+policy = 'v4'
 
 for rov_setting in rov_settings:
     for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
@@ -56,29 +54,23 @@ for rov_setting in rov_settings:
         
         # Load paths
         paths = list()
-        # Standard policies path list
-        standard_policy_paths = [dm.json_file(scenario, scenario_type, 'standard', rov_setting, hash_seed, probe, 'None', attack_relay, num_attackers, num_trials)]
-        # Overlay policies path list
-        paths.append(
-                dm.json_file(scenario, scenario_type, 'others', rov_setting, hash_seed, probe, relay, attack_relay, num_attackers, num_trials)
-            )
+        # Overlay policy path list
+        for attack_relay in (False, True):
+            for relay in relays:
+                paths.append(
+                        dm.json_file(scenario, scenario_type, 'others', rov_setting, hash_seed, probe, relay, attack_relay, num_attackers, num_trials)
+                    )
         
-
         # Load Results
-        rov_results = dm.get_results(standard_policy_paths, subgraph, [dm.policy_name_map['rov']])
-        rovpp_results = dm.get_results(standard_policy_paths, subgraph, [dm.policy_name_map['rovppv1lite']])
-        v4_results = dm.get_results(paths, subgraph, [dm.policy_name_map[bgp_immunity_policy]])
-        results = rov_results + rovpp_results + v4_results
-        
+        results = dm.get_results(paths, subgraph, [dm.policy_name_map[policy]])
         
         # Generate Lines
         line_styles_map = dict()
-        policy_lines = dm.standard_policies + (relay,)
-        for i, policy in enumerate(policy_lines):
-            if policy in dm.standard_policies:
-                line_styles_map[i] = dm.lines_style_mapper(policy, policy)
-            else:
-                line_styles_map[i] = dm.lines_style_mapper(bgp_immunity_policy, policy)
+        i = 0
+        for attack_relay in (False, True):
+            for relay in relays:
+                line_styles_map[i] = dm.lines_style_mapper(policy, relay, attack_relay)
+                i += 1
         
         lines = []
         for i, result in enumerate(results):
@@ -86,16 +78,16 @@ for rov_setting in rov_settings:
                 lines.append(Line(line_styles_map[i], False, result.adopting[subgraph]))
         
         # Set which policy directory the result is saved too
-        policy_dir = 'immunity' if bgp_immunity_policy == 'rovppo' else 'pheme'
+        policy_dir = 'immunity' if policy == 'rovppo' else 'pheme'
         # Set the mixed adoption setting
         mixed_setting = f'rov_{rov_setting}' if rov_setting != 'v4' else 'policy_mixed'
-        adoption_setting_str = 'non_adopting_' if adoption_setting == dm.non_adopting_setting else '' 
-        
+            
         # Plot Lines
-        generate_plotly(lines, metric)
+        # generate_plotly(lines, metric)
         generate_plot(lines,
                       ylim=100,
                       outcome_text=dm.metric_outcome[metric],
+                      linemap=compare_policies_by_attack_relay_linemap,
                       size_inches=(5, 4),
                       legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-                      fname=f"./immunity_paper_plots/{policy_dir}/subprefix/{mixed_setting}/{adoption_setting_str}subprefix_no_relay{'_with_probing'if probe else ''}_{dm.metric_filename_prefix[metric]}.pdf")
+                      fname=f"./immunity_paper_plots/{policy_dir}/subprefix/{mixed_setting}/subprefix_compare_attack_relay_{dm.metric_filename_prefix[metric]}.pdf")
