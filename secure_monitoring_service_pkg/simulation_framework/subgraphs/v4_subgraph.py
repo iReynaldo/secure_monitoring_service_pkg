@@ -214,20 +214,18 @@ class V4Subgraph(Subgraph):
                     before_relay_usage, after_relay_usage)
 
         if self.collect_as_metadata and prefix_outcomes:
-            if scenario.trusted_server_ref:
-                self.write_as_metadata(
-                    trial, percent_adopt, propagation_round,
-                    scenario,
-                    prefix_with_minimum_successful_connections,
-                    prefix_outcomes[prefix_with_minimum_successful_connections])
+            self.write_as_metadata(
+                trial, percent_adopt, propagation_round,
+                scenario,
+                prefix_with_minimum_successful_connections,
+                prefix_outcomes[prefix_with_minimum_successful_connections])
 
         if self.collect_agg_as_metadata and prefix_outcomes:
-            if scenario.trusted_server_ref:
-                self.write_agg_as_metadata(
-                     trial, percent_adopt, propagation_round,
-                     scenario,
-                     prefix_with_minimum_successful_connections,
-                     prefix_outcomes[prefix_with_minimum_successful_connections])
+            self.write_agg_as_metadata(
+                 trial, percent_adopt, propagation_round,
+                 scenario,
+                 prefix_with_minimum_successful_connections,
+                 prefix_outcomes[prefix_with_minimum_successful_connections])
 
         key = self._get_subgraph_key(scenario)
         shared_data[key] = shared_data.get(key + f"_{prefix_with_minimum_successful_connections}", 0)
