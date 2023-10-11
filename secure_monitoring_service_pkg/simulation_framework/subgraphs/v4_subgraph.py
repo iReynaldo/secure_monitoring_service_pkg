@@ -648,15 +648,16 @@ class V4Subgraph(Subgraph):
         outcomes: Dict[AS, Outcomes] = outcomes if outcomes else dict()
         traceback_asn_outcomes: Dict[int, int] = traceback_asn_outcomes if traceback_asn_outcomes else dict()
         for as_obj in engine.as_dict.values():
-            if recompute_disconnections and outcomes[as_obj] == Outcomes.DISCONNECTED:
-                # Gets AS outcome and stores it in the outcomes dict
-                self._get_as_outcome(as_obj,
-                                     outcomes,
-                                     traceback_asn_outcomes,
-                                     engine,
-                                     scenario,
-                                     attacker_ann,
-                                     force_recompute=True)
+            if recompute_disconnections:
+                if outcomes[as_obj] == Outcomes.DISCONNECTED and not isinstance(as_obj, scenario.AdoptASCls):
+                    # Gets AS outcome and stores it in the outcomes dict
+                    self._get_as_outcome(as_obj,
+                                         outcomes,
+                                         traceback_asn_outcomes,
+                                         engine,
+                                         scenario,
+                                         attacker_ann,
+                                         force_recompute=True)
             else:
                 # Gets AS outcome and stores it in the outcomes dict
                 self._get_as_outcome(as_obj,
