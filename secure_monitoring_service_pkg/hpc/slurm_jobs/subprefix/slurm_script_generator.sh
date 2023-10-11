@@ -6,7 +6,7 @@
 
 export PYTHONHASHSEED=0
 export HIJACK_SCENARIO="V4SubprefixHijackScenario"
-export NUM_TRIALS=2000
+export NUM_TRIALS=250
 
 declare -A cpus
 declare -A ram
@@ -26,7 +26,7 @@ echo 'rm jobs.txt' >> submit_jobs.sh
 
 
 # Create Script Files
-for rov_setting in real none
+for rov_setting in none
 do
 #----------------- File for Base Result for ROV and V1 Lite  --------------------
 cat > standard_policies_rov_${rov_setting}.sh << EOF
@@ -34,6 +34,7 @@ cat > standard_policies_rov_${rov_setting}.sh << EOF
 #SBATCH --partition=lo-core                   # Name of partition
 #SBATCH --ntasks=20                           # Request Number of CPU cores
 #SBATCH --mem-per-cpu=3G
+#SBATCH --nodes=1
 #SBATCH --mail-type=BEGIN,END,FAIL              # Event(s) that triggers email notification (BEGIN,END,FAIL,ALL)
 #SBATCH --mail-user=reynaldo.morillo@uconn.edu  # Destination email address
 
@@ -49,14 +50,16 @@ EOF
 
 echo "sbatch standard_policies_rov_${rov_setting}.sh >> jobs.txt" >> submit_jobs.sh
 
+# For metadata collection
 # ----------------- Inner Loop Cannot be indented --------------------
-for relay in akamai cloudflare neustar incapsula verisign conglomerate five ten twenty forty
+for relay in neustar twenty                                                                                                                                    
 do 
-cat > rov_${rov_setting}_overlay_${relay}.sh << EOF
+cat > meta_rov_${rov_setting}_overlay_${relay}.sh << EOF
 #!/bin/bash
 #SBATCH --partition=lo-core                   # Name of partition
 #SBATCH --ntasks=${cpus[${relay}]}              # Request Number of CPU cores
 #SBATCH --mem-per-cpu=${ram[$relay]}G
+#SBATCH --nodes=1
 #SBATCH --mail-type=BEGIN,END,FAIL              # Event(s) that triggers email notification (BEGIN,END,FAIL,ALL)
 #SBATCH --mail-user=reynaldo.morillo@uconn.edu  # Destination email address
 
@@ -66,11 +69,39 @@ conda activate py311
 
 export PYTHONHASHSEED=$PYTHONHASHSEED
 cd ../../../
-python __main__.py --relay_asns ${relay} --num_trials $NUM_TRIALS --cpus ${cpus[${relay}]} --python_hash_seed $PYTHONHASHSEED --rov_adoption ${rov_setting} --num_attackers 1 --policy rovppo v4 --scenario $HIJACK_SCENARIO
+python __main__.py --relay_asns ${relay} --num_trials $NUM_TRIALS --cpus ${cpus[${relay}]} --python_hash_seed $PYTHONHASHSEED --rov_adoption ${rov_setting} --num_attackers 1 --policy rovppo v4 --scenario $HIJACK_SCENARIO --collect_agg_as_metadata --tunnel_customers_traffic
+EOF
+
+echo "sbatch meta_rov_${rov_setting}_overlay_${relay}.sh >> jobs.txt" >> submit_jobs.sh
+
+done
+# ----------------- Inner Loop Cannot be indented --------------------
+
+# Main data collection
+# ----------------- Inner Loop Cannot be indented --------------------
+for relay in neustar akamai cloudflare incapsula verisign conglomerate five ten twenty forty
+do 
+cat > rov_${rov_setting}_overlay_${relay}.sh << EOF
+#!/bin/bash
+#SBATCH --partition=lo-core                   # Name of partition
+#SBATCH --ntasks=${cpus[${relay}]}              # Request Number of CPU cores
+#SBATCH --mem-per-cpu=${ram[$relay]}G
+#SBATCH --nodes=1
+#SBATCH --mail-type=BEGIN,END,FAIL              # Event(s) that triggers email notification (BEGIN,END,FAIL,ALL)
+#SBATCH --mail-user=reynaldo.morillo@uconn.edu  # Destination email address
+
+# Setup pypy environment
+source /home/rjm11010/miniconda3/etc/profile.d/conda.sh
+conda activate py311
+
+export PYTHONHASHSEED=$PYTHONHASHSEED
+cd ../../../
+python __main__.py --relay_asns ${relay} --num_trials $NUM_TRIALS --cpus ${cpus[${relay}]} --python_hash_seed $PYTHONHASHSEED --rov_adoption ${rov_setting} --num_attackers 1 --policy rovppo v4 --scenario $HIJACK_SCENARIO --tunnel_customers_traffic
 EOF
 
 echo "sbatch rov_${rov_setting}_overlay_${relay}.sh >> jobs.txt" >> submit_jobs.sh
 
 done
 # ----------------- Inner Loop Cannot be indented --------------------
+
 done
