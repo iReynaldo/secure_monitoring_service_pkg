@@ -1,5 +1,13 @@
 #!/bin/sh
 
+commit_message="Plot updates"
+
+# Check if commit message given
+if [ $# -eq 1 ]
+then
+    commit_message=$1
+fi
+
 output_dir="../overleaf_bgp_immunity/figures/results/new"
 results_dir="../analysis/spyder/immunity_paper_plots"
 
@@ -15,6 +23,6 @@ git status | more
 read -p "Ctrl-C to cancel git changes"
 echo "Commiting changes"
 git add .
-git commit -m "Plot updates"
+git commit -m "${commit_message}"
 echo "Pushing changes to Overleaf"
 git push origin master

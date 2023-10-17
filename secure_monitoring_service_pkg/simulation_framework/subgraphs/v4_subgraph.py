@@ -207,11 +207,10 @@ class V4Subgraph(Subgraph):
 
         # Why is prefix_outcomes sometime empty? -- Answer is because we don't need to outcomes recalculate between subgraphs
         if self.collect_avoid_list_metadata and prefix_outcomes:
-            if scenario.trusted_server_ref:
-                self.write_avoid_list_metadata(
-                    trial, percent_adopt, propagation_round,
-                    scenario, prefix_with_minimum_successful_connections,
-                    before_relay_usage, after_relay_usage)
+            self.write_avoid_list_metadata(
+                trial, percent_adopt, propagation_round,
+                scenario, prefix_with_minimum_successful_connections,
+                before_relay_usage, after_relay_usage)
 
         if self.collect_as_metadata and prefix_outcomes:
             self.write_as_metadata(
@@ -240,8 +239,12 @@ class V4Subgraph(Subgraph):
                 writer = csv.DictWriter(csvfile,
                                         fieldnames=self.avoid_list_metadata_fieldnames,
                                         delimiter=self.csv_file_delimiter)
-                avoid_list = scenario.trusted_server_ref._recommendations[
-                    prefix]
+                avoid_list = tuple()
+                avoid_list_len = 0
+                if scenario.trusted_server_ref:
+                    avoid_list = scenario.trusted_server_ref._recommendations[
+                        prefix]
+                    avoid_list_len = len(avoid_list)
                 # Calculate some CSV features
                 num_relay_asns = 0 if not scenario.relay_asns else len(scenario.relay_asns)
                 # Create new row
@@ -266,7 +269,7 @@ class V4Subgraph(Subgraph):
                     'after_relay_num_relays_victim_success': after_relay_usage[Outcomes.VICTIM_SUCCESS],
                     'after_relay_num_relays_disconnected': after_relay_usage[Outcomes.DISCONNECTED],
                     'after_relay_num_relays_available': after_relay_usage[self.available_relay_counter_key],
-                    'avoid_list_len': len(avoid_list),
+                    'avoid_list_len': avoid_list_len,
                     'avoid_list': str(avoid_list) if len(avoid_list) else '{}'
                 }
                 writer.writerow(row)

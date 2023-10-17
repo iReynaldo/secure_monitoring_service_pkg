@@ -470,11 +470,11 @@ compare_relays_linemap = {
     'BGPImMS Cloudflare - k=5 adopting': {'color': 'C2', 'marker': default_marker, 'linestyle': 'dashed'},
     'BGPImMS Cloudflare - k=10 adopting': {'color': 'C2', 'marker': default_marker, 'linestyle': 'dashed'},
 
-    'BGPIm Incapsula - adopting': {'color': 'C3', 'marker': plus_marker, 'linestyle': 'dashed'},    
-    'BGPImMS Incapsula - adopting': {'color': 'C3', 'marker': plus_marker, 'linestyle': 'dashed'},
-    'BGPImMS Incapsula - k=2 adopting': {'color': 'C3', 'marker': plus_marker, 'linestyle': 'dashed'},
-    'BGPImMS Incapsula - k=5 adopting': {'color': 'C3', 'marker': plus_marker, 'linestyle': 'dashed'},
-    'BGPImMS Incapsula - k=10 adopting': {'color': 'C3', 'marker': plus_marker, 'linestyle': 'dashed'},
+    'BGPIm Incapsula - adopting': {'color': 'C3', 'marker': default_marker, 'linestyle': 'dashed'},    
+    'BGPImMS Incapsula - adopting': {'color': 'C3', 'marker': default_marker, 'linestyle': 'dashed'},
+    'BGPImMS Incapsula - k=2 adopting': {'color': 'C3', 'marker': default_marker, 'linestyle': 'dashed'},
+    'BGPImMS Incapsula - k=5 adopting': {'color': 'C3', 'marker': default_marker, 'linestyle': 'dashed'},
+    'BGPImMS Incapsula - k=10 adopting': {'color': 'C3', 'marker': default_marker, 'linestyle': 'dashed'},
 
     'BGPIm Neustar - adopting': {'color': 'C4', 'marker': default_marker, 'linestyle': 'dashed'},    
     'BGPImMS Neustar - adopting': {'color': 'C4', 'marker': default_marker, 'linestyle': 'dashed'},
@@ -681,7 +681,8 @@ def generate_plot(lines: [Line],
                  outcome_text=None,
                  ylim=None,
                  linemap=linemap,
-                 show_legend=True):
+                 show_legend=True,
+                 alpha=1):
     fig, ax = plt.subplots()
 
     # plt.xlim(0, 1.3)
@@ -701,7 +702,8 @@ def generate_plot(lines: [Line],
                     label="" if (line.label in used_labels) else line.label,
                     color=linemap[line.label]['color'],
                     marker=linemap[line.label]["marker"],
-                    path_effects=[path_effects.SimpleLineShadow(offset=(0, -0.5)), path_effects.Normal()])
+                    path_effects=[path_effects.SimpleLineShadow(offset=(0, -0.5)), path_effects.Normal()],
+                    alpha=alpha)
 
         used_labels.add(line.label)
 

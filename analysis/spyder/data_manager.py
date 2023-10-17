@@ -12,6 +12,8 @@ import json
 from math import sqrt
 from statistics import mean, stdev
 
+import numpy as np
+
 from v4_graph_generator import PolicyResult
 
 
@@ -87,7 +89,7 @@ peer_map = {
 
 def calc_90_per_conf(list_of_vals):
     if len(list_of_vals) > 1:
-        yerr_num = 1.645 * 2 * stdev(list_of_vals)
+        yerr_num = 1.645 * 2 * np.std(list_of_vals)
         yerr_denom = sqrt(len(list_of_vals))
         return yerr_num / yerr_denom
     else:
@@ -157,7 +159,8 @@ def json_file(scenario, scenario_type, policies, rov_setting, hash_seed, probe,
            f"_{policies}_policies" \
            f"_{rov_setting}_rov" \
            f"_{hash_seed}_hash" \
-           f"_{probe}_probe{'_True_tunnel' if tunnel else ''}"    \
+           f"_{probe}_probe" \
+           f"_{tunnel}_tunnel" \
            f"_{relay}_relay" \
            f"_{attack_relay}_attackRelay" \
            f"_{num_attackers}_attacker" \

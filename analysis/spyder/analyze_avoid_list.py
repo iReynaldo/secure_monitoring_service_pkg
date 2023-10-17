@@ -26,11 +26,10 @@ import plotly.io as pio
 pio.renderers.default = 'browser'
 
 # Data configuration
-relay = 'verisign'
 rov_setting = 'none'
 
 # Load data
-data_file_path = f'../../data/graphs/metadata/V4SubprefixHijackScenario_scenario_none_type_others_policies_{rov_setting}_rov_0_hash_False_probe_{relay}_relay_False_attackRelay_1_attacker_250_trials_full_percentages_avoid_list_metadata.csv'
+data_file_path = f'../../data/graphs/metadata/V4SubprefixHijackScenario_scenario_none_type_others_policies_{rov_setting}_rov_0_hash_False_probe_False_tunnel_None_relay_False_attackRelay_1_attacker_8000_trials_full_percentages_avoid_list_metadata.csv'
 data = pd.read_csv(data_file_path, delimiter='\t')
 
 #%% Preview Data Columns
@@ -98,8 +97,10 @@ _ax = _fig.add_axes([0, 0, 1, 1])
 # Make Plot
 _bp = _ax.boxplot(box_plot_data, patch_artist = True, labels=data['percentage'].unique()*100)
 
+# Change the Width of the median line
 for median in _bp['medians']:
-    median.set(linewidth=4)
+    median.set(linewidth=2)
+    
 # Change Flier properties
 for flier in _bp['fliers']: flier.set(color ='#e7298a', alpha = 0.01) 
 
@@ -113,7 +114,7 @@ _fig.set_size_inches(5, 4, forward=True)
 plt.gca().yaxis.grid()
 plt.tight_layout()
 plt.rcParams.update({"font.size": 12, "lines.markersize": 8})
-plt.savefig(f"./immunity_paper_plots/pheme/subprefix/rov_{rov_setting}/avoid_list_boxplot_{relay}.pdf", bbox_inches='tight')
+plt.savefig(f"./immunity_paper_plots/pheme/subprefix/rov_{rov_setting}/avoid_list_boxplot.pdf", bbox_inches='tight')
 
 #%% Histogram
 # fig = px.bar(counts_df_copy, x='as', y='count')
