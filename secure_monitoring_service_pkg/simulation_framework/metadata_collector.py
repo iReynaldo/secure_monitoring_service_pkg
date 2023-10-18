@@ -39,7 +39,8 @@ AS_CSV_FIELDNAMES = ['trial', 'percentage', 'propagation_round',
 AGG_AS_CSV_FIELDNAMES = ['trial', 'percentage', 'propagation_round',
                          'adoption_setting', 'prefix_for_outcome',
                          'attacker_asns', 'victim_asn',
-                         'relay_name']
+                         'relay_name', 'empty_rib', 'no_providers',
+                         'no_legit_origin_prefix']
 
 # Add all the rest of the columns
 #

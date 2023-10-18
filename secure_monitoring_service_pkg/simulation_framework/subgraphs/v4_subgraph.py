@@ -220,9 +220,10 @@ class V4Subgraph(Subgraph):
                 prefix_outcomes[prefix_with_minimum_successful_connections])
 
         if self.collect_agg_as_metadata and prefix_outcomes:
+            origin_prefix = next(iter(scenario.get_victim_announcements())).prefix
             self.write_agg_as_metadata(
                  trial, percent_adopt, propagation_round,
-                 scenario,
+                 scenario, origin_prefix,
                  prefix_with_minimum_successful_connections,
                  prefix_outcomes[prefix_with_minimum_successful_connections])
 
@@ -313,7 +314,7 @@ class V4Subgraph(Subgraph):
                     writer.writerow(row)
 
     def write_agg_as_metadata(self, trial, percent_adopt, propagation_round,
-                              scenario, prefix, outcomes):
+                              scenario, origin_prefix, prefix, outcomes):
         with metadata_collector.agg_as_csv_flock:
             with open(self.agg_as_csv_filename, 'a') as csvfile:
                 writer = csv.DictWriter(csvfile,
@@ -332,6 +333,14 @@ class V4Subgraph(Subgraph):
                     # For any topology section (i.e. all) add to it
                     counts['_'.join([adoption_setting, provider_setting,
                                      using_adopting_provider_setting, 'all', outcome])] += 1
+                    if provider_setting == 'noad' and outcome == Outcomes.DISCONNECTED and topology_section == 'edge':
+                        if len(as_obj._local_rib.keys()) == 0:
+                            counts['empty_rib'] += 1
+                        elif len(as_obj.providers) == 0:
+                            counts['no_providers'] += 1
+                        elif not as_obj._local_rib.get_ann(origin_prefix):
+                            counts['no_legit_origin_prefix'] += 1
+
                 # Create new row
                 row = {
                     'trial': trial,
@@ -341,7 +350,8 @@ class V4Subgraph(Subgraph):
                     'prefix_for_outcome': prefix,
                     'attacker_asns': str(list(scenario.attacker_asns)),
                     'victim_asn': next(iter(scenario.victim_asns)),
-                    'relay_name': scenario.relay_name
+                    'relay_name': scenario.relay_name,
+
                 }
                 row.update(counts)
                 writer.writerow(row)
