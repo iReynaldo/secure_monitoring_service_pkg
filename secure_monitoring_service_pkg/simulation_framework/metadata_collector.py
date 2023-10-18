@@ -31,8 +31,8 @@ AS_CSV_FIELDNAMES = ['trial', 'percentage', 'propagation_round',
                      'adoption_setting', 'prefix_for_outcome',
                      'attacker_asns', 'victim_asn',
                      'relay_name', 'num_relays',
-                     'asn', 'policy', 'num_providers',
-                     'num_adopting_providers',
+                     'asn', 'policy', 'topology_section',
+                     'num_providers', 'num_adopting_providers',
                      'outcome', 'using_adopting_provider',
                      'using_relay']
 

@@ -289,6 +289,8 @@ class V4Subgraph(Subgraph):
                     # Number of Adopting Providers & Using Adopting Provider
                     num_adopting_providers, using_adopting_provider = \
                         self._calc_adopting_provider_features(as_obj, scenario, prefix)
+                    # Topology section
+                    topology_section = self._topology_section(as_obj)
                     # Create new row
                     row = {
                         'trial': trial,
@@ -301,6 +303,7 @@ class V4Subgraph(Subgraph):
                         'relay_name': scenario.relay_name,
                         'asn': as_obj.asn,
                         'policy': as_obj.name,
+                        'topology_section': topology_section,
                         'num_providers': len(as_obj.providers),
                         'num_adopting_providers': num_adopting_providers,
                         'outcome': outcome,
