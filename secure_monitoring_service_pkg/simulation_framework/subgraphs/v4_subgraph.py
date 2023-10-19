@@ -292,26 +292,28 @@ class V4Subgraph(Subgraph):
                         self._calc_adopting_provider_features(as_obj, scenario, prefix)
                     # Topology section
                     topology_section = self._topology_section(as_obj)
-                    # Create new row
-                    row = {
-                        'trial': trial,
-                        'percentage': percent_adopt,
-                        'propagation_round': propagation_round,
-                        'adoption_setting': scenario.AdoptASCls.name,
-                        'prefix_for_outcome': prefix,
-                        'attacker_asns': str(list(scenario.attacker_asns)),
-                        'victim_asn': next(iter(scenario.victim_asns)),
-                        'relay_name': scenario.relay_name,
-                        'asn': as_obj.asn,
-                        'policy': as_obj.name,
-                        'topology_section': topology_section,
-                        'num_providers': len(as_obj.providers),
-                        'num_adopting_providers': num_adopting_providers,
-                        'outcome': outcome,
-                        'using_adopting_provider': using_adopting_provider,
-                        'using_relay': used_relay
-                    }
-                    writer.writerow(row)
+                    if num_adopting_providers == 0 and outcome == Outcomes.DISCONNECTED and topology_section == 'edge':
+                        # Create new row
+                        row = {
+                            'trial': trial,
+                            'percentage': percent_adopt,
+                            'propagation_round': propagation_round,
+                            'adoption_setting': scenario.AdoptASCls.name,
+                            'prefix_for_outcome': prefix,
+                            'attacker_asns': str(list(scenario.attacker_asns)),
+                            'victim_asn': next(iter(scenario.victim_asns)),
+                            'relay_name': scenario.relay_name,
+                            'asn': as_obj.asn,
+                            'policy': as_obj.name,
+                            'topology_section': topology_section,
+                            'num_providers': len(as_obj.providers),
+                            'num_adopting_providers': num_adopting_providers,
+                            'outcome': outcome,
+                            'using_adopting_provider': using_adopting_provider,
+                            'using_relay': used_relay,
+                            'as_local_rib': str(as_obj._local_rib)
+                        }
+                        writer.writerow(row)
 
     def write_agg_as_metadata(self, trial, percent_adopt, propagation_round,
                               scenario, origin_prefix, prefix, outcomes):

@@ -34,7 +34,7 @@ AS_CSV_FIELDNAMES = ['trial', 'percentage', 'propagation_round',
                      'asn', 'policy', 'topology_section',
                      'num_providers', 'num_adopting_providers',
                      'outcome', 'using_adopting_provider',
-                     'using_relay']
+                     'using_relay', 'as_local_rib']
 
 AGG_AS_CSV_FIELDNAMES = ['trial', 'percentage', 'propagation_round',
                          'adoption_setting', 'prefix_for_outcome',
