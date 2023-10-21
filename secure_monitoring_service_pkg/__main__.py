@@ -146,12 +146,20 @@ def only_using_standard_policies(policies):
     return True
 
 
+def other_policies(policies):
+    if len(policies) > 1:
+        return "others"
+    else:
+        return policies[0]
+
+
 def process_other_args(args):
     # If output filename given, use it
     if args.output:
         output_filename = args.output
     else:
-        policies_used_str = "standard" if only_using_standard_policies(args.policy) else "others"
+        # TODO: Change this to put the single policy that's being used (if it's a single policy)
+        policies_used_str = "standard" if only_using_standard_policies(args.policy) else other_policies(args.policy)
         percentages_str = 'full' if args.percentages == ALL_PERCENTAGES else str(args.percentages).replace(' ', '')
         if args.replace_rov_ases_with:
             mixed_adoption_setting = args.replace_rov_ases_with[0]

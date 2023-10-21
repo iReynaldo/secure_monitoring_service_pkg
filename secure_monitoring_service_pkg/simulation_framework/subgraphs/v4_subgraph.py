@@ -465,20 +465,11 @@ class V4Subgraph(Subgraph):
 
         # Create a set of relays that have successful connections to origin
         available_relays = set()
-        if ROVPPO.__name__ == scenario.AdoptASCls.__name__ and not scenario.probe_data_plane:
-            # If the adopting ASes are running ROV++ Overlay
-            # without the ability to probe the dataplane, then there is
-            # no way to filter the available Relays. So simply say all
-            # relays are available to use.
-            available_relays = scenario.relay_asns
-            # Update Metadata tracking variable
-            before_relay_usage.update((self.available_relay_counter_key,) * len(available_relays))
-        else:
-            for relay_asn in scenario.relay_asns:
-                if self._relay_is_available(engine, scenario, outcomes, attacker_ann.prefix, relay_asn):
-                    available_relays.add(relay_asn)
-            # Update Metadata tracking variable
-            before_relay_usage.update((self.available_relay_counter_key,) * len(available_relays))
+        for relay_asn in scenario.relay_asns:
+            if self._relay_is_available(engine, scenario, outcomes, attacker_ann.prefix, relay_asn):
+                available_relays.add(relay_asn)
+        # Update Metadata tracking variable
+        before_relay_usage.update((self.available_relay_counter_key,) * len(available_relays))
 
         # If the relay_setting is CDN, then if any one of the
         # relay ASNs is available, then all corresponding relay
