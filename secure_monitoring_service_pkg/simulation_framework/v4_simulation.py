@@ -24,8 +24,9 @@ from bgp_simulator_pkg import BGPSimpleAS
 # Constants
 ####################
 
-CAIDA_CACHE_DIR = "~/tmp/caida_collector_cache"
-CAIDA_CACHE_TSV = "~/tmp/caida_collector.tsv"
+HOME_DIR = str(Path.home())
+CAIDA_CACHE_DIR = HOME_DIR + "/tmp/caida_collector_cache"
+CAIDA_CACHE_TSV = HOME_DIR + "/tmp/caida_collector.tsv"
 
 class V4Simulation(Simulation):
 
