@@ -364,7 +364,7 @@ class V4Subgraph(Subgraph):
             self._calc_adopting_provider_features(as_obj, scenario, prefix)
         using_adopting_provider_setting = 'using' if using_adopting_provider else 'notusing'
         num_proivders = len(as_obj.providers)
-        if num_adopting_providers == 0:
+        if num_adopting_providers == 0 and num_proivders > 0:
             return 'noad', using_adopting_provider_setting
         elif 0 < num_adopting_providers < num_proivders:
             return 'al1ad', using_adopting_provider_setting
