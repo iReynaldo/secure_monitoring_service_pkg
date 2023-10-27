@@ -29,7 +29,7 @@ BASE_PATH = Path("~/Desktop/graphs/").expanduser()
 adoption_settings = {
     "adopters_for_1_attackers": [ROVPPV1LiteSimpleAS, ROVSMS, ROVSMSK1, ROVSMSK2],
     "adopters_for_2_attackers": [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK2, ROVSMSK3],
-    "adopters_for_5_attackers": [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK5, ROVSMSK10]
+    "adopters_for_5_attackers": [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK5, ROVSMSK10],
 }
 
 # Scenario options
@@ -42,14 +42,19 @@ ARTEMIS_SUBPREFIX_HIJACK = "ArtemisSubprefixHijackScenario"
 # Functions
 #############################
 
+
 # Function for this obtained here and updated with more safe function call
 # https://stackoverflow.com/a/41210204
 def get_git_revision_hash():
-  return subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout[:-1]
+    return subprocess.run(
+        ["git", "rev-parse", "HEAD"], capture_output=True, text=True
+    ).stdout[:-1]
 
 
 def get_git_short_revision_hash():
-  return subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout[:-1]
+    return subprocess.run(
+        ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True
+    ).stdout[:-1]
 
 
 def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settings):
@@ -68,11 +73,9 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
 # Simulation Arguments
 #############################
 
+
 def other_settings():
-    settings = {
-        "scenario": AUTOIMMUNE,
-        "output_filename": "default"
-    }
+    settings = {"scenario": AUTOIMMUNE, "output_filename": "default"}
     return settings
 
 
@@ -80,7 +83,11 @@ def scenario_kwargs():
     settings = {
         "num_attackers": 2,
         "min_rov_confidence": 1,
-        "adoption_subcategory_attrs": ("stub_or_mh_ases", "etc_ases", "input_clique_ases"),
+        "adoption_subcategory_attrs": (
+            "stub_or_mh_ases",
+            "etc_ases",
+            "input_clique_ases",
+        ),
         "relay_asns": None,
         "assume_relays_are_reachable": False,
         "tunnel_customer_traffic": False,
@@ -90,11 +97,17 @@ def scenario_kwargs():
         settings["indirect"] = False
 
     # Validate Settings
-    if not (settings["relay_asns"] == Peer.twenty or settings["relay_asns"] == Peer.hundred
-            or settings["relay_asns"] == Peer.five or settings["relay_asns"] == Peer.ten):
-        assert not settings["assume_relays_are_reachable"], "assume_relays_are_reachable " \
-                                                            "should only be set True for " \
-                                                            "Peer relay setting"
+    if not (
+        settings["relay_asns"] == Peer.twenty
+        or settings["relay_asns"] == Peer.hundred
+        or settings["relay_asns"] == Peer.five
+        or settings["relay_asns"] == Peer.ten
+    ):
+        assert not settings["assume_relays_are_reachable"], (
+            "assume_relays_are_reachable "
+            "should only be set True for "
+            "Peer relay setting"
+        )
     return settings
 
 
@@ -105,7 +118,7 @@ def simulation_kwargs():
         "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
         "parse_cpus": 4,
         "python_hash_seed": 0,
-        "caida_kwargs": {}  # {"csv_path": Path("./aux_files/rov_adoption_5.csv")}
+        "caida_kwargs": {},  # {"csv_path": Path("./aux_files/rov_adoption_5.csv")}
     }
 
 
@@ -113,9 +126,12 @@ def simulation_kwargs():
 # Main
 #############################
 
+
 def main():
     # Get adoption classes
-    adoption_classes = adoption_settings[f"adopters_for_{scenario_kwargs()['num_attackers']}_attackers"]
+    adoption_classes = adoption_settings[
+        f"adopters_for_{scenario_kwargs()['num_attackers']}_attackers"
+    ]
 
     # Load Simulation settings
     settings = other_settings()
@@ -123,39 +139,50 @@ def main():
     sims = None
     if settings["scenario"] == SUBPREFIX_HIJACK:
         sims = [
-            V4Simulation(scenarios=[V4SubprefixHijackScenario(AdoptASCls=Cls,
-                                                              AnnCls=ROVPPAnn,
-                                                              **scenario_kwargs())
-                                    for Cls in adoption_classes
-                                    ],
-                         output_path=BASE_PATH / settings["output_filename"],
-                         **simulation_kwargs()),
+            V4Simulation(
+                scenarios=[
+                    V4SubprefixHijackScenario(
+                        AdoptASCls=Cls, AnnCls=ROVPPAnn, **scenario_kwargs()
+                    )
+                    for Cls in adoption_classes
+                ],
+                output_path=BASE_PATH / settings["output_filename"],
+                **simulation_kwargs(),
+            ),
         ]
     elif settings["scenario"] == AUTOIMMUNE:
         sims = [
-            V4Simulation(scenarios=[SubprefixAutoImmuneScenario(AdoptASCls=Cls,
-                                                                AnnCls=ROVPPAnn,
-                                                                **scenario_kwargs())
-                                    for Cls in adoption_classes
-                                    ],
-                         output_path=BASE_PATH / settings["output_filename"],
-                         **simulation_kwargs()),
+            V4Simulation(
+                scenarios=[
+                    SubprefixAutoImmuneScenario(
+                        AdoptASCls=Cls, AnnCls=ROVPPAnn, **scenario_kwargs()
+                    )
+                    for Cls in adoption_classes
+                ],
+                output_path=BASE_PATH / settings["output_filename"],
+                **simulation_kwargs(),
+            ),
         ]
     elif settings["scenario"] == ARTEMIS_SUBPREFIX_HIJACK:
         sims = [
-            V4Simulation(scenarios=[ArtemisSubprefixHijackScenario(AdoptASCls=Cls,
-                                                                   AnnCls=ROVPPAnn,
-                                                                   **scenario_kwargs())
-                                    for Cls in adoption_classes
-                                    ],
-                         output_path=BASE_PATH / settings["output_filename"],
-                         **simulation_kwargs()),
+            V4Simulation(
+                scenarios=[
+                    ArtemisSubprefixHijackScenario(
+                        AdoptASCls=Cls, AnnCls=ROVPPAnn, **scenario_kwargs()
+                    )
+                    for Cls in adoption_classes
+                ],
+                output_path=BASE_PATH / settings["output_filename"],
+                **simulation_kwargs(),
+            ),
         ]
     else:
         raise f"Unknown scenario specified: {settings['scenario']}"
 
     # collect experiment settings
-    experiment_settings_to_save = process_experiment_settings(simulation_kwargs(), scenario_kwargs(), other_settings())
+    experiment_settings_to_save = process_experiment_settings(
+        simulation_kwargs(), scenario_kwargs(), other_settings()
+    )
 
     # Run Simulations
     for sim in sims:

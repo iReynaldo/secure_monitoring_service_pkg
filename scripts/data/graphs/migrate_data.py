@@ -9,8 +9,12 @@ db = client.v4
 collection = db.simulations
 requesting = []
 
-with open("final/subprefix/rov-none/no-attack-relay/akamai/settings.json") as settings_file:
-    with open("final/subprefix/rov-none/no-attack-relay/akamai/results.json") as results_file:
+with open(
+    "final/subprefix/rov-none/no-attack-relay/akamai/settings.json"
+) as settings_file:
+    with open(
+        "final/subprefix/rov-none/no-attack-relay/akamai/results.json"
+    ) as results_file:
         jsonObj = settings_file.read()
         resultsJSON = results_file.read()
         myDict = json.loads(jsonObj)

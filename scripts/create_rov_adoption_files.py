@@ -17,8 +17,10 @@ from bgp_simulator_pkg import SimulationEngine
 #########################
 
 # Path to real rov adoption
-path_to_real_rov_adoption = '../secure_monitoring_service_pkg/aux_files/rov_adoption_real.csv'
-base_path_to_new_path = '../secure_monitoring_service_pkg/aux_files'
+path_to_real_rov_adoption = (
+    "../secure_monitoring_service_pkg/aux_files/rov_adoption_real.csv"
+)
+base_path_to_new_path = "../secure_monitoring_service_pkg/aux_files"
 
 # field names
 # fields = ['asn', 'filtering', 'confidence', 'source']
@@ -29,19 +31,20 @@ base_path_to_new_path = '../secure_monitoring_service_pkg/aux_files'
 
 print("Loading CAIDA information")
 # Get possible ASes
-engine = CaidaCollector(BaseASCls=BGPSimpleAS,
-                        GraphCls=SimulationEngine,
-                        ).run()
+engine = CaidaCollector(
+    BaseASCls=BGPSimpleAS,
+    GraphCls=SimulationEngine,
+).run()
 all_ases_set = engine.stub_or_mh_asns
 possible_ases_set = copy.deepcopy(all_ases_set)
 print("Done loading CAIDA information")
 
 # load default ROV ASes
 default_rov_ases = list()
-with open(path_to_real_rov_adoption, 'r') as csvfile:
+with open(path_to_real_rov_adoption, "r") as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
-        asn = int(row['asn'])
+        asn = int(row["asn"])
         default_rov_ases.append(asn)
         possible_ases_set.discard(asn)
 
@@ -57,7 +60,7 @@ for perc in [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90]:
     print(f"Creating file for ROV setting {perc}%")
     # name of output csv file
     filename = f"rov_adoption_{perc}.csv"
-    new_output_file_path = '/'.join([base_path_to_new_path, filename])
+    new_output_file_path = "/".join([base_path_to_new_path, filename])
 
     # Copy from original real rov adoption
     shutil.copyfile(path_to_real_rov_adoption, new_output_file_path)
@@ -68,7 +71,7 @@ for perc in [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90]:
 
     rows = list()
     # writing to csv file
-    with open(new_output_file_path, 'a') as csvfile:
+    with open(new_output_file_path, "a") as csvfile:
         # creating a csv writer object
         csvwriter = csv.writer(csvfile)
         # Uniformly random select additional ROV ASes
@@ -76,6 +79,6 @@ for perc in [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90]:
         asn_list = random.choices(possible_ases_list, k=remaining_num_ases_needed)
         # Create row records
         for asn in asn_list:
-            rows.append([str(asn), 'all', '1', 'synthetic'])
+            rows.append([str(asn), "all", "1", "synthetic"])
         # Write the data rows
         csvwriter.writerows(rows)
