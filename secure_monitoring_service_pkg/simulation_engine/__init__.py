@@ -27,5 +27,5 @@ __all__ = [
     "ROVSMSK5000",
     "ROVSMSK10000",
     "ROVSMSK20000",
-    "ROVSMSK30000"
+    "ROVSMSK30000",
 ]

@@ -13,18 +13,23 @@ from rovpp_pkg import ROVPPAnn
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg import ROVSMS
 
+
 class Config114(EngineTestConfig):
     """Contains config options to run a test"""
 
     name = "114"
     desc = "Subprefix Hijack with V4 Lite"
-    scenario = V4SubprefixHijackScenario(attacker_asns={ASNs.ATTACKER.value},
-                                         victim_asns={ASNs.VICTIM.value},
-                                         AdoptASCls=ROVSMS,
-                                         BaseASCls=BGPSimpleAS,
-                                         AnnCls=ROVPPAnn)
+    scenario = V4SubprefixHijackScenario(
+        attacker_asns={ASNs.ATTACKER.value},
+        victim_asns={ASNs.VICTIM.value},
+        AdoptASCls=ROVSMS,
+        BaseASCls=BGPSimpleAS,
+        AnnCls=ROVPPAnn,
+    )
     graph = graphs.Graph046()
-    non_default_as_cls_dict: Dict[int, Type[AS]] = {32: ROVSMS,
-                                                    33: ROVSMS,
-                                                    77: ROVSimpleAS}
+    non_default_as_cls_dict: Dict[int, Type[AS]] = {
+        32: ROVSMS,
+        33: ROVSMS,
+        77: ROVSimpleAS,
+    }
     propagation_rounds = 1

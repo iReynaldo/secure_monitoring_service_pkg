@@ -1,6 +1,6 @@
-
 # Copied from the base bgp_simulator
 # Temporary until we can get this as something to import
+
 
 class GraphInfo:
     """Contains information to build a graph"""

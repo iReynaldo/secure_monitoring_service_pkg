@@ -8,7 +8,6 @@ import random
 from copy import deepcopy
 
 
-
 from caida_collector_pkg import CaidaCollector
 
 from bgp_simulator_pkg import Simulation
@@ -28,24 +27,29 @@ HOME_DIR = str(Path.home())
 CAIDA_CACHE_DIR = HOME_DIR + "/tmp/caida_collector_cache"
 CAIDA_CACHE_TSV = HOME_DIR + "/tmp/caida_collector.tsv"
 
-class V4Simulation(Simulation):
 
-    def __init__(self,
-                 percent_adoptions: Tuple[
-                     Union[float, SpecialPercentAdoptions], ...] = (
-                         .05, .1, .3, .5, .8),
-                 scenarios: Tuple[Scenario, ...] = tuple(
-                     [SubprefixHijack(AdoptASCls=x)  # type: ignore
-                      for x in [ROVSimpleAS]]
-                 ),
-                 subgraphs: Optional[Tuple[Subgraph, ...]] = None,
-                 num_trials: int = 2,
-                 propagation_rounds: int = 1,
-                 output_path: Path = Path("/tmp/graphs"),
-                 parse_cpus: int = 8,
-                 python_hash_seed: Optional[int] = None,
-                 caida_topology_date: str = None,
-                 caida_kwargs=None):
+class V4Simulation(Simulation):
+    def __init__(
+        self,
+        percent_adoptions: Tuple[Union[float, SpecialPercentAdoptions], ...] = (
+            0.05,
+            0.1,
+            0.3,
+            0.5,
+            0.8,
+        ),
+        scenarios: Tuple[Scenario, ...] = tuple(
+            [SubprefixHijack(AdoptASCls=x) for x in [ROVSimpleAS]]  # type: ignore
+        ),
+        subgraphs: Optional[Tuple[Subgraph, ...]] = None,
+        num_trials: int = 2,
+        propagation_rounds: int = 1,
+        output_path: Path = Path("/tmp/graphs"),
+        parse_cpus: int = 8,
+        python_hash_seed: Optional[int] = None,
+        caida_topology_date: str = None,
+        caida_kwargs=None,
+    ):
         """Downloads relationship data, runs simulation
 
         Graphs -> A list of graph classes
@@ -57,13 +61,11 @@ class V4Simulation(Simulation):
         if subgraphs:
             self.subgraphs: Tuple[Subgraph, ...] = subgraphs
         else:
-            self.subgraphs = tuple([
-                Cls() for Cls in
-                Subgraph.subclasses if Cls.name])
+            self.subgraphs = tuple([Cls() for Cls in Subgraph.subclasses if Cls.name])
 
-        self.percent_adoptions: Tuple[Union[float,
-        SpecialPercentAdoptions],
-        ...] = percent_adoptions
+        self.percent_adoptions: Tuple[
+            Union[float, SpecialPercentAdoptions], ...
+        ] = percent_adoptions
         self.num_trials: int = num_trials
         self.propagation_rounds: int = propagation_rounds
         self.output_path: Path = output_path
@@ -79,15 +81,18 @@ class V4Simulation(Simulation):
         # Done here so that the caida files are cached
         # So that multiprocessing doesn't interfere with one another
         if caida_topology_date:
-            dl_time = datetime.strptime(caida_topology_date, '%Y.%m.%d')
+            dl_time = datetime.strptime(caida_topology_date, "%Y.%m.%d")
             dl_time.replace(hour=0, minute=0, second=0, microsecond=0)
             self.caida_download_time = dl_time
-            CaidaCollector().run(dl_time=dl_time,
-                                 cache_dir=Path(CAIDA_CACHE_DIR),
-                                 tsv_path=Path(CAIDA_CACHE_TSV))
+            CaidaCollector().run(
+                dl_time=dl_time,
+                cache_dir=Path(CAIDA_CACHE_DIR),
+                tsv_path=Path(CAIDA_CACHE_TSV),
+            )
         else:
-            CaidaCollector().run(cache_dir=Path(CAIDA_CACHE_DIR),
-                                 tsv_path=Path(CAIDA_CACHE_TSV))
+            CaidaCollector().run(
+                cache_dir=Path(CAIDA_CACHE_DIR), tsv_path=Path(CAIDA_CACHE_TSV)
+            )
 
     def run(self, experiment_settings_to_save=None):
         """Runs the simulation and write the data"""
@@ -120,15 +125,14 @@ class V4Simulation(Simulation):
             make_archive(self.output_path, "zip", tmp_dir)  # type: ignore
             print(f"\nWrote graphs to {self.output_path}.zip")
 
-    def _run_chunk(self,
-                   chunk_id: int,
-                   percent_adopt_trials: List[Tuple[Union[float,
-                                                    SpecialPercentAdoptions],
-                                                    int]],
-                   # MUST leave as false. _get_mp_results depends on this
-                   # This should be fixed and this comment deleted
-                   single_proc: bool = False
-                   ) -> Tuple[Subgraph, ...]:
+    def _run_chunk(
+        self,
+        chunk_id: int,
+        percent_adopt_trials: List[Tuple[Union[float, SpecialPercentAdoptions], int]],
+        # MUST leave as false. _get_mp_results depends on this
+        # This should be fixed and this comment deleted
+        single_proc: bool = False,
+    ) -> Tuple[Subgraph, ...]:
         """Runs a chunk of trial inputs"""
 
         # Check to enable deterministic multiprocess runs
@@ -139,10 +143,11 @@ class V4Simulation(Simulation):
         # (after the multiprocess process has started)
         # Changing recursion depth does nothing
         # Making nothing a reference does nothing
-        engine = CaidaCollector(BaseASCls=BGPSimpleAS,
-                                GraphCls=SimulationEngine,
-                                GraphCls_kwargs=self.caida_graphcls_kwargs,
-                                ).run(dl_time=self.caida_download_time)
+        engine = CaidaCollector(
+            BaseASCls=BGPSimpleAS,
+            GraphCls=SimulationEngine,
+            GraphCls_kwargs=self.caida_graphcls_kwargs,
+        ).run(dl_time=self.caida_download_time)
         # Must deepcopy here to have the same behavior between single
         # And multiprocessing
         if single_proc:
@@ -154,21 +159,24 @@ class V4Simulation(Simulation):
 
         for percent_adopt, trial in percent_adopt_trials:
             for scenario in self.scenarios:
-
                 # Deep copy scenario to ensure it's fresh
                 # Since certain things like announcements change round to round
                 scenario = deepcopy(scenario)
 
                 if isinstance(percent_adopt, float):
-                    print(f"{percent_adopt * 100}% "
-                          f"{scenario.graph_label}, "
-                          f"#{trial}",
-                          end="                             " + "\r")
+                    print(
+                        f"{percent_adopt * 100}% "
+                        f"{scenario.graph_label}, "
+                        f"#{trial}",
+                        end="                             " + "\r",
+                    )
                 elif isinstance(percent_adopt, SpecialPercentAdoptions):
-                    print(f"{percent_adopt.value * 100}% "
-                          f"{scenario.graph_label}, "
-                          f"#{trial}",
-                          end="                             " + "\r")
+                    print(
+                        f"{percent_adopt.value * 100}% "
+                        f"{scenario.graph_label}, "
+                        f"#{trial}",
+                        end="                             " + "\r",
+                    )
                 else:
                     raise NotImplementedError
 
@@ -177,14 +185,15 @@ class V4Simulation(Simulation):
 
                 for propagation_round in range(self.propagation_rounds):
                     # Run the engine
-                    engine.run(propagation_round=propagation_round,
-                               scenario=scenario)
+                    engine.run(propagation_round=propagation_round, scenario=scenario)
 
-                    kwargs = {"engine": engine,
-                              "percent_adopt": percent_adopt,
-                              "trial": trial,
-                              "scenario": scenario,
-                              "propagation_round": propagation_round}
+                    kwargs = {
+                        "engine": engine,
+                        "percent_adopt": percent_adopt,
+                        "trial": trial,
+                        "scenario": scenario,
+                        "propagation_round": propagation_round,
+                    }
 
                     # Pre-aggregation Hook
                     scenario.pre_aggregation_hook(**kwargs)

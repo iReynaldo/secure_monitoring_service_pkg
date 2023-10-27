@@ -7,10 +7,10 @@ class CDN:
     conglomerate = frozenset(akamai | cloudflare | verisign | incapsula | neustar)
 
     reverse_mapping = {
-        akamai: 'akamai',
-        cloudflare: 'cloudflare',
-        verisign: 'verisign',
-        incapsula: 'incapsula',
-        neustar: 'neustar',
-        conglomerate: 'conglomerate'
+        akamai: "akamai",
+        cloudflare: "cloudflare",
+        verisign: "verisign",
+        incapsula: "incapsula",
+        neustar: "neustar",
+        conglomerate: "conglomerate",
     }

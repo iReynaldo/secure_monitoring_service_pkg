@@ -5,7 +5,9 @@ import igraph as ig
 from igraph import plot
 import numpy as np
 
-from secure_monitoring_service_pkg.simulation_framework.sim_logger import test_logger as logger
+from secure_monitoring_service_pkg.simulation_framework.sim_logger import (
+    test_logger as logger,
+)
 from secure_monitoring_service_pkg.simulation_framework import sim_logger
 
 ################################
@@ -20,6 +22,7 @@ ARTIFICIAL_SOURCE_ASN = 0
 ################################
 # Functions
 ################################
+
 
 def asn_set_from_edge_list(edge_list):
     # Get count of number of unique ASes
@@ -91,11 +94,7 @@ def create_report_graph_object_with_capacities(edge_list):
     number_of_ases = len(asn_set_from_edge_list(edge_list))
 
     # Create graph object
-    g = ig.Graph(
-        number_of_ases,
-        edge_list,
-        directed=True
-    )
+    g = ig.Graph(number_of_ases, edge_list, directed=True)
 
     logger.debug("Graph edge list: {0}".format(edge_list))
 
@@ -154,7 +153,7 @@ def get_mvdp_with_subgraph_pictures(path_list, target_asn):
     target_asn_path_list = list()
     for path in path_list_copy:
         if target_asn in path:
-            path_to_target_asn = path[:path.index(target_asn) + 1]
+            path_to_target_asn = path[: path.index(target_asn) + 1]
             target_asn_path_list.append(path_to_target_asn)
 
     # Create v_in and v_out vertices
@@ -162,7 +161,11 @@ def get_mvdp_with_subgraph_pictures(path_list, target_asn):
 
     # Remap asns to sequence
     (seq_asn_map, asn_seq_map) = map_asns_to_seq(converted_target_asn_path_list)
-    logger.debug("Remapped Converted target asn path list: {0}".format(converted_target_asn_path_list))
+    logger.debug(
+        "Remapped Converted target asn path list: {0}".format(
+            converted_target_asn_path_list
+        )
+    )
 
     # Create artificial source edges
     artificial_source_seq_num = max(seq_asn_map) + 1
@@ -184,10 +187,11 @@ def get_mvdp_with_subgraph_pictures(path_list, target_asn):
     adjusted_target = asn_seq_map[target_asn]
     logger.debug("Artificial Source: {0}".format(artificial_source_seq_num))
     logger.debug("Adjusted Target: {0}".format(adjusted_target))
-    flow = report_graph.maxflow(source=artificial_source_seq_num,
-                                target=adjusted_target,
-                                capacity=report_graph.es["capacity"]
-                                )
+    flow = report_graph.maxflow(
+        source=artificial_source_seq_num,
+        target=adjusted_target,
+        capacity=report_graph.es["capacity"],
+    )
 
     logger.debug("Capacities: {0}".format(report_graph.es["capacity"]))
     logger.debug("Max flow: {0}".format(flow.value))
@@ -225,7 +229,9 @@ def create_report_graph(path_list):
 
     # Identify the leaves
     # Leaves should have 0 in-degree
-    nparray_of_leaf_vector_ids = np.where(np.array(prelim_report_graph.degree(mode="in")) == 0)[0]
+    nparray_of_leaf_vector_ids = np.where(
+        np.array(prelim_report_graph.degree(mode="in")) == 0
+    )[0]
     del prelim_report_graph
 
     # Create artificial source edges
@@ -244,20 +250,34 @@ def create_report_graph(path_list):
     logger.debug("Added Artificial Source to Graph Edge List")
     report_graph = create_report_graph_object_with_capacities(graph_edge_list)
 
-    return report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_num, nparray_of_leaf_vector_ids
+    return (
+        report_graph,
+        seq_asn_map,
+        asn_seq_map,
+        artificial_source_seq_num,
+        nparray_of_leaf_vector_ids,
+    )
 
 
-def get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_num, target_asn, plot_graph=False):
+def get_max_vdp(
+    report_graph,
+    seq_asn_map,
+    asn_seq_map,
+    artificial_source_seq_num,
+    target_asn,
+    plot_graph=False,
+):
     # Run the max flow
     adjusted_target = asn_seq_map[target_asn]
     logger.debug("Artificial Source: {0}".format(artificial_source_seq_num))
     logger.debug("Raw Target: {0}".format(target_asn))
     logger.debug("Adjusted Target: {0}".format(adjusted_target))
     try:
-        flow = report_graph.maxflow(source=artificial_source_seq_num,
-                                    target=adjusted_target,
-                                    capacity=report_graph.es["capacity"]
-                                    )
+        flow = report_graph.maxflow(
+            source=artificial_source_seq_num,
+            target=adjusted_target,
+            capacity=report_graph.es["capacity"],
+        )
     except BaseException:
         logger.info("Artificial Source: {0}".format(artificial_source_seq_num))
         logger.info("Target ASN: {0}".format(target_asn))
@@ -277,21 +297,38 @@ def get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_nu
 
 
 # @profile
-def get_avoid_list(reports_path_list, max_num_dishonest_nodes, specific_target_asn_set=None):
+def get_avoid_list(
+    reports_path_list, max_num_dishonest_nodes, specific_target_asn_set=None
+):
     logger.debug("Inside the get_avoid_list method")
     logger.info("Reports Path List: {0}".format(reports_path_list))
     if not specific_target_asn_set:
-        target_asn_set = target_asn_set_from_path_list(reports_path_list, max_num_dishonest_nodes)
+        target_asn_set = target_asn_set_from_path_list(
+            reports_path_list, max_num_dishonest_nodes
+        )
     else:
         target_asn_set = specific_target_asn_set
     avoid_list = list()
-    (report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_num, nparray_of_leaf_vector_ids) = create_report_graph(
-        reports_path_list)
+    (
+        report_graph,
+        seq_asn_map,
+        asn_seq_map,
+        artificial_source_seq_num,
+        nparray_of_leaf_vector_ids,
+    ) = create_report_graph(reports_path_list)
     for target_asn in target_asn_set:
         # Optimization: Calculate mvdp only if it's not a leaf
-        if target_asn in asn_seq_map and (asn_seq_map[target_asn] not in nparray_of_leaf_vector_ids):
-            max_num_vdp = get_max_vdp(report_graph, seq_asn_map, asn_seq_map, artificial_source_seq_num, target_asn,
-                                      sim_logger.CONDUCTING_SYSTEM_TEST)
+        if target_asn in asn_seq_map and (
+            asn_seq_map[target_asn] not in nparray_of_leaf_vector_ids
+        ):
+            max_num_vdp = get_max_vdp(
+                report_graph,
+                seq_asn_map,
+                asn_seq_map,
+                artificial_source_seq_num,
+                target_asn,
+                sim_logger.CONDUCTING_SYSTEM_TEST,
+            )
             if max_num_vdp > max_num_dishonest_nodes:
                 avoid_list.append(target_asn)
     logger.debug("Avoid List: {0}".format(avoid_list))

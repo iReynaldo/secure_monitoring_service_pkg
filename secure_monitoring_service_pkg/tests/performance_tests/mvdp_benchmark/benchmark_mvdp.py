@@ -11,6 +11,7 @@ from secure_monitoring_service_pkg import mvdp
 # Dataclasses
 # https://docs.python.org/3.9/library/dataclasses.html
 
+
 # Credits to Python Tutorial
 # https://www.pythontutorial.net/advanced-python/python-context-managers/#:~:text=Python%20context%20managers%20work%20based%20on%20the%20context,a%20class%20that%20supports%20the%20context%20manager%20protocol.
 class simple_timer:
@@ -18,6 +19,7 @@ class simple_timer:
     Time whatever is in the context
     This seems to add 1 second to the time
     """
+
     def __init__(self, label):
         self.label = label
         self.elapsed_time = None
@@ -29,14 +31,16 @@ class simple_timer:
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.end = perf_counter()
         self.elapsed_time = self.end - self.start
-        print('{} : {}'.format(self.label, self.elapsed_time))
+        print("{} : {}".format(self.label, self.elapsed_time))
         return False
+
 
 class timer:
     """
     Time whatever is in the context
     This seems to add 1 second to the time
     """
+
     def __init__(self, label, expected_time):
         self.label = label
         self.expected_time = expected_time
@@ -49,12 +53,14 @@ class timer:
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.end = perf_counter()
         self.elapsed_time = self.end - self.start
-        print('{} : {}'.format(self.label, self.end - self.start))
-        print('Expected Time: {}'.format(self.expected_time))
+        print("{} : {}".format(self.label, self.end - self.start))
+        print("Expected Time: {}".format(self.expected_time))
         # Calculating Faster than
         # https://math.stackexchange.com/questions/1227389/what-is-the-difference-between-faster-by-factor-and-faster-by-percent
-        faster_than = ((self.expected_time - self.elapsed_time) / self.expected_time) * 100
-        print('This Run was {}% faster than Expected: '.format(faster_than))
+        faster_than = (
+            (self.expected_time - self.elapsed_time) / self.expected_time
+        ) * 100
+        print("This Run was {}% faster than Expected: ".format(faster_than))
         return False
 
 
@@ -81,10 +87,15 @@ def internet_scale_path_list_1():
     k = 1
     :return:
     """
-    from secure_monitoring_service_pkg.tests.performance_tests.mvdp_benchmark.report_path_lists.path_list_1 import expected_time, reports_path_list
+    from secure_monitoring_service_pkg.tests.performance_tests.mvdp_benchmark.report_path_lists.path_list_1 import (
+        expected_time,
+        reports_path_list,
+    )
+
     # flow_value = mvdp.get_mvdp_with_subgraph_pictures(reports_path_list, 1)
     with timer("Path List 1", expected_time) as _:
         avoid_list = mvdp.get_avoid_list(reports_path_list, 1)
+
 
 @profile
 def internet_scale_path_list_2():
@@ -92,7 +103,11 @@ def internet_scale_path_list_2():
     k = 1
     :return:
     """
-    from secure_monitoring_service_pkg.tests.performance_tests.mvdp_benchmark.report_path_lists.path_list_2 import expected_time, reports_path_list
+    from secure_monitoring_service_pkg.tests.performance_tests.mvdp_benchmark.report_path_lists.path_list_2 import (
+        expected_time,
+        reports_path_list,
+    )
+
     # flow_value = mvdp.get_mvdp_with_subgraph_pictures(reports_path_list, 1)
     with timer("Path List 2", expected_time) as _:
         avoid_list = mvdp.get_avoid_list(reports_path_list, 1)
@@ -104,7 +119,11 @@ def internet_scale_path_list_3():
     k = 1
     :return:
     """
-    from secure_monitoring_service_pkg.tests.performance_tests.mvdp_benchmark.report_path_lists.path_list_3 import expected_time, reports_path_list
+    from secure_monitoring_service_pkg.tests.performance_tests.mvdp_benchmark.report_path_lists.path_list_3 import (
+        expected_time,
+        reports_path_list,
+    )
+
     # flow_value = mvdp.get_mvdp_with_subgraph_pictures(reports_path_list, 1)
     with timer("Path List 3", expected_time) as _:
         avoid_list = mvdp.get_avoid_list(reports_path_list, 1)
@@ -116,13 +135,17 @@ def internet_scale_path_list_4():
     k = 1
     :return:
     """
-    from secure_monitoring_service_pkg.tests.performance_tests.mvdp_benchmark.report_path_lists.path_list_4 import expected_time, reports_path_list
+    from secure_monitoring_service_pkg.tests.performance_tests.mvdp_benchmark.report_path_lists.path_list_4 import (
+        expected_time,
+        reports_path_list,
+    )
+
     # flow_value = mvdp.get_mvdp_with_subgraph_pictures(reports_path_list, 1)
     with timer("Path List 4", expected_time) as _:
         avoid_list = mvdp.get_avoid_list(reports_path_list, 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     internet_scale_path_list_1()
     internet_scale_path_list_2()
     internet_scale_path_list_3()

@@ -15,5 +15,5 @@ __all__ = [
     "V4PrefixHijackScenario",
     "V4Scenario",
     "CDN",
-    "Peer"
+    "Peer",
 ]

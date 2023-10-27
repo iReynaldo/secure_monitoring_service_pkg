@@ -10,40 +10,48 @@ from bgp_simulator_pkg import Timestamps
 from ..v4_scenario import V4Scenario
 from ....simulation_engine.report import Report
 
-from secure_monitoring_service_pkg.simulation_framework.sim_logger \
-    import sim_logger as logger
+from secure_monitoring_service_pkg.simulation_framework.sim_logger import (
+    sim_logger as logger,
+)
 from ....simulation_engine import ROVSMS
 
 
 class SubprefixAutoImmuneScenario(V4Scenario):
     __slots__ = ()
 
-    def __init__(self, *args, fightback=False, relay_asns=None, indirect=True, **kwargs):
-        super(SubprefixAutoImmuneScenario, self).__init__(*args, relay_asns=relay_asns, **kwargs)
+    def __init__(
+        self, *args, fightback=False, relay_asns=None, indirect=True, **kwargs
+    ):
+        super(SubprefixAutoImmuneScenario, self).__init__(
+            *args, relay_asns=relay_asns, **kwargs
+        )
         self.subprefixes = dict()
         self.providers = dict()
         self.name: str = "SubprefixAutoImmuneScenario"
-        self.indirect = indirect  # If the autoimmune attack is indirect(True)/direct(False)
+        self.indirect = (
+            indirect  # If the autoimmune attack is indirect(True)/direct(False)
+        )
         self.fightback = fightback
 
     def _get_announcements(self, *args, **kwargs) -> Tuple["Announcement", ...]:
-        """Returns victim, attacker, and relay anns for autoimmune attack
-
-        """
+        """Returns victim, attacker, and relay anns for autoimmune attack"""
 
         anns = list()
         # Setup Victim Announcements
         for victim_asn in self.victim_asns:
-            anns.append(self.AnnCls(prefix=Prefixes.PREFIX.value,
-                                    as_path=(victim_asn,),
-                                    timestamp=Timestamps.VICTIM.value,
-                                    seed_asn=victim_asn,
-                                    roa_valid_length=True,
-                                    roa_origin=victim_asn,
-                                    recv_relationship=Relationships.ORIGIN))
+            anns.append(
+                self.AnnCls(
+                    prefix=Prefixes.PREFIX.value,
+                    as_path=(victim_asn,),
+                    timestamp=Timestamps.VICTIM.value,
+                    seed_asn=victim_asn,
+                    roa_valid_length=True,
+                    roa_origin=victim_asn,
+                    recv_relationship=Relationships.ORIGIN,
+                )
+            )
 
-        err: str = "Fix the roa_origins of the " \
-                   "announcements for multiple victims"
+        err: str = "Fix the roa_origins of the " "announcements for multiple victims"
         assert len(self.victim_asns) == 1, err
 
         # Setup Attacker Announcements
@@ -74,13 +82,17 @@ class SubprefixAutoImmuneScenario(V4Scenario):
             self.subprefixes[provider.asn] = subprefix
             self.providers[subprefix] = provider.asn
             for attacker_asn in self.attacker_asns:
-                anns.append(self.AnnCls(prefix=subprefix,
-                                        as_path=(attacker_asn, provider.asn),
-                                        timestamp=Timestamps.ATTACKER.value,
-                                        seed_asn=attacker_asn,
-                                        roa_valid_length=False,
-                                        roa_origin=roa_origin,
-                                        recv_relationship=Relationships.ORIGIN))
+                anns.append(
+                    self.AnnCls(
+                        prefix=subprefix,
+                        as_path=(attacker_asn, provider.asn),
+                        timestamp=Timestamps.ATTACKER.value,
+                        seed_asn=attacker_asn,
+                        roa_valid_length=False,
+                        roa_origin=roa_origin,
+                        recv_relationship=Relationships.ORIGIN,
+                    )
+                )
         return anns
 
     def generate_malicious_reports(self, providers):
@@ -91,8 +103,11 @@ class SubprefixAutoImmuneScenario(V4Scenario):
             for attacker_asn in self.attacker_asns:
                 trusted_server_ref = self.AdoptASCls.trusted_server
                 # Instead of sending announcements, submit malicious reports directly
-                report = Report(reporting_asn=attacker_asn, prefix=subprefix,
-                                as_path=(attacker_asn, provider.asn))
+                report = Report(
+                    reporting_asn=attacker_asn,
+                    prefix=subprefix,
+                    as_path=(attacker_asn, provider.asn),
+                )
                 trusted_server_ref.receive_report(report)
 
     def get_attacker_announcements(self):
@@ -102,13 +117,17 @@ class SubprefixAutoImmuneScenario(V4Scenario):
             attacker_announcements = set()
             some_attacker_asn = next(iter(self.attacker_asns))
             for subprefix in self.subprefixes.values():
-                attacker_announcements.add(self.AnnCls(prefix=subprefix,
-                                                       as_path=(some_attacker_asn,),
-                                                       timestamp=Timestamps.ATTACKER.value,
-                                                       seed_asn=some_attacker_asn,
-                                                       roa_valid_length=False,
-                                                       roa_origin=next(iter(self.victim_asns)),
-                                                       recv_relationship=Relationships.ORIGIN))
+                attacker_announcements.add(
+                    self.AnnCls(
+                        prefix=subprefix,
+                        as_path=(some_attacker_asn,),
+                        timestamp=Timestamps.ATTACKER.value,
+                        seed_asn=some_attacker_asn,
+                        roa_valid_length=False,
+                        roa_origin=next(iter(self.victim_asns)),
+                        recv_relationship=Relationships.ORIGIN,
+                    )
+                )
             return attacker_announcements
 
     def generate_fightback_relay_announcements(self):
@@ -118,13 +137,17 @@ class SubprefixAutoImmuneScenario(V4Scenario):
             for i, relay_asn in enumerate(self.relay_asns):
                 relay_prefix = Prefixes.SUBPREFIX.value
                 self.relay_prefixes[relay_asn] = relay_prefix
-                anns.append(self.AnnCls(prefix=relay_prefix,
-                                        as_path=(relay_asn,),
-                                        timestamp=2,
-                                        seed_asn=relay_asn,
-                                        roa_valid_length=True,
-                                        roa_origin=relay_asn,
-                                        recv_relationship=Relationships.ORIGIN))
+                anns.append(
+                    self.AnnCls(
+                        prefix=relay_prefix,
+                        as_path=(relay_asn,),
+                        timestamp=2,
+                        seed_asn=relay_asn,
+                        roa_valid_length=True,
+                        roa_origin=relay_asn,
+                        recv_relationship=Relationships.ORIGIN,
+                    )
+                )
         return anns
 
     def apply_blackholes_from_avoid_list(self, engine):
@@ -152,4 +175,6 @@ class SubprefixAutoImmuneScenario(V4Scenario):
                     avoid_list_created_flag = True
                     self.has_rovsms_ases = True
 
-                as_obj._force_add_blackholes_from_avoid_list(self.ordered_prefix_subprefix_dict)
+                as_obj._force_add_blackholes_from_avoid_list(
+                    self.ordered_prefix_subprefix_dict
+                )

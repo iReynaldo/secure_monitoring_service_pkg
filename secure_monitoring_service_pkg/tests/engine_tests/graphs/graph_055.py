@@ -16,9 +16,7 @@ class Graph055(GraphInfo):
     def __init__(self):
         self.attacker_asn_set = {660, 661}
         super(Graph055, self).__init__(
-            peer_links=set([PLink(4, 5),
-                            PLink(4, 8),
-                            PLink(6, 3)]),
+            peer_links=set([PLink(4, 5), PLink(4, 8), PLink(6, 3)]),
             customer_provider_links=set(
                 [
                     CPLink(provider_asn=4, customer_asn=2),
@@ -29,7 +27,7 @@ class Graph055(GraphInfo):
                     CPLink(provider_asn=5, customer_asn=71),
                     CPLink(provider_asn=8, customer_asn=9),
                     CPLink(provider_asn=9, customer_asn=661),  # Attacker
-                    CPLink(provider_asn=9, customer_asn=72)
+                    CPLink(provider_asn=9, customer_asn=72),
                 ]
             ),
         )

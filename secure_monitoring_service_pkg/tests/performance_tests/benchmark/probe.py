@@ -27,12 +27,15 @@ BASE_PATH = Path("~/Desktop/graphs/").expanduser()
 # Function for this obtained here and updated with more safe function call
 # https://stackoverflow.com/a/41210204
 def get_git_revision_hash():
-  return subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout[:-1]
+    return subprocess.run(
+        ["git", "rev-parse", "HEAD"], capture_output=True, text=True
+    ).stdout[:-1]
 
 
 def get_git_short_revision_hash():
-  return subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout[:-1]
-
+    return subprocess.run(
+        ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True
+    ).stdout[:-1]
 
 
 def main(settings, policy, scenario):
@@ -44,9 +47,13 @@ def main(settings, policy, scenario):
     else:
         raise f"Scenario: '{scenario}' is not recognized"
 
-    sims = V4Simulation(scenarios=scenarios,
-                        output_path=BASE_PATH / f"{scenario}_benchmark",
-                        **settings),
+    sims = (
+        V4Simulation(
+            scenarios=scenarios,
+            output_path=BASE_PATH / f"{scenario}_benchmark",
+            **settings,
+        ),
+    )
 
     for sim in sims:
         sim.run()
@@ -54,17 +61,13 @@ def main(settings, policy, scenario):
 
 def v4_subprefix_hijack_scenario(policy):
     return [
-            V4SubprefixHijackScenario(AdoptASCls=Cls,
-                                      AnnCls=ROVPPAnn)
-            for Cls in [policy]
+        V4SubprefixHijackScenario(AdoptASCls=Cls, AnnCls=ROVPPAnn) for Cls in [policy]
     ]
 
 
 def subprefix_auto_immune_scenario(policy):
     return [
-        SubprefixAutoImmuneScenario(AdoptASCls=Cls,
-                                    AnnCls=ROVPPAnn)
-        for Cls in [policy]
+        SubprefixAutoImmuneScenario(AdoptASCls=Cls, AnnCls=ROVPPAnn) for Cls in [policy]
     ]
 
 
@@ -76,7 +79,9 @@ def process_args(args):
     settings["parse_cpus"] = args.cpus
     # TODO: The following settings are defaults not passed in
     #  These can be added as arguments at a later time.
-    settings["caida_kwargs"] = {}  # {"csv_path": Path("./aux_files/rov_adoption_5.csv")}
+    settings[
+        "caida_kwargs"
+    ] = {}  # {"csv_path": Path("./aux_files/rov_adoption_5.csv")}
     settings["python_hash_seed"] = args.seed
 
     # Interpret the policy_str
@@ -91,54 +96,66 @@ def process_args(args):
     elif policy_str == "v4k5":
         policy = ROVSMSK5
     else:
-        raise (ValueError,
-               "Unrecognized policy specified. "
-               "Use following options {v1, v4, v4k1, v4k5}")
+        raise (
+            ValueError,
+            "Unrecognized policy specified. "
+            "Use following options {v1, v4, v4k1, v4k5}",
+        )
     return settings, policy, args
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Benchmarking utility')
-    parser.add_argument('-p', '--percentages',
-                        type=float,
-                        nargs='*',
-                        default=[0.0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0],
-                        help='a list of floats')
-    parser.add_argument('-n', '--num_trials',
-                        type=int,
-                        nargs='?',
-                        default=10,
-                        help='Number of trials to run')
-    parser.add_argument('-c', '--cpus',
-                        type=int,
-                        nargs='?',
-                        default=1,
-                        help='Number of CPUs to use')
-    parser.add_argument('-y', '--policy',
-                        type=str,
-                        nargs='?',
-                        default="v4k1",
-                        help='Adoption Policy to use')
-    parser.add_argument('-t', '--tag',
-                        type=str,
-                        nargs='?',
-                        default="standard",
-                        help='Tag to put label in benchmark table')
-    parser.add_argument('-s', '--scenario',
-                        type=str,
-                        nargs='?',
-                        default="V4SubprefixHijackScenario",
-                        help='Attack Scenario')
-    parser.add_argument('--seed',
-                        type=int,
-                        nargs='?',
-                        default=0,
-                        help='Number of CPUs to use')
+    parser = argparse.ArgumentParser(description="Benchmarking utility")
+    parser.add_argument(
+        "-p",
+        "--percentages",
+        type=float,
+        nargs="*",
+        default=[0.0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0],
+        help="a list of floats",
+    )
+    parser.add_argument(
+        "-n",
+        "--num_trials",
+        type=int,
+        nargs="?",
+        default=10,
+        help="Number of trials to run",
+    )
+    parser.add_argument(
+        "-c", "--cpus", type=int, nargs="?", default=1, help="Number of CPUs to use"
+    )
+    parser.add_argument(
+        "-y",
+        "--policy",
+        type=str,
+        nargs="?",
+        default="v4k1",
+        help="Adoption Policy to use",
+    )
+    parser.add_argument(
+        "-t",
+        "--tag",
+        type=str,
+        nargs="?",
+        default="standard",
+        help="Tag to put label in benchmark table",
+    )
+    parser.add_argument(
+        "-s",
+        "--scenario",
+        type=str,
+        nargs="?",
+        default="V4SubprefixHijackScenario",
+        help="Attack Scenario",
+    )
+    parser.add_argument(
+        "--seed", type=int, nargs="?", default=0, help="Number of CPUs to use"
+    )
     return process_args(parser.parse_args())
 
 
 if __name__ == "__main__":
-
     # Parse args and get benchmark settings
     settings, policy, args = parse_args()
 
@@ -177,17 +194,17 @@ if __name__ == "__main__":
             "policy",
             "platform",
             "platform_version",
-            "percentages"
+            "percentages",
         ]
         writer = csv.DictWriter(tsvfile, delimiter="\t", fieldnames=fieldnames)
         # writer.writeheader()  # Comment this out if the file already exists
         # Get the benchmark settings
-        runtime_platform = \
-            "pypy" if '__pypy__' in sys.builtin_module_names else "python"
+        runtime_platform = (
+            "pypy" if "__pypy__" in sys.builtin_module_names else "python"
+        )
         # peak memory usage (kilobytes on Linux, bytes on OS X)
         self_max_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-        children_max_memory = \
-            resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss
+        children_max_memory = resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss
         total_max_memory = self_max_memory + children_max_memory
         row = {
             "machine_name": os.uname().nodename,
@@ -205,7 +222,7 @@ if __name__ == "__main__":
             "policy": args.policy,
             "platform": runtime_platform,
             "platform_version": platform.python_version(),
-            "percentages": args.percentages
+            "percentages": args.percentages,
         }
         writer.writerow(row)
     print("Results written")

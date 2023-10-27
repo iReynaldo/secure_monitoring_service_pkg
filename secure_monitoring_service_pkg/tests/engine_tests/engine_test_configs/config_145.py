@@ -20,17 +20,21 @@ class Config145(EngineTestConfig):
     name = "145"
     desc = "AutoImmune Attack with V4 Lite"
     graph = graphs.Graph059()
-    scenario = SubprefixAutoImmuneScenario(num_attackers=2,
-                                           attacker_asns=graph.attacker_asn_set,
-                                           victim_asns={ASNs.VICTIM.value},
-                                           AdoptASCls=ROVSMSK3,
-                                           BaseASCls=BGPSimpleAS,
-                                           AnnCls=ROVPPAnn)
+    scenario = SubprefixAutoImmuneScenario(
+        num_attackers=2,
+        attacker_asns=graph.attacker_asn_set,
+        victim_asns={ASNs.VICTIM.value},
+        AdoptASCls=ROVSMSK3,
+        BaseASCls=BGPSimpleAS,
+        AnnCls=ROVPPAnn,
+    )
 
-    non_default_as_cls_dict: Dict[int, Type[AS]] = {3: ROVSMSK3,
-                                                    4: ROVSMSK3,
-                                                    8: ROVSMSK3,
-                                                    10: ROVSMSK3,
-                                                    11: ROVSMSK3,
-                                                    7: ROVSimpleAS}
+    non_default_as_cls_dict: Dict[int, Type[AS]] = {
+        3: ROVSMSK3,
+        4: ROVSMSK3,
+        8: ROVSMSK3,
+        10: ROVSMSK3,
+        11: ROVSMSK3,
+        7: ROVSimpleAS,
+    }
     propagation_rounds = 1
