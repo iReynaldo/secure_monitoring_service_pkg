@@ -2,7 +2,6 @@ import ipaddress
 
 from bgp_simulator_pkg import Diagram
 
-from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
 
 
 class V4Diagram(Diagram):

@@ -5,7 +5,6 @@ from caida_collector_pkg import AS
 from bgp_simulator_pkg import graphs
 from bgp_simulator_pkg import EngineTestConfig
 from bgp_simulator_pkg import BGPSimpleAS
-from bgp_simulator_pkg import ROVSimpleAS
 from bgp_simulator_pkg import ASNs
 
 from rovpp_pkg import ROVPPAnn

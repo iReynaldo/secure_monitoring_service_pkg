@@ -1,6 +1,5 @@
-from typing import Tuple, Set, Dict, Optional, Type
+from typing import Tuple
 
-from caida_collector_pkg import AS
 
 from bgp_simulator_pkg import Announcement
 from bgp_simulator_pkg import Prefixes
@@ -151,7 +150,7 @@ class SubprefixAutoImmuneScenario(V4Scenario):
         return anns
 
     def apply_blackholes_from_avoid_list(self, engine):
-        logger.debug(f"Inside apply_blackholes_from_avoid_list")
+        logger.debug("Inside apply_blackholes_from_avoid_list")
         # Create a flag to check if avoid_list has been created
         avoid_list_created_flag = False
         # Iterate over all adopting ASNs

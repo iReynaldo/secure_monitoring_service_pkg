@@ -1,7 +1,6 @@
 from typing import Tuple
 
 from bgp_simulator_pkg import SubprefixHijack
-from bgp_simulator_pkg import Relationships
 
 from ..v4_scenario import V4Scenario
 

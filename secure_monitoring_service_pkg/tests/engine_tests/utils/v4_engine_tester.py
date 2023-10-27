@@ -19,9 +19,6 @@ from ....simulation_framework.scenarios.hijack_scenarios import (
 from ....simulation_framework.scenarios.hijack_scenarios import (
     V4SubprefixHijackScenario,
 )
-from ....simulation_framework.scenarios.hijack_scenarios import (
-    ArtemisSubprefixHijackScenario,
-)
 
 
 class V4EngineTester(EngineTester):

@@ -4,7 +4,6 @@ import sys
 import csv
 from collections import Counter
 
-from filelock import FileLock
 
 from caida_collector_pkg import AS
 

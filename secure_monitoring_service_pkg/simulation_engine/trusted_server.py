@@ -1,6 +1,5 @@
 from collections import defaultdict
 import copy
-import ipaddress
 from typing import Dict, Set, List, Tuple
 from collections import defaultdict
 

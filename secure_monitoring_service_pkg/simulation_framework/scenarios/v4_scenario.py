@@ -134,7 +134,7 @@ class V4Scenario(Scenario):
             return self.victim_asns
 
     def apply_blackholes_from_avoid_list(self, engine):
-        logger.debug(f"Inside apply_blackholes_from_avoid_list")
+        logger.debug("Inside apply_blackholes_from_avoid_list")
         # Create a flag to check if avoid_list has been created
         avoid_list_created_flag = False
         # Iterate over all adopting ASNs

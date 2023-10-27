@@ -1,8 +1,6 @@
 import igraph as ig
 
 # Imported for debugging code at the bottom
-from igraph import plot
-import sys
 
 
 def test_hand_made_graph():

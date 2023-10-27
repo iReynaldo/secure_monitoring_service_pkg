@@ -4,7 +4,6 @@ import os
 import sys
 from pathlib import Path
 from datetime import datetime
-import random
 import argparse
 import platform
 import resource
