@@ -65,7 +65,7 @@ POLICIES = {
     'v4k10': ROVSMSK10
 }
 
-# Add the STANDARD_POLICIES to list of POLICIES 
+# Add the STANDARD_POLICIES to list of POLICIES
 POLICIES.update(STANDARD_POLICIES)
 
 
@@ -131,7 +131,7 @@ def process_simulation_args(args):
         "parse_cpus": args.cpus,
         "python_hash_seed": args.python_hash_seed,
         "caida_topology_date": args.caida_topology_date,
-        "caida_kwargs": {"csv_path": Path("./aux_files/rov_adoption_real.csv")} if rov_setting else {}
+        "caida_kwargs": {"csv_path": Path("../scripts/aux_files/rov_adoption_real.csv")} if rov_setting else {}
     }
 
 

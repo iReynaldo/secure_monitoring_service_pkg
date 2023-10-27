@@ -1,5 +1,2 @@
-snakeviz
 igraph
 cairocffi
-numpy
-pandas
