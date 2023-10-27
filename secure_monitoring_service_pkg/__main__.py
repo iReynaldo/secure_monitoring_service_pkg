@@ -124,6 +124,7 @@ def process_simulation_args(args):
     else:
         raise ValueError(f"Unknown ROV setting given: {rov_setting_raw}")
 
+    aux_path = Path(__file__).parent / "aux_files"
     return {
         "percent_adoptions": args.percentages,
         "num_trials": args.num_trials,
@@ -131,7 +132,7 @@ def process_simulation_args(args):
         "parse_cpus": args.cpus,
         "python_hash_seed": args.python_hash_seed,
         "caida_topology_date": args.caida_topology_date,
-        "caida_kwargs": {"csv_path": Path("../scripts/aux_files/rov_adoption_real.csv")} if rov_setting else {}
+        "caida_kwargs": {"csv_path": aux_path / "rov_adoption_real.csv"} if rov_setting else {}
     }
 
 
