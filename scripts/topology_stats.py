@@ -12,7 +12,7 @@ HOME_DIR = str(Path.home())
 CAIDA_CACHE_DIR = HOME_DIR + "/tmp/caida_collector_cache"
 CAIDA_CACHE_TSV = HOME_DIR + "/tmp/caida_collector.tsv"
 
-caida_topology_date = '2023.04.29'
+caida_topology_date = '2023.05.07'  # '2023.04.29'
 dl_time = datetime.strptime(caida_topology_date, '%Y.%m.%d')
 dl_time.replace(hour=0, minute=0, second=0, microsecond=0)
 
