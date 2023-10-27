@@ -198,23 +198,25 @@ rsconnect/
 # UConn HPC SLURM
 *.out
 
+
 # Data Directory files and plots (too much data to save in git) 
-*/as_metadata/
-*/graphs/final/
-*/graphs/prelim/
-*/graphs/mixed/
-*/graphs/*.zip
-*/graphs/jsons/*.json
-*/graphs/metadata/*.csv
+scripts/data/as_metadata/
+scripts/data/graphs/final/
+scripts/data/graphs/prelim/
+scripts/data/graphs/mixed/
+scripts/data/graphs/*.zip
+scripts/data/graphs/jsons/*.json
+scripts/data/graphs/metadata/*.csv
 
-*/spyder/plots/
-*/spyder/paper_plots/
+scripts/analysis/spyder/plots/
+scripts/analysis/spyder/paper_plots/
 
-*/graphs/attacker_5/
-*/graphs/archive/
-*/graphs/beta/
-*/graphs/alpha/
-*/graphs/metadata/
-*/graphs/old_jsons_sep_26_2023/
-*/graphs/archived_zip_sep_26_2023/
-analysis/spyder/immunity_paper_plots/
+scripts/data/graphs/attacker_5/
+scripts/data/graphs/archive/
+scripts/data/graphs/beta/
+scripts/data/graphs/alpha/
+scripts/data/graphs/metadata/
+scripts/data/graphs/old_jsons_sep_26_2023/
+scripts/data/graphs/archived_zip_sep_26_2023/
+scripts/analysis/spyder/immunity_paper_plots/
+
