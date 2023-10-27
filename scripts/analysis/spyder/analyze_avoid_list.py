@@ -10,12 +10,9 @@ Created on Tue Sep 26 18:34:27 2023
 # Imports
 ################################
 
-from collections import Counter
 
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import plotly.express as px
 import plotly.io as pio
 
 # %%#############################
@@ -110,7 +107,7 @@ for flier in _bp["fliers"]:
     flier.set(color="#e7298a", alpha=0.01)
 
 # Set Y and X axis Labels
-_ax.set_ylabel(f"Number of ASes on Avoid List")
+_ax.set_ylabel("Number of ASes on Avoid List")
 _ax.set_xlabel("Percent adoption")
 
 

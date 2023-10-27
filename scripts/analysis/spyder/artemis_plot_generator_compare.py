@@ -40,5 +40,5 @@ generate_plot(
     outcome_text="Attacker Success",
     size_inches=(5, 4),
     legend_kwargs={"loc": "upper left", "prop": {"size": 11}},
-    fname=f"./plots/artemis-5-attackers-victim-success.pdf",
+    fname="./plots/artemis-5-attackers-victim-success.pdf",
 )

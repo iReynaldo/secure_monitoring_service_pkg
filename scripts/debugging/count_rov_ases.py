@@ -1,4 +1,3 @@
-import random
 from pathlib import Path
 
 from caida_collector_pkg import CaidaCollector

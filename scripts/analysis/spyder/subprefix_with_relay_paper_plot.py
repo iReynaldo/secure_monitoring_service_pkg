@@ -6,7 +6,7 @@ Created on May 16, 2023
 @author: Reynaldo Morillo
 """
 
-from v4_graph_generator import Line, generate_plot, generate_plotly
+from v4_graph_generator import Line, generate_plot
 import data_manager as dm
 
 

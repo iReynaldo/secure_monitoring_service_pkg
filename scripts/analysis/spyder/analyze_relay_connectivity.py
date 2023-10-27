@@ -10,14 +10,9 @@ Created on Tue Sep 26 18:34:27 2023
 # Imports
 ################################
 
-from collections import Counter
-from math import sqrt
-from statistics import mean, stdev
 
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import plotly.express as px
 import plotly.io as pio
 
 import data_manager as dm
@@ -109,7 +104,7 @@ for i, attack_relay_setting in enumerate((False, True)):
 # _ax.plot(relay_data_agg['percentage'], relay_data_agg[feature+'mean'], color='red')
 
 # Set Y and X axis Labels
-_ax.set_ylabel(f"Percent of edge ASes using relays")
+_ax.set_ylabel("Percent of edge ASes using relays")
 _ax.set_xlabel("Percent adoption")
 _ax.legend(loc="best")
 

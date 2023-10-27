@@ -8,8 +8,6 @@ Created on May 16, 2023
 
 from v4_graph_generator import (
     Line,
-    generate_plot,
-    compare_relays_linemap,
     generate_plotly,
 )
 import data_manager as dm

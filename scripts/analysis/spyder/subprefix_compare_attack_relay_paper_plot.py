@@ -10,7 +10,6 @@ from v4_graph_generator import (
     Line,
     generate_plot,
     compare_policies_by_attack_relay_linemap,
-    generate_plotly,
 )
 import data_manager as dm
 

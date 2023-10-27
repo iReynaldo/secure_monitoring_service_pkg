@@ -11,7 +11,7 @@ from rovpp_pkg import ROVPPV1LiteSimpleAS
 from secure_monitoring_service_pkg import V4Subgraph
 from secure_monitoring_service_pkg import V4Simulation
 from secure_monitoring_service_pkg import ROVSMS, ROVSMSK1, ROVSMSK2
-from secure_monitoring_service_pkg import ROVSMSK3, ROVSMSK5, ROVSMSK6
+from secure_monitoring_service_pkg import ROVSMSK3, ROVSMSK5
 from secure_monitoring_service_pkg import ROVSMSK10
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario

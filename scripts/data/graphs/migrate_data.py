@@ -2,7 +2,7 @@
 
 import pymongo
 import json
-from pymongo import MongoClient, InsertOne
+from pymongo import InsertOne
 
 client = pymongo.MongoClient("mongodb://localhost:27017")
 db = client.v4

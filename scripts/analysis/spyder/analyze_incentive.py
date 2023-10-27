@@ -10,15 +10,10 @@ Created on Sun Oct  8 16:23:56 2023
 # Imports
 ################################
 
-from collections import Counter
-from math import sqrt
-from statistics import mean, stdev
 from enum import Enum
 
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import plotly.express as px
 import plotly.io as pio
 
 import data_manager as dm
@@ -280,13 +275,13 @@ for adoption_setting in (True, False):
         # Y axis Label
         metric = None
         if outcome_setting == Outcomes.HIJACKED:
-            _ax.set_ylabel(f"Attacker Success")
+            _ax.set_ylabel("Attacker Success")
             metric = "attacker_success"
         elif outcome_setting == Outcomes.VICTIM_SUCCESS:
-            _ax.set_ylabel(f"Successful Connections")
+            _ax.set_ylabel("Successful Connections")
             metric = "successful_connections"
         elif outcome_setting == Outcomes.DISCONNECTED:
-            _ax.set_ylabel(f"Disconnections")
+            _ax.set_ylabel("Disconnections")
             metric = "disconnections"
         else:
             raise f"Unknown outcome_setting: {outcome_setting}"

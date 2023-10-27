@@ -7,7 +7,7 @@ Created on Tue Jul  4 21:13:27 2023
 """
 
 from math import sqrt
-from statistics import mean, stdev
+from statistics import stdev
 
 import pandas as pd
 import matplotlib.pyplot as plt

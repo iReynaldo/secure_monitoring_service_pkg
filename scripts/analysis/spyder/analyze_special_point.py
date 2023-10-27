@@ -10,18 +10,10 @@ Created on Thu Oct 19 13:20:34 2023
 # Imports
 ################################
 
-from collections import Counter
-from math import sqrt
-from statistics import mean, stdev
-from enum import Enum
 
-import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import plotly.express as px
 import plotly.io as pio
 
-import data_manager as dm
 
 # %%#############################
 # Load Data

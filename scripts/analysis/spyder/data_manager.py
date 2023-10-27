@@ -10,7 +10,6 @@ This module helps access the data for plotting
 
 import json
 from math import sqrt
-from statistics import mean, stdev
 
 import numpy as np
 

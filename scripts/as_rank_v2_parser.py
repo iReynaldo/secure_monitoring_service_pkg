@@ -24,7 +24,6 @@ __email__ = "jfuruness@gmail.com"
 __status__ = "Production"
 
 import csv
-import os
 import json
 import urllib.request
 
