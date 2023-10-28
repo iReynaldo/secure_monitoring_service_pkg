@@ -102,7 +102,7 @@ class V4Scenario(Scenario):
         # Iterate over all adopting ASNs
         # TODO: Does non_default_as_cls_dict also contain ROV ASes when
         #  doing mixed deployment?
-        for asn in self.scenario_config.override_non_default_asn_cls_dict:
+        for asn in self.non_default_asn_cls_dict:
             # Get reference to AS Object
             as_obj = engine.as_dict[asn]
             # TODO: Remove this check if ROV ASes are not in

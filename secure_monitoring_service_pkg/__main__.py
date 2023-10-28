@@ -6,6 +6,7 @@ from pathlib import Path
 import argparse
 
 from bgpy import ROVSimpleAS
+from bgpy import ASGroups
 from bgpy.subgraph_simulation_framework import SubgraphSimulation
 
 from rovpp_pkg import ROVPPAnn
@@ -327,7 +328,11 @@ def parse_args():
         "--adoption_subcategory",
         type=str,
         nargs="*",
-        default=("stub_or_mh_ases", "etc_ases", "input_clique_ases"),
+        default=(
+            ASGroups.STUBS_OR_MH.value,
+            ASGroups.ETC.value,
+            ASGroups.INPUT_CLIQUE.value,
+        ),
         help="The area in the graph for adoption. "
         "Does not restrict additional ROV adoption",
     )
@@ -475,7 +480,7 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
     settings = dict()
     settings.update(other_settings)
     del simulation_kwargs["subgraphs"]  # We don't need to output this
-    simulation_kwargs["caida_kwargs"] = str(simulation_kwargs["caida_kwargs"])
+    # simulation_kwargs["caida_kwargs"] = str(simulation_kwargs["caida_kwargs"])
     settings.update(simulation_kwargs)
     scenario_kwargs["relay_asns"] = str(scenario_kwargs["relay_asns"])
     scenario_kwargs["special_static_as_class"] = str(
