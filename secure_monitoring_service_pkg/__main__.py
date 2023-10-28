@@ -152,9 +152,8 @@ def process_simulation_args(args):
 
     aux_path = Path(__file__).parent / "aux_files"
 
-    HOME_DIR = str(Path.home())
-    CAIDA_CACHE_DIR = HOME_DIR + "/tmp/caida_collector_cache"
-    CAIDA_CACHE_TSV = HOME_DIR + "/tmp/caida_collector.tsv"
+    CAIDA_CACHE_DIR = Path.home() / "/tmp/caida_collector_cache"
+    CAIDA_CACHE_TSV = Path.home() / "/tmp/caida_collector.tsv"
 
     caida_run_kwargs = {
         "cache_dir": CAIDA_CACHE_DIR,

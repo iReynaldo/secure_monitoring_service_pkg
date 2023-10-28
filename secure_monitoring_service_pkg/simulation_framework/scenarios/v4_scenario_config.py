@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 from bgpy import ScenarioConfig
 from bgpy import RealROVSimpleAS
@@ -22,16 +23,16 @@ NO_RELAY_SETTING = "no_relay"
 
 @dataclass(frozen=True)
 class V4ScenarioConfig(ScenarioConfig):
-    relay_asns = None
-    attack_relays = False
-    fraction_of_peer_ases_to_attack = 0.5
-    assume_relays_are_reachable = False
-    tunnel_customers_traffic = False
-    probe_data_plane = False
-    special_static_as_class = None
-    fightback=False
+    relay_asns: Any = None
+    attack_relays: Any = False
+    fraction_of_peer_ases_to_attack: Any = 0.5
+    assume_relays_are_reachable: Any = False
+    tunnel_customers_traffic: Any = False
+    probe_data_plane: Any = False
+    special_static_as_class: Any = None
+    fightback: Any=False
     # If the autoimmune attack is indirect(True)/direct(False)
-    indirect=True
+    indirect: Any=True
 
     def __post_init__(self):
         if self.special_static_as_class is None:
