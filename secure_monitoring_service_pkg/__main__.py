@@ -480,6 +480,9 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
     settings = dict()
     settings.update(other_settings)
     del simulation_kwargs["subgraphs"]  # We don't need to output this
+    simulation_kwargs["caida_run_kwargs"] = str(
+        simulation_kwargs["caida_run_kwargs"]
+    )
     # simulation_kwargs["caida_kwargs"] = str(simulation_kwargs["caida_kwargs"])
     settings.update(simulation_kwargs)
     scenario_kwargs["relay_asns"] = str(scenario_kwargs["relay_asns"])
