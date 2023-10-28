@@ -25,6 +25,28 @@ class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
         )
         self.name = "ArtemisSubprefixHijackScenario"
 
+    def determine_as_outcome(self,
+                             as_obj: AS,
+                             ann: Optional[Announcement]
+                             ) -> Tuple[Type[Outcomes], Type[int]]:
+        """Determines the outcome at an AS
+
+        ann is most_specific_ann is the most specific prefix announcement
+        that exists at that AS
+        """
+
+        if as_obj.asn in self.attacker_asns:
+            return Outcomes.ATTACKER_SUCCESS, as_obj.asn
+        elif as_obj.asn in self.victim_asns or as_obj.asn in self.relay_asns:
+            return Outcomes.VICTIM_SUCCESS, as_obj.asn
+        # End of traceback
+        elif (ann is None
+              or len(ann.as_path) == 1
+              or ann.recv_relationship == Relationships.ORIGIN
+              or ann.traceback_end):
+            return Outcomes.DISCONNECTED, as_obj.asn
+        else:
+            return Outcomes.UNDETERMINED, as_obj.asn
 
     def _get_announcements(self, *args, **kwargs) -> Tuple["Announcement", ...]:
         """Returns victim, attacker, and relay anns for autoimmune attack"""

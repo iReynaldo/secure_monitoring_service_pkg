@@ -1,5 +1,4 @@
 import random
-import math
 
 from typing import Tuple, Optional, Type, Set, Dict, List, Union
 from ipaddress import ip_network
@@ -13,16 +12,10 @@ from bgpy import Announcement
 from bgpy import Timestamps
 from bgpy import SimulationEngine
 from bgpy import SpecialPercentAdoptions
-from bgpy import RealROVSimpleAS
 from bgpy import ASGroups
 
-from .cdn import CDN
-from .peer import Peer
 from .v4_scenario_config import (
     CDN_RELAY_SETTING,
-    PEER_RELAY_SETTING,
-    CUSTOM_RELAY_SETTING,
-    NO_RELAY_SETTING,
 )
 from secure_monitoring_service_pkg.simulation_framework.sim_logger import (
     sim_logger as logger,
@@ -71,6 +64,29 @@ class V4Scenario(Scenario):
         self.relay_prefixes: Dict[int, str] = dict()
         self.has_rovsms_ases = False
         super(V4Scenario, self).__init__(*args, **kwargs)
+
+    def determine_as_outcome(self,
+                             as_obj: AS,
+                             ann: Optional[Announcement]
+                             ) -> Tuple[Type[Outcomes], Type[int]]:
+        """Determines the outcome at an AS
+
+        ann is most_specific_ann is the most specific prefix announcement
+        that exists at that AS
+        """
+
+        if as_obj.asn in self.attacker_asns:
+            return Outcomes.ATTACKER_SUCCESS, as_obj.asn
+        elif as_obj.asn in self.victim_asns:
+            return Outcomes.VICTIM_SUCCESS, as_obj.asn
+        # End of traceback
+        elif (ann is None
+              or len(ann.as_path) == 1
+              or ann.recv_relationship == Relationships.ORIGIN
+              or ann.traceback_end):
+            return Outcomes.DISCONNECTED, as_obj.asn
+        else:
+            return Outcomes.UNDETERMINED, as_obj.asn
 
     @property
     def _default_adopters(self) -> frozenset[int]:
