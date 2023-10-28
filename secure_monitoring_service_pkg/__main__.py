@@ -5,7 +5,9 @@ import subprocess
 from pathlib import Path
 import argparse
 
+from bgpy import get_real_world_rov_asn_cls_dict
 from bgpy import ROVSimpleAS
+from bgpy import RealROVSimpleAS
 from bgpy import ASGroups
 from bgpy.subgraph_simulation_framework import SubgraphSimulation
 
@@ -83,6 +85,13 @@ POLICIES = {
 # Add the STANDARD_POLICIES to list of POLICIES
 POLICIES.update(STANDARD_POLICIES)
 
+CAIDA_CACHE_DIR = Path.home() / "/tmp/caida_collector_cache"
+CAIDA_CACHE_TSV = Path.home() / "/tmp/caida_collector.tsv"
+
+caida_run_kwargs = {
+    "cache_dir": CAIDA_CACHE_DIR,
+    "tsv_path": CAIDA_CACHE_TSV
+}
 
 #############################
 # Functions
@@ -115,6 +124,15 @@ def process_scenario_args(args):
     else:
         raise ValueError(f"Unknown Overlay setting given: {overlay_setting_raw}")
 
+    hardcoded_asn_cls_dict = get_real_world_rov_asn_cls_dict(
+        caida_run_kwargs=caida_run_kwargs.copy()
+    )
+
+    special_static_as_class = (None
+        if not args.replace_rov_ases_with
+        else POLICIES.get(args.replace_rov_ases_with[0])
+    )
+
     settings = {
         "num_attackers": args.num_attackers,
         # "min_rov_confidence": 0 if args.rov_adoption != "none" else 1000,
@@ -125,10 +143,17 @@ def process_scenario_args(args):
         "assume_relays_are_reachable": args.assume_relays_are_reachable,
         "tunnel_customers_traffic": args.tunnel_customers_traffic,
         "probe_data_plane": args.probe_data_plane,
-        "special_static_as_class": None
-        if not args.replace_rov_ases_with
-        else POLICIES.get(args.replace_rov_ases_with[0]),
+        "special_static_as_class": special_static_as_class
     }
+    if args.rov_adoption != "none":
+        # I know this doesn't include peer filters but this
+        # logic was elsewhere before, I just moved it here
+        if special_static_as_class:
+            Cls = special_static_as_class
+        else:
+            Cls = RealROVSimpleAS
+        hardcoded_asn_cls_dict = {x: Cls for x in hardcoded_asn_cls_dict}
+        settings["hardcoded_asn_cls_dict"] = hardcoded_asn_cls_dict
     # Set for AutoImmune attack indirect/direct
     if args.scenario == AUTOIMMUNE:
         settings["indirect"] = (
@@ -152,9 +177,6 @@ def process_simulation_args(args):
         raise ValueError(f"Unknown ROV setting given: {rov_setting_raw}")
 
     aux_path = Path(__file__).parent / "aux_files"
-
-    CAIDA_CACHE_DIR = Path.home() / "/tmp/caida_collector_cache"
-    CAIDA_CACHE_TSV = Path.home() / "/tmp/caida_collector.tsv"
 
     caida_run_kwargs = {
         "cache_dir": CAIDA_CACHE_DIR,
@@ -489,6 +511,8 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
     scenario_kwargs["special_static_as_class"] = str(
         scenario_kwargs["special_static_as_class"]
     )
+    rov = scenario_kwargs.pop("hardcoded_asn_cls_dict", None)
+    scenario_kwargs["using_real_world_rov_asns"] = True if rov else False
     settings.update(scenario_kwargs)
     settings["git_hash"] = get_git_revision_hash()
     settings["git_short_hash"] = get_git_short_revision_hash()
