@@ -6,11 +6,11 @@ from collections import Counter
 
 from filelock import FileLock
 
-from bgpy import AS
+from bgpy.caida_collector import AS
 
 from bgpy import SimulationEngine
 from bgpy import Scenario
-from bgpy import Subgraph
+from bgpy.subgraph_simulation_framework.subgraphs import Subgraph
 from bgpy import Outcomes
 from bgpy import Announcement as Ann
 

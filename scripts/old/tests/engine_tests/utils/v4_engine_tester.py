@@ -3,7 +3,7 @@ from typing import Dict, Any
 from pathlib import Path
 import random
 
-from bgpy import AS
+from bgpy.caida_collector import AS
 
 from bgpy import EngineTester
 from bgpy import Outcomes

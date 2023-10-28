@@ -5,7 +5,7 @@ import csv
 from collections import Counter
 
 
-from bgpy import AS
+from bgpy.caida_collector import AS
 
 from bgpy import SimulationEngine
 from bgpy import Scenario

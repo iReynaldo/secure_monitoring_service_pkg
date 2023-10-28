@@ -116,7 +116,7 @@ def process_scenario_args(args):
 
     settings = {
         "num_attackers": args.num_attackers,
-        "min_rov_confidence": 0 if args.rov_adoption != "none" else 1000,
+        # "min_rov_confidence": 0 if args.rov_adoption != "none" else 1000,
         "adoption_subcategory_attrs": args.adoption_subcategory,
         "relay_asns": overlay_setting,
         "attack_relays": args.attack_relays,
@@ -162,7 +162,7 @@ def process_simulation_args(args):
     }
     if args.caida_topology_date:
         caida_run_kwargs["dl_time"] = datetime.strptime(
-            caida_topology_date, "%Y.%m.%d"
+            args.caida_topology_date, "%Y.%m.%d"
         )
 
     return {
@@ -176,7 +176,7 @@ def process_simulation_args(args):
         # But this no longer takes place in caida
         #"caida_kwargs": {"csv_path": aux_path / "rov_adoption_real.csv"}
         #if rov_setting
-        else {},
+        #else {},
     }
 
 
@@ -510,8 +510,8 @@ def main():
         sims = [
             SubgraphSimulation(
                 scenario_configs=[
-                    ScenarioConfig(
-                        ScenarioCls=V4SubprefixHijackScenario
+                    V4ScenarioConfig(
+                        ScenarioCls=V4SubprefixHijackScenario,
                         AdoptASCls=Cls,
                         AnnCls=ROVPPAnn,
                         **scenario_args
@@ -526,7 +526,7 @@ def main():
         sims = [
             SubgraphSimulation(
                 scenario_configs=[
-                    ScenarioConfig(
+                    V4ScenarioConfig(
                         ScenarioCls=V4PrefixHijackScenario,
                         AdoptASCls=Cls,
                         AnnCls=ROVPPAnn,
@@ -542,7 +542,7 @@ def main():
         sims = [
             SubgraphSimulation(
                 scenario_configs=[
-                    ScenarioConfig(
+                    V4ScenarioConfig(
                         ScenarioCls=SubprefixAutoImmuneScenario,
                         AdoptASCls=Cls,
                         AnnCls=ROVPPAnn,
@@ -558,7 +558,7 @@ def main():
         sims = [
             SubgraphSimulation(
                 scenario_configs=[
-                    ScenarioConfig(
+                    V4ScenarioConfig(
                         ArtemisSubprefixHijackScenario,
                         AdoptASCls=Cls,
                         AnnCls=ROVPPAnn,
@@ -574,7 +574,7 @@ def main():
         sims = [
             SubgraphSimulation(
                 scenario_configs=[
-                    ScenarioConfig(
+                    V4ScenarioConfig(
                         V4SuperprefixPrefixHijack,
                         AdoptASCls=Cls,
                         AnnCls=ROVPPAnn,

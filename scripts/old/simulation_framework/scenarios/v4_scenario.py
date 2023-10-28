@@ -4,7 +4,7 @@ import math
 from typing import Tuple, Optional, Type, Set, Dict, List, Union
 from ipaddress import ip_network
 
-from bgpy import AS
+from bgpy.caida_collector import AS
 
 from bgpy import Outcomes
 from bgpy import Relationships

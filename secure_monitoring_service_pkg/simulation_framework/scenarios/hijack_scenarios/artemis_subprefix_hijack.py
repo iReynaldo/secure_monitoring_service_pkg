@@ -6,7 +6,7 @@ from bgpy import SubprefixHijack
 from bgpy import Outcomes
 from bgpy import Prefixes
 
-from bgpy import AS
+from bgpy.caida_collector import AS
 
 from ..v4_scenario import V4Scenario
 

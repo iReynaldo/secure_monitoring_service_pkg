@@ -1,10 +1,10 @@
 from typing import Dict, Type
 
-from bgpy import AS
+from bgpy.caida_collector import AS
 
 from bgpy import EngineTestConfig
 from bgpy import BGPSimpleAS
-from bgpy import ASNs
+from bgpy.caida_collector import ASNs
 
 from rovpp_pkg import ROVPPAnn
 
