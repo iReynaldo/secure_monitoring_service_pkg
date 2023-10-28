@@ -16,10 +16,7 @@ from ....simulation_engine import ROVSMS
 
 
 class SubprefixAutoImmuneScenario(V4Scenario):
-
     def __init__(self, *args, **kwargs):
-
-
         self.subprefixes = dict()
         self.providers = dict()
 

@@ -4,7 +4,6 @@ from caida_collector_pkg import AS
 
 from bgp_simulator_pkg import EngineTestConfig
 from bgp_simulator_pkg import BGPSimpleAS
-from bgp_simulator_pkg import ROVSimpleAS
 from bgp_simulator_pkg import ASNs
 
 from rovpp import ROVPPAnn
@@ -20,14 +19,18 @@ class Config139(EngineTestConfig):
     name = "139"
     desc = "AutoImmune Attack with V4 Lite k=1"
     graph = graphs.Graph056()
-    scenario = SubprefixAutoImmuneScenario(num_attackers=1,
-                                           attacker_asns=graph.attacker_asn_set,
-                                           victim_asns={ASNs.VICTIM.value},
-                                           AdoptASCls=ROVSMSK1,
-                                           BaseASCls=BGPSimpleAS,
-                                           AnnCls=ROVPPAnn)
+    scenario = SubprefixAutoImmuneScenario(
+        num_attackers=1,
+        attacker_asns=graph.attacker_asn_set,
+        victim_asns={ASNs.VICTIM.value},
+        AdoptASCls=ROVSMSK1,
+        BaseASCls=BGPSimpleAS,
+        AnnCls=ROVPPAnn,
+    )
 
-    non_default_as_cls_dict: Dict[int, Type[AS]] = {70: ROVSMSK1,
-                                                    71: ROVSMSK1,
-                                                    72: ROVSMSK1}
+    non_default_as_cls_dict: Dict[int, Type[AS]] = {
+        70: ROVSMSK1,
+        71: ROVSMSK1,
+        72: ROVSMSK1,
+    }
     propagation_rounds = 1

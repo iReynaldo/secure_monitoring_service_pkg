@@ -27,22 +27,26 @@ class Config157(EngineTestConfig):
     desc = "Direct AutoImmune Attack with ROV++ V4 k=2"
     graph = graphs.Graph061()
     relay_asns = {12, 13}
-    scenario = SubprefixAutoImmuneScenario(num_attackers=2,
-                                           attacker_asns=graph.attacker_asn_set,
-                                           victim_asns={ASNs.VICTIM.value},
-                                           AdoptASCls=ROVSMSK1,
-                                           BaseASCls=BGPSimpleAS,
-                                           AnnCls=ROVPPAnn,
-                                           relay_asns=relay_asns,
-                                           assume_relays_are_reachable=False,
-                                           indirect=False)
+    scenario = SubprefixAutoImmuneScenario(
+        num_attackers=2,
+        attacker_asns=graph.attacker_asn_set,
+        victim_asns={ASNs.VICTIM.value},
+        AdoptASCls=ROVSMSK1,
+        BaseASCls=BGPSimpleAS,
+        AnnCls=ROVPPAnn,
+        relay_asns=relay_asns,
+        assume_relays_are_reachable=False,
+        indirect=False,
+    )
 
-    non_default_as_cls_dict: Dict[int, Type[AS]] = {3: ROVSMSK1,
-                                                    4: ROVSMSK1,
-                                                    8: ROVSMSK1,
-                                                    10: ROVSMSK1,
-                                                    11: ROVSMSK1,
-                                                    7: ROVSimpleAS}
+    non_default_as_cls_dict: Dict[int, Type[AS]] = {
+        3: ROVSMSK1,
+        4: ROVSMSK1,
+        8: ROVSMSK1,
+        10: ROVSMSK1,
+        11: ROVSMSK1,
+        7: ROVSimpleAS,
+    }
     for asn in relay_asns:
         non_default_as_cls_dict[asn] = ROVSMSK1
 

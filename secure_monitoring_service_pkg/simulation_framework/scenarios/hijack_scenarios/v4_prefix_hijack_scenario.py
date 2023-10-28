@@ -6,7 +6,6 @@ from ..v4_scenario import V4Scenario
 
 
 class V4PrefixHijackScenario(V4Scenario, PrefixHijack):
-
     def __init__(self, *args, **kwargs):
         super(V4PrefixHijackScenario, self).__init__(*args, **kwargs)
         self.name = "V4PrefixHijackScenario"

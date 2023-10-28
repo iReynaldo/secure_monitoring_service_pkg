@@ -65,10 +65,9 @@ class V4Scenario(Scenario):
         self.has_rovsms_ases = False
         super(V4Scenario, self).__init__(*args, **kwargs)
 
-    def determine_as_outcome(self,
-                             as_obj: AS,
-                             ann: Optional[Announcement]
-                             ) -> Tuple[Type[Outcomes], Type[int]]:
+    def determine_as_outcome(
+        self, as_obj: AS, ann: Optional[Announcement]
+    ) -> Tuple[Type[Outcomes], Type[int]]:
         """Determines the outcome at an AS
 
         ann is most_specific_ann is the most specific prefix announcement
@@ -80,10 +79,12 @@ class V4Scenario(Scenario):
         elif as_obj.asn in self.victim_asns:
             return Outcomes.VICTIM_SUCCESS, as_obj.asn
         # End of traceback
-        elif (ann is None
-              or len(ann.as_path) == 1
-              or ann.recv_relationship == Relationships.ORIGIN
-              or ann.traceback_end):
+        elif (
+            ann is None
+            or len(ann.as_path) == 1
+            or ann.recv_relationship == Relationships.ORIGIN
+            or ann.traceback_end
+        ):
             return Outcomes.DISCONNECTED, as_obj.asn
         else:
             return Outcomes.UNDETERMINED, as_obj.asn
@@ -154,9 +155,7 @@ class V4Scenario(Scenario):
                 ):
                     subprefix_list.append(str(prefix))
         # Get rid of ip_network
-        return {
-            str(k): v for k, v in prefix_subprefix_dict.items()
-        }
+        return {str(k): v for k, v in prefix_subprefix_dict.items()}
 
     def pre_aggregation_hook(self, **kwargs):
         """

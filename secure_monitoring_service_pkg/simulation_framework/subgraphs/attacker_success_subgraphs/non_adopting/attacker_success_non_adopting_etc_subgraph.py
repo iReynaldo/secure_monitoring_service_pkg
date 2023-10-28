@@ -3,6 +3,7 @@ from bgpy import Outcomes
 
 from ..attacker_success_subgraph import AttackerSuccessSubgraph
 
+
 class AttackerSuccessNonAdoptingEtcSubgraph(AttackerSuccessSubgraph):
     """A graph for attacker success for etc ASes that don't adopt"""
 
@@ -12,7 +13,8 @@ class AttackerSuccessNonAdoptingEtcSubgraph(AttackerSuccessSubgraph):
         """Returns the key to be used in shared_data on the subgraph"""
 
         return self._get_as_type_pol_outcome_perc_k(
-            ASGroups.ETC, scenario.scenario_config.BaseASCls, Outcomes.ATTACKER_SUCCESS)
+            ASGroups.ETC, scenario.scenario_config.BaseASCls, Outcomes.ATTACKER_SUCCESS
+        )
 
     @property
     def y_axis_label(self) -> str:

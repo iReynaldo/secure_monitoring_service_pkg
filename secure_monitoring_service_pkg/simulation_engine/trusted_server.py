@@ -40,11 +40,20 @@ class TrustedServer:
     def rec_blackhole(self, subprefix: str, as_path: Tuple[int, ...]) -> bool:
         """Recommends a blackhole for a subprefix"""
 
-        # Checks if the suspect is in the given as_path
-        for suspect in self._recommendations.get(subprefix, []):
-            if suspect in as_path:
+        suspects = self._recommendations.get(subprefix, ())
+        for as_ in as_path:
+            if as_ in suspects:
                 return True
-        return False
+        else:
+            return False
+
+        # Rewrote above, much faster by an order of magnitude
+        # Because as_path is often short, and suspects is a set
+        # Checks if the suspect is in the given as_path
+        # for suspect in self._recommendations.get(subprefix, []):
+        #     if suspect in as_path:
+        #         return True
+        # return False
 
     def receive_report(self, unprocessed_invalid_ann):
         """Process report about an invalid ann"""

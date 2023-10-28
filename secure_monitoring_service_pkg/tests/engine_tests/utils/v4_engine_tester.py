@@ -10,14 +10,18 @@ from bgp_simulator_pkg import Outcomes
 
 from .v4_diagram import V4Diagram
 
-from secure_monitoring_service_pkg.simulation_framework.subgraphs.v4_subgraph import V4Subgraph
-from ....simulation_framework.scenarios.hijack_scenarios import SubprefixAutoImmuneScenario
-from ....simulation_framework.scenarios.hijack_scenarios import V4SubprefixHijackScenario
-from ....simulation_framework.scenarios.hijack_scenarios import ArtemisSubprefixHijackScenario
+from secure_monitoring_service_pkg.simulation_framework.subgraphs.v4_subgraph import (
+    V4Subgraph,
+)
+from ....simulation_framework.scenarios.hijack_scenarios import (
+    SubprefixAutoImmuneScenario,
+)
+from ....simulation_framework.scenarios.hijack_scenarios import (
+    V4SubprefixHijackScenario,
+)
 
 
 class V4EngineTester(EngineTester):
-
     def test_engine(self):
         """Tests an engine run
 
@@ -39,57 +43,66 @@ class V4EngineTester(EngineTester):
         engine = self._get_engine(scenario)
         # Run engine
         for propagation_round in range(self.conf.propagation_rounds):
-            engine.run(propagation_round=propagation_round,
-                       scenario=scenario)
-            kwargs = {"engine": engine,
-                      "scenario": scenario,
-                      "propagation_round": propagation_round}
+            engine.run(propagation_round=propagation_round, scenario=scenario)
+            kwargs = {
+                "engine": engine,
+                "scenario": scenario,
+                "propagation_round": propagation_round,
+            }
             scenario.pre_aggregation_hook(**kwargs)
 
         prefix_outcomes: Dict[str, Dict[AS, Outcomes]] = dict()
         prefix_outcomes_yaml: Dict[str, Dict[AS, Outcomes]] = dict()
         for attacker_ann in scenario.get_attacker_announcements_for_origin():
             # Get traceback results {AS: Outcome}
-            outcomes, traceback_asn_outcomes = V4Subgraph()._get_engine_outcomes(engine, scenario, attacker_ann)
+            outcomes, traceback_asn_outcomes = V4Subgraph()._get_engine_outcomes(
+                engine, scenario, attacker_ann
+            )
             # Create Shared data
             shared_data: Dict[Any, Any] = dict()
             # Update outcomes if reconnections via relays can be made
-            if scenario.relay_asns and (isinstance(scenario, SubprefixAutoImmuneScenario) or isinstance(scenario, V4SubprefixHijackScenario)):
+            if scenario.relay_asns and (
+                isinstance(scenario, SubprefixAutoImmuneScenario)
+                or isinstance(scenario, V4SubprefixHijackScenario)
+            ):
                 # Add relay prefix data to shared data
                 shared_data["relay_prefixes"] = scenario.relay_prefixes
-                V4Subgraph()._recalculate_outcomes_with_relays(scenario,
-                                                               engine,
-                                                               attacker_ann,
-                                                               outcomes,
-                                                               traceback_asn_outcomes,
-                                                               shared_data,
-                                                               track_relay_usage=True)
+                V4Subgraph()._recalculate_outcomes_with_relays(
+                    scenario,
+                    engine,
+                    attacker_ann,
+                    outcomes,
+                    traceback_asn_outcomes,
+                    shared_data,
+                    track_relay_usage=True,
+                )
             prefix_outcomes[attacker_ann.prefix] = outcomes
             # Convert this to just be {ASN: Outcome} (Not the AS object)
             outcomes_yaml = {as_obj.asn: result for as_obj, result in outcomes.items()}
             prefix_outcomes_yaml[attacker_ann.prefix] = outcomes_yaml
 
-
             # Add additional things to shared_data for system test checking
             if scenario.avoid_lists:
                 for prefix in scenario.avoid_lists:
-                    shared_data[f"avoid_list_for_{prefix}"] = sorted(scenario.avoid_lists[prefix])
+                    shared_data[f"avoid_list_for_{prefix}"] = sorted(
+                        scenario.avoid_lists[prefix]
+                    )
 
             # Verify the Avoid List
             if scenario.has_rovsms_ases:
-                V4Subgraph().verify_avoid_list(engine,
-                                               scenario,
-                                               outcomes,
-                                               shared_data,
-                                               traceback_asn_outcomes,
-                                               trigger_assert=False)
+                V4Subgraph().verify_avoid_list(
+                    engine,
+                    scenario,
+                    outcomes,
+                    shared_data,
+                    traceback_asn_outcomes,
+                    trigger_assert=False,
+                )
 
         # Aggregate outcomes
-        V4Subgraph()._add_traceback_to_shared_data(shared_data,
-                                                   engine,
-                                                   scenario,
-                                                   prefix_outcomes)
-
+        V4Subgraph()._add_traceback_to_shared_data(
+            shared_data, engine, scenario, prefix_outcomes
+        )
 
         # By default, this is a no op
         scenario.post_propagation_hook(**kwargs)  # Clears scenario data
@@ -120,13 +133,22 @@ class V4EngineTester(EngineTester):
             # Save outcomes
             self.codec.dump(outcomes, path=self.get_outcomes_guess_path(prefix))
             # Save outcomes as ground truth if ground truth doesn't exist
-            if not self.get_outcomes_ground_truth_path(prefix).exists() or self.overwrite:
-                self.codec.dump(outcomes, path=self.get_outcomes_ground_truth_path(prefix))
+            if (
+                not self.get_outcomes_ground_truth_path(prefix).exists()
+                or self.overwrite
+            ):
+                self.codec.dump(
+                    outcomes, path=self.get_outcomes_ground_truth_path(prefix)
+                )
             self.codec.dump(shared_data, path=self.get_shared_data_guess_path(prefix))
             # Save shared_data as ground truth if ground truth doesn't exist
-            if not self.get_shared_data_ground_truth_path(prefix).exists() or self.overwrite:
-                self.codec.dump(shared_data,
-                                path=self.get_shared_data_ground_truth_path(prefix))
+            if (
+                not self.get_shared_data_ground_truth_path(prefix).exists()
+                or self.overwrite
+            ):
+                self.codec.dump(
+                    shared_data, path=self.get_shared_data_ground_truth_path(prefix)
+                )
 
     def _compare_yaml(self, prefix):
         """Compares YAML for ground truth vs guess for engine and outcomes"""
@@ -155,7 +177,7 @@ class V4EngineTester(EngineTester):
         outcomes_gt = self.codec.load(self.get_outcomes_ground_truth_path(prefix))
 
         # Draw Graphs
-        prefix_without_slash = prefix.replace('/', '_')
+        prefix_without_slash = prefix.replace("/", "_")
         # Write guess graph
         V4Diagram().generate_as_graph(
             engine_guess,
@@ -166,7 +188,8 @@ class V4EngineTester(EngineTester):
             f"Traceback for {prefix}",  # type: ignore
             shared_data,
             path=self.test_dir / f"guess_{prefix_without_slash}.gv",
-            view=False)
+            view=False,
+        )
         # Write ground truth graph
         V4Diagram().generate_as_graph(
             engine_gt,
@@ -177,7 +200,8 @@ class V4EngineTester(EngineTester):
             f"Traceback for {prefix}",
             shared_data,
             path=self.test_dir / f"ground_truth_{prefix_without_slash}.gv",
-            view=False)
+            view=False,
+        )
 
     #########
     # Paths #
@@ -186,35 +210,35 @@ class V4EngineTester(EngineTester):
     def get_engine_ground_truth_path(self, prefix) -> Path:
         """Returns the path to the engine's ground truth YAML"""
 
-        prefix_without_slash = prefix.replace('/', '_')
+        prefix_without_slash = prefix.replace("/", "_")
         return self.test_dir / f"engine_gt_{prefix_without_slash}.yaml"
 
     def get_engine_guess_path(self, prefix) -> Path:
         """Returns the path to the engine's guess YAML"""
 
-        prefix_without_slash = prefix.replace('/', '_')
+        prefix_without_slash = prefix.replace("/", "_")
         return self.test_dir / f"engine_guess_{prefix_without_slash}.yaml"
 
     def get_outcomes_ground_truth_path(self, prefix) -> Path:
         """Returns the path to the outcomes ground truth YAML"""
 
-        prefix_without_slash = prefix.replace('/', '_')
+        prefix_without_slash = prefix.replace("/", "_")
         return self.test_dir / f"outcomes_gt_{prefix_without_slash}.yaml"
 
     def get_outcomes_guess_path(self, prefix) -> Path:
         """Returns the path to the outcomes guess YAML"""
 
-        prefix_without_slash = prefix.replace('/', '_')
+        prefix_without_slash = prefix.replace("/", "_")
         return self.test_dir / f"outcomes_guess_{prefix_without_slash}.yaml"
 
     def get_shared_data_ground_truth_path(self, prefix) -> Path:
         """Returns the path to the shared_data ground truth YAML"""
 
-        prefix_without_slash = prefix.replace('/', '_')
+        prefix_without_slash = prefix.replace("/", "_")
         return self.test_dir / f"shared_data_gt_{prefix_without_slash}.yaml"
 
     def get_shared_data_guess_path(self, prefix) -> Path:
         """Returns the path to the shared_data guess YAML"""
 
-        prefix_without_slash = prefix.replace('/', '_')
+        prefix_without_slash = prefix.replace("/", "_")
         return self.test_dir / f"shared_data_guess_{prefix_without_slash}.yaml"

@@ -86,12 +86,9 @@ POLICIES = {
 POLICIES.update(STANDARD_POLICIES)
 
 CAIDA_CACHE_DIR = Path.home() / "/tmp/caida_collector_cache"
-CAIDA_CACHE_TSV = Path.home() / "/tmp/caida_collector.tsv"
+CAIDA_CACHE_TSV = None
 
-caida_run_kwargs = {
-    "cache_dir": CAIDA_CACHE_DIR,
-    "tsv_path": CAIDA_CACHE_TSV
-}
+caida_run_kwargs = {"cache_dir": CAIDA_CACHE_DIR, "tsv_path": None}
 
 #############################
 # Functions
@@ -124,10 +121,7 @@ def process_scenario_args(args):
     else:
         raise ValueError(f"Unknown Overlay setting given: {overlay_setting_raw}")
 
-    caida_run_kwargs = {
-        "cache_dir": CAIDA_CACHE_DIR,
-        "tsv_path": CAIDA_CACHE_TSV
-    }
+    caida_run_kwargs = {"cache_dir": CAIDA_CACHE_DIR, "tsv_path": None}
     if args.caida_topology_date:
         caida_run_kwargs["dl_time"] = datetime.strptime(
             args.caida_topology_date, "%Y.%m.%d"
@@ -137,7 +131,8 @@ def process_scenario_args(args):
         caida_run_kwargs=caida_run_kwargs
     )
 
-    special_static_as_class = (None
+    special_static_as_class = (
+        None
         if not args.replace_rov_ases_with
         else POLICIES.get(args.replace_rov_ases_with[0])
     )
@@ -152,7 +147,7 @@ def process_scenario_args(args):
         "assume_relays_are_reachable": args.assume_relays_are_reachable,
         "tunnel_customers_traffic": args.tunnel_customers_traffic,
         "probe_data_plane": args.probe_data_plane,
-        "special_static_as_class": special_static_as_class
+        "special_static_as_class": special_static_as_class,
     }
     if args.rov_adoption != "none":
         # I know this doesn't include peer filters but this
@@ -187,10 +182,7 @@ def process_simulation_args(args):
 
     aux_path = Path(__file__).parent / "aux_files"
 
-    caida_run_kwargs = {
-        "cache_dir": CAIDA_CACHE_DIR,
-        "tsv_path": CAIDA_CACHE_TSV
-    }
+    caida_run_kwargs = {"cache_dir": CAIDA_CACHE_DIR, "tsv_path": CAIDA_CACHE_TSV}
     if args.caida_topology_date:
         caida_run_kwargs["dl_time"] = datetime.strptime(
             args.caida_topology_date, "%Y.%m.%d"
@@ -205,9 +197,9 @@ def process_simulation_args(args):
         "caida_run_kwargs": caida_run_kwargs,
         # NOTE: this is to add the ROV nodes if rov_setting is true
         # But this no longer takes place in caida
-        #"caida_kwargs": {"csv_path": aux_path / "rov_adoption_real.csv"}
-        #if rov_setting
-        #else {},
+        # "caida_kwargs": {"csv_path": aux_path / "rov_adoption_real.csv"}
+        # if rov_setting
+        # else {},
     }
 
 
@@ -511,9 +503,7 @@ def process_experiment_settings(simulation_kwargs, scenario_kwargs, other_settin
     settings = dict()
     settings.update(other_settings)
     del simulation_kwargs["subgraphs"]  # We don't need to output this
-    simulation_kwargs["caida_run_kwargs"] = str(
-        simulation_kwargs["caida_run_kwargs"]
-    )
+    simulation_kwargs["caida_run_kwargs"] = str(simulation_kwargs["caida_run_kwargs"])
     # simulation_kwargs["caida_kwargs"] = str(simulation_kwargs["caida_kwargs"])
     settings.update(simulation_kwargs)
     scenario_kwargs["relay_asns"] = str(scenario_kwargs["relay_asns"])
@@ -554,7 +544,7 @@ def main():
                         ScenarioCls=V4SubprefixHijackScenario,
                         AdoptASCls=Cls,
                         AnnCls=ROVPPAnn,
-                        **scenario_args
+                        **scenario_args,
                     )
                     for Cls in adoption_classes
                 ],
@@ -570,7 +560,7 @@ def main():
                         ScenarioCls=V4PrefixHijackScenario,
                         AdoptASCls=Cls,
                         AnnCls=ROVPPAnn,
-                        **scenario_args
+                        **scenario_args,
                     )
                     for Cls in adoption_classes
                 ],
@@ -586,7 +576,7 @@ def main():
                         ScenarioCls=SubprefixAutoImmuneScenario,
                         AdoptASCls=Cls,
                         AnnCls=ROVPPAnn,
-                        **scenario_args
+                        **scenario_args,
                     )
                     for Cls in adoption_classes
                 ],
@@ -602,7 +592,7 @@ def main():
                         ArtemisSubprefixHijackScenario,
                         AdoptASCls=Cls,
                         AnnCls=ROVPPAnn,
-                        **scenario_args
+                        **scenario_args,
                     )
                     for Cls in adoption_classes
                 ],
@@ -618,7 +608,7 @@ def main():
                         V4SuperprefixPrefixHijack,
                         AdoptASCls=Cls,
                         AnnCls=ROVPPAnn,
-                        **scenario_args
+                        **scenario_args,
                     )
                     for Cls in adoption_classes
                 ],

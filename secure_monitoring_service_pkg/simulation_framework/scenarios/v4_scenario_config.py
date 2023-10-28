@@ -21,6 +21,7 @@ NO_RELAY_SETTING = "no_relay"
 # Main Scenario Class
 ################################
 
+
 @dataclass(frozen=True)
 class V4ScenarioConfig(ScenarioConfig):
     relay_asns: Any = None
@@ -30,9 +31,9 @@ class V4ScenarioConfig(ScenarioConfig):
     tunnel_customers_traffic: Any = False
     probe_data_plane: Any = False
     special_static_as_class: Any = None
-    fightback: Any=False
+    fightback: Any = False
     # If the autoimmune attack is indirect(True)/direct(False)
-    indirect: Any=True
+    indirect: Any = True
 
     def __post_init__(self):
         if self.special_static_as_class is None:

@@ -14,9 +14,7 @@ class Graph066(GraphInfo):
     def __init__(self):
         self.attacker_asn_set = {660, 666}
         super(Graph066, self).__init__(
-            peer_links=set([
-                PeerLink(3, 6)
-            ]),
+            peer_links=set([PeerLink(3, 6)]),
             customer_provider_links=set(
                 [
                     CPLink(provider_asn=2, customer_asn=1),

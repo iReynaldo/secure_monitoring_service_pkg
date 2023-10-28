@@ -1,6 +1,5 @@
 from dataclasses import replace
 import random
-import ipaddress
 
 from rovpp import ROVPPV1LiteSimpleAS
 
@@ -52,34 +51,38 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
     def _force_add_blackholes_from_avoid_list(self, ordered_prefix_subprefix_dict):
         holes = []
         for reported_prefix in self.trusted_server._recommendations:
-            reported_prefix_network = ipaddress.ip_network(reported_prefix)
+            # reported_prefix_network = ipaddress.ip_network(reported_prefix)
             # If the reported prefix is a prefix hijack, and a valid ann already exists,
             # don't consider blackholing it. Hidden Hijacks don't exist in prefix hijacks.
             reported_prefix_ann = self._local_rib.get_ann(reported_prefix)
             if reported_prefix_ann and reported_prefix_ann.valid_by_roa:
                 continue
             for prefix, ann in self._local_rib.prefix_anns():
-                ann_prefix_network = ipaddress.ip_network(prefix)
+                assert reported_prefix in ordered_prefix_subprefix_dict
+                # ann_prefix_network = ipaddress.ip_network(prefix)
                 # Check if ann is
                 # - The reported prefix is a subprefix of it
                 # - The AS path of has a member on the avoid list
-                if reported_prefix_network.subnet_of(
-                    ann_prefix_network
-                ) and self.trusted_server.rec_blackhole(reported_prefix, ann.as_path):
+                if (
+                    # reported_prefix_network.subnet_of(ann_prefix_network)
+                    (
+                        reported_prefix in ordered_prefix_subprefix_dict[prefix]
+                        or reported_prefix == prefix
+                    )
+                    and self.trusted_server.rec_blackhole(reported_prefix, ann.as_path)
+                ):
                     # Create Blackhole
                     # We need to create our own subprefix ann
                     # Since we may not have actually received the hijack
                     # Since this policy is for hidden hijacks
                     blackhole_kwargs = {
-                        'prefix': reported_prefix,
-                        'roa_valid_length': False,
-                        'blackhole': True,
-                        'traceback_end': True
+                        "prefix": reported_prefix,
+                        "roa_valid_length": False,
+                        "blackhole": True,
+                        "traceback_end": True,
                     }
                     if reported_prefix_ann:
-                        blackhole_ann = replace(
-                            reported_prefix_ann, **blackhole_kwargs
-                        )
+                        blackhole_ann = replace(reported_prefix_ann, **blackhole_kwargs)
                     else:
                         blackhole_ann = replace(ann, **blackhole_kwargs)
                     holes.append(blackhole_ann)

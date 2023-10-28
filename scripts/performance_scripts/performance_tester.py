@@ -23,9 +23,9 @@ random.seed(0)
 
 
 # Read in arguments
-policy_str=sys.argv[1]
-perentage=float(sys.argv[2])/100.0
-num_trials=int(sys.argv[3])
+policy_str = sys.argv[1]
+perentage = float(sys.argv[2]) / 100.0
+num_trials = int(sys.argv[3])
 
 # Interpret the policy_str
 if policy_str == "v1":
@@ -35,32 +35,33 @@ elif policy_str == "v4":
 elif policy_str == "v4k1":
     policy = ROVSMSK1
 else:
-    raise(ValueError,
-          "Unrecognized policy specified. "
-          "Use following options {v1, v4, v4k1}")
-
+    raise (
+        ValueError,
+        "Unrecognized policy specified. " "Use following options {v1, v4, v4k1}",
+    )
 
 
 def get_default_kwargs():
-    return {"percent_adoptions": [perentage],
-            "num_trials": num_trials,
-            "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
-            "parse_cpus": 1}
-
-
+    return {
+        "percent_adoptions": [perentage],
+        "num_trials": num_trials,
+        "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
+        "parse_cpus": 1,
+    }
 
 
 def main():
-
     # assert isinstance(input("Turn asserts off for speed?"), str)
     sims = [
-            V4Simulation(scenarios=[V4SubprefixHijackScenario(AdoptASCls=Cls,
-                                                              AnnCls=ROVPPAnn)
-                                    for Cls in [policy]
-                                    ],
-                         output_path=BASE_PATH / "subprefix",
-                         **get_default_kwargs()),
-           ]
+        V4Simulation(
+            scenarios=[
+                V4SubprefixHijackScenario(AdoptASCls=Cls, AnnCls=ROVPPAnn)
+                for Cls in [policy]
+            ],
+            output_path=BASE_PATH / "subprefix",
+            **get_default_kwargs(),
+        ),
+    ]
 
     for sim in sims:
         start = datetime.now()
@@ -77,4 +78,3 @@ if __name__ == "__main__":
         end_time = time.perf_counter()
         print("End Time", time.ctime())
         print("Elasped Time: ", end_time - start_time)
-

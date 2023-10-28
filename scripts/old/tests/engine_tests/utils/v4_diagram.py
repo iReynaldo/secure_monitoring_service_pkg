@@ -3,7 +3,6 @@ import ipaddress
 from bgpy import Diagram
 
 
-
 class V4Diagram(Diagram):
     def generate_as_graph(
         self,
