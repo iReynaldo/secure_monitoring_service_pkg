@@ -1,0 +1,27 @@
+all_ATTACKER_SUCCESS_1.2.0.0/16: 1
+all_ATTACKER_SUCCESS_perc_1.2.0.0/16: 8.333333333333334
+all_VICTIM_SUCCESS_1.2.0.0/16: 11
+all_VICTIM_SUCCESS_perc_1.2.0.0/16: 91.66666666666667
+avoid_list_for_1.2.1.0/24: []
+etc_BGP Simple: 3
+etc_BGP Simple_VICTIM_SUCCESS_1.2.0.0/16: 3
+etc_BGP Simple_VICTIM_SUCCESS_percent_1.2.0.0/16: 100.0
+etc_ROV V4 Lite K2: 2
+etc_ROV V4 Lite K2_VICTIM_SUCCESS_1.2.0.0/16: 2
+etc_ROV V4 Lite K2_VICTIM_SUCCESS_percent_1.2.0.0/16: 100.0
+etc_ROVSimple: 1
+etc_ROVSimple_VICTIM_SUCCESS_1.2.0.0/16: 1
+etc_ROVSimple_VICTIM_SUCCESS_percent_1.2.0.0/16: 100.0
+num_ases_should_not_be_on_avoid_list: 0
+num_of_victim_providers: 1
+num_victim_providers_on_avoid_list: 0
+set: true
+size_of_avoid_list: 1
+stubs_or_mh_BGP Simple: 4
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_1.2.0.0/16: 1
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_percent_1.2.0.0/16: 25.0
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_1.2.0.0/16: 3
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_percent_1.2.0.0/16: 75.0
+stubs_or_mh_ROV V4 Lite K2: 2
+stubs_or_mh_ROV V4 Lite K2_VICTIM_SUCCESS_1.2.0.0/16: 2
+stubs_or_mh_ROV V4 Lite K2_VICTIM_SUCCESS_percent_1.2.0.0/16: 100.0

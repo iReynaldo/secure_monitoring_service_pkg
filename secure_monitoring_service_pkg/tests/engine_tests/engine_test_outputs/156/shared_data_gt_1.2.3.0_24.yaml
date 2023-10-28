@@ -1,0 +1,34 @@
+all_ATTACKER_SUCCESS_1.2.3.0/24: 2
+all_ATTACKER_SUCCESS_perc_1.2.3.0/24: 12.5
+all_DISCONNECTED_1.2.3.0/24: 7
+all_DISCONNECTED_perc_1.2.3.0/24: 43.75
+all_VICTIM_SUCCESS_1.2.3.0/24: 7
+all_VICTIM_SUCCESS_perc_1.2.3.0/24: 43.75
+avoid_list_for_1.2.3.0/24:
+- 1
+etc_BGP Simple: 6
+etc_BGP Simple_DISCONNECTED_1.2.3.0/24: 1
+etc_BGP Simple_DISCONNECTED_percent_1.2.3.0/24: 16.666666666666668
+etc_BGP Simple_VICTIM_SUCCESS_1.2.3.0/24: 5
+etc_BGP Simple_VICTIM_SUCCESS_percent_1.2.3.0/24: 83.33333333333333
+etc_ROV V4 Lite K1: 2
+etc_ROV V4 Lite K1_DISCONNECTED_1.2.3.0/24: 2
+etc_ROV V4 Lite K1_DISCONNECTED_percent_1.2.3.0/24: 100.0
+etc_ROVSimple: 1
+etc_ROVSimple_VICTIM_SUCCESS_1.2.3.0/24: 1
+etc_ROVSimple_VICTIM_SUCCESS_percent_1.2.3.0/24: 100.0
+num_ases_should_not_be_on_avoid_list: 0
+num_of_victim_providers: 1
+num_victim_providers_on_avoid_list: 1
+set: true
+size_of_avoid_list: 1
+stubs_or_mh_BGP Simple: 4
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_1.2.3.0/24: 2
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_percent_1.2.3.0/24: 50.0
+stubs_or_mh_BGP Simple_DISCONNECTED_1.2.3.0/24: 1
+stubs_or_mh_BGP Simple_DISCONNECTED_percent_1.2.3.0/24: 25.0
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_1.2.3.0/24: 1
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_percent_1.2.3.0/24: 25.0
+stubs_or_mh_ROV V4 Lite K1: 3
+stubs_or_mh_ROV V4 Lite K1_DISCONNECTED_1.2.3.0/24: 3
+stubs_or_mh_ROV V4 Lite K1_DISCONNECTED_percent_1.2.3.0/24: 100.0
