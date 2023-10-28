@@ -124,8 +124,17 @@ def process_scenario_args(args):
     else:
         raise ValueError(f"Unknown Overlay setting given: {overlay_setting_raw}")
 
+    caida_run_kwargs = {
+        "cache_dir": CAIDA_CACHE_DIR,
+        "tsv_path": CAIDA_CACHE_TSV
+    }
+    if args.caida_topology_date:
+        caida_run_kwargs["dl_time"] = datetime.strptime(
+            args.caida_topology_date, "%Y.%m.%d"
+        )
+
     hardcoded_asn_cls_dict = get_real_world_rov_asn_cls_dict(
-        caida_run_kwargs=caida_run_kwargs.copy()
+        caida_run_kwargs=caida_run_kwargs
     )
 
     special_static_as_class = (None
