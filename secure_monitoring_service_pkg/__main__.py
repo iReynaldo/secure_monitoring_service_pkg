@@ -6,16 +6,17 @@ from pathlib import Path
 import argparse
 
 from bgp_simulator_pkg import ROVSimpleAS
+from bgpy.subgraph_simulation_framework import SubgraphSimulation
 
 from rovpp_pkg import ROVPPAnn
 from rovpp_pkg import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg import V4Subgraph
-from secure_monitoring_service_pkg import V4Simulation
 from secure_monitoring_service_pkg import ROVPPO
 from secure_monitoring_service_pkg import ROVSMS, ROVSMSK1, ROVSMSK2
 from secure_monitoring_service_pkg import ROVSMSK3, ROVSMSK5, ROVSMSK6
 from secure_monitoring_service_pkg import ROVSMSK10
+from secure_monitoring_service_pkg import V4ScenarioConfig
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
 from secure_monitoring_service_pkg import ArtemisSubprefixHijackScenario
@@ -150,15 +151,31 @@ def process_simulation_args(args):
         raise ValueError(f"Unknown ROV setting given: {rov_setting_raw}")
 
     aux_path = Path(__file__).parent / "aux_files"
+
+    HOME_DIR = str(Path.home())
+    CAIDA_CACHE_DIR = HOME_DIR + "/tmp/caida_collector_cache"
+    CAIDA_CACHE_TSV = HOME_DIR + "/tmp/caida_collector.tsv"
+
+    caida_run_kwargs = {
+        "cache_dir": CAIDA_CACHE_DIR,
+        "tsv_path": CAIDA_CACHE_TSV
+    }
+    if args.caida_topology_date:
+        caida_run_kwargs["dl_time"] = datetime.strptime(
+            caida_topology_date, "%Y.%m.%d"
+        )
+
     return {
         "percent_adoptions": args.percentages,
         "num_trials": args.num_trials,
         "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
         "parse_cpus": args.cpus,
         "python_hash_seed": args.python_hash_seed,
-        "caida_topology_date": args.caida_topology_date,
-        "caida_kwargs": {"csv_path": aux_path / "rov_adoption_real.csv"}
-        if rov_setting
+        "caida_run_kwargs": caida_run_kwargs,
+        # NOTE: this is to add the ROV nodes if rov_setting is true
+        # But this no longer takes place in caida
+        #"caida_kwargs": {"csv_path": aux_path / "rov_adoption_real.csv"}
+        #if rov_setting
         else {},
     }
 
@@ -491,10 +508,13 @@ def main():
     sims = None
     if other_args["scenario"] == SUBPREFIX_HIJACK:
         sims = [
-            V4Simulation(
-                scenarios=[
-                    V4SubprefixHijackScenario(
-                        AdoptASCls=Cls, AnnCls=ROVPPAnn, **scenario_args
+            SubgraphSimulation(
+                scenario_configs=[
+                    ScenarioConfig(
+                        ScenarioCls=V4SubprefixHijackScenario
+                        AdoptASCls=Cls,
+                        AnnCls=ROVPPAnn,
+                        **scenario_args
                     )
                     for Cls in adoption_classes
                 ],
@@ -504,10 +524,13 @@ def main():
         ]
     elif other_args["scenario"] == PREFIX_HIJACK:
         sims = [
-            V4Simulation(
-                scenarios=[
-                    V4PrefixHijackScenario(
-                        AdoptASCls=Cls, AnnCls=ROVPPAnn, **scenario_args
+            SubgraphSimulation(
+                scenario_configs=[
+                    ScenarioConfig(
+                        ScenarioCls=V4PrefixHijackScenario,
+                        AdoptASCls=Cls,
+                        AnnCls=ROVPPAnn,
+                        **scenario_args
                     )
                     for Cls in adoption_classes
                 ],
@@ -517,10 +540,13 @@ def main():
         ]
     elif other_args["scenario"] == AUTOIMMUNE:
         sims = [
-            V4Simulation(
-                scenarios=[
-                    SubprefixAutoImmuneScenario(
-                        AdoptASCls=Cls, AnnCls=ROVPPAnn, **scenario_args
+            SubgraphSimulation(
+                scenario_configs=[
+                    ScenarioConfig(
+                        ScenarioCls=SubprefixAutoImmuneScenario,
+                        AdoptASCls=Cls,
+                        AnnCls=ROVPPAnn,
+                        **scenario_args
                     )
                     for Cls in adoption_classes
                 ],
@@ -530,10 +556,13 @@ def main():
         ]
     elif other_args["scenario"] == ARTEMIS_SUBPREFIX_HIJACK:
         sims = [
-            V4Simulation(
-                scenarios=[
-                    ArtemisSubprefixHijackScenario(
-                        AdoptASCls=Cls, AnnCls=ROVPPAnn, **scenario_args
+            SubgraphSimulation(
+                scenario_configs=[
+                    ScenarioConfig(
+                        ArtemisSubprefixHijackScenario,
+                        AdoptASCls=Cls,
+                        AnnCls=ROVPPAnn,
+                        **scenario_args
                     )
                     for Cls in adoption_classes
                 ],
@@ -543,10 +572,13 @@ def main():
         ]
     elif other_args["scenario"] == SUPERPREFIX_PLUS_PREFIX_HIJACK:
         sims = [
-            V4Simulation(
-                scenarios=[
-                    V4SuperprefixPrefixHijack(
-                        AdoptASCls=Cls, AnnCls=ROVPPAnn, **scenario_args
+            SubgraphSimulation(
+                scenario_configs=[
+                    ScenarioConfig(
+                        V4SuperprefixPrefixHijack,
+                        AdoptASCls=Cls,
+                        AnnCls=ROVPPAnn,
+                        **scenario_args
                     )
                     for Cls in adoption_classes
                 ],
@@ -566,9 +598,9 @@ def main():
 
     # Run Simulations
     for sim in sims:
-        start = datetime.now()
+        # start = datetime.now()
         sim.run(experiment_settings_to_save)
-        print(f"{sim.output_path} {(datetime.now() - start).total_seconds()}")
+        # print(f"{sim.output_path} {(datetime.now() - start).total_seconds()}")
 
 
 if __name__ == "__main__":
