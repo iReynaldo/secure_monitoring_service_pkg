@@ -17,27 +17,27 @@ import data_manager as dm
 # Example file name
 # V4SubprefixHijackScenario_scenario_none_type_real_rov_0_hash_incapsula_relay_False_attackRelay_5_attacker_500_trials_full_percentages
 
-#-----------------------------------
+# -----------------------------------
 # Constants
-#-----------------------------------
+# -----------------------------------
 
 line_name_map = {
-        "rov": 'ROV adopting',
-        "rovppv1lite": "ROV++ V1 Lite adopting",
-        "v4k2": "Pheme k=2 adopting",
-        "v4k5": "Pheme k=5 adopting",
-        "v4k10": "Pheme k=10 adopting",
-    }
+    "rov": "ROV adopting",
+    "rovppv1lite": "ROV++ V1 Lite adopting",
+    "v4k2": "Pheme k=2 adopting",
+    "v4k5": "Pheme k=5 adopting",
+    "v4k10": "Pheme k=10 adopting",
+}
 
-#-----------------------------------
+# -----------------------------------
 # Args
-#-----------------------------------
+# -----------------------------------
 
-scenario = 'V4SubprefixHijackScenario'
+scenario = "V4SubprefixHijackScenario"
 # scenario = 'V4SuperprefixPrefixHijack'
-scenario_type = 'none'
+scenario_type = "none"
 # rov_setting = 'real'
-rov_setting = 'none'
+rov_setting = "none"
 hash_seed = 0
 # relay
 attack_relay = False
@@ -46,47 +46,55 @@ num_trials = 500
 
 metric = dm.victim_success
 k = 5
-relay = 'verisign'
-policies = [f'v4k{k}']
+relay = "verisign"
+policies = [f"v4k{k}"]
 
 for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
-    
-    #-----------------------------------
+    # -----------------------------------
     # Plot Generation
-    #-----------------------------------
-    
+    # -----------------------------------
+
     subgraph = dm.metric_subgraph[metric]
-    
-    
+
     # Load paths
     paths = list()
-    
+
     for attack_relay in [False, True]:
         paths.append(
-                dm.json_file(scenario, scenario_type, rov_setting, hash_seed, relay, attack_relay, num_attackers, num_trials)
+            dm.json_file(
+                scenario,
+                scenario_type,
+                rov_setting,
+                hash_seed,
+                relay,
+                attack_relay,
+                num_attackers,
+                num_trials,
             )
-    
+        )
+
     # Load Results
-    results = dm.get_results(paths, subgraph, [dm.policy_name_map[f'v4k{k}']])
-    
+    results = dm.get_results(paths, subgraph, [dm.policy_name_map[f"v4k{k}"]])
+
     # Generate Lines
     lines_map = dict()
     relay_filename = ""
 
     lines_map[0] = f"Pheme {relay.capitalize()} - k={k} adopting"
     lines_map[1] = f"Pheme {relay.capitalize()} Attacked - k={k} adopting"
-    
+
     lines = []
     for i, result in enumerate(results):
         if result:
             lines.append(Line(lines_map[i], False, result.adopting[subgraph]))
-    
-        
+
     # Plot Lines
-    generate_plot(lines,
-                  ylim=100,
-                  outcome_text=dm.metric_outcome[metric],
-                  size_inches=(5, 4),
-                  legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-                  linemap=create_compare_cdn_linemap(relay.capitalize()),
-                  fname=f"./plots/subprefix/compare_attackRelay_{dm.metric_filename_prefix[metric]}.pdf")
+    generate_plot(
+        lines,
+        ylim=100,
+        outcome_text=dm.metric_outcome[metric],
+        size_inches=(5, 4),
+        legend_kwargs={"loc": "best", "prop": {"size": 11}},
+        linemap=create_compare_cdn_linemap(relay.capitalize()),
+        fname=f"./plots/subprefix/compare_attackRelay_{dm.metric_filename_prefix[metric]}.pdf",
+    )

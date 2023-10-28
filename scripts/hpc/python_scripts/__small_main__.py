@@ -2,17 +2,15 @@ from datetime import datetime
 from pathlib import Path
 import time
 
-from rovpp_pkg import ROVPPAnn
-from rovpp_pkg import ROVPPV1LiteSimpleAS
+from rovpp import ROVPPAnn
+from rovpp import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg import V4Subgraph
 from secure_monitoring_service_pkg import V4Simulation
 from secure_monitoring_service_pkg import ROVSMS, ROVSMSK1, ROVSMSK2
-from secure_monitoring_service_pkg import ROVSMSK3, ROVSMSK5, ROVSMSK6
+from secure_monitoring_service_pkg import ROVSMSK3, ROVSMSK5
 from secure_monitoring_service_pkg import ROVSMSK10
-from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
-from secure_monitoring_service_pkg import CDN
 from secure_monitoring_service_pkg import Peer
 
 
@@ -26,7 +24,7 @@ BASE_PATH = Path("~/Desktop/graphs/").expanduser()
 adoption_settings = {
     "adopters_for_1_attackers": [ROVPPV1LiteSimpleAS, ROVSMS, ROVSMSK1, ROVSMSK2],
     "adopters_for_2_attackers": [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK2, ROVSMSK3],
-    "adopters_for_5_attackers": [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK5, ROVSMSK10]
+    "adopters_for_5_attackers": [ROVPPV1LiteSimpleAS, ROVSMSK1, ROVSMSK5, ROVSMSK10],
 }
 
 
@@ -39,16 +37,26 @@ def scenario_kwargs():
     settings = {
         "num_attackers": 5,
         "min_rov_confidence": 0,
-        "adoption_subcategory_attrs": ("stub_or_mh_ases", "etc_ases", "input_clique_ases"),
+        "adoption_subcategory_attrs": (
+            "stub_or_mh_ases",
+            "etc_ases",
+            "input_clique_ases",
+        ),
         "relay_asns": None,
         "assume_relays_are_reachable": False,
         "tunnel_customer_traffic": False,
     }
-    if not (settings["relay_asns"] == Peer.twenty or settings["relay_asns"] == Peer.hundred
-    or settings["relay_asns"] == Peer.five or settings["relay_asns"] == Peer.ten):
-        assert not settings["assume_relays_are_reachable"], "assume_relays_are_reachable " \
-                                                            "should only be set True for " \
-                                                            "Peer relay setting"
+    if not (
+        settings["relay_asns"] == Peer.twenty
+        or settings["relay_asns"] == Peer.hundred
+        or settings["relay_asns"] == Peer.five
+        or settings["relay_asns"] == Peer.ten
+    ):
+        assert not settings["assume_relays_are_reachable"], (
+            "assume_relays_are_reachable "
+            "should only be set True for "
+            "Peer relay setting"
+        )
     return settings
 
 
@@ -59,20 +67,26 @@ def simulation_kwargs():
         "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
         "parse_cpus": 100,
         "python_hash_seed": 0,
-        "caida_kwargs": {"csv_path": Path("./aux_files/rov_adoption_real.csv")}
+        "caida_kwargs": {"csv_path": Path("./aux_files/rov_adoption_real.csv")},
     }
 
 
 def main():
-    adoption_classes = adoption_settings[f"adopters_for_{scenario_kwargs()['num_attackers']}_attackers"]
+    adoption_classes = adoption_settings[
+        f"adopters_for_{scenario_kwargs()['num_attackers']}_attackers"
+    ]
     sims = [
-        V4Simulation(scenarios=[SubprefixAutoImmuneScenario(AdoptASCls=Cls,
-                                                            AnnCls=ROVPPAnn,
-                                                            **scenario_kwargs())
-                                for Cls in adoption_classes
-                                ],
-                     output_path=BASE_PATH / "hpc_1_cpu_autoimmune_rov_real_5_attackers_1000_trials",
-                     **simulation_kwargs()),
+        V4Simulation(
+            scenarios=[
+                SubprefixAutoImmuneScenario(
+                    AdoptASCls=Cls, AnnCls=ROVPPAnn, **scenario_kwargs()
+                )
+                for Cls in adoption_classes
+            ],
+            output_path=BASE_PATH
+            / "hpc_1_cpu_autoimmune_rov_real_5_attackers_1000_trials",
+            **simulation_kwargs(),
+        ),
     ]
 
     for sim in sims:

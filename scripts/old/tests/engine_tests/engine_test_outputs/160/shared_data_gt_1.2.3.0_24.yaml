@@ -1,0 +1,24 @@
+all_ATTACKER_SUCCESS_1.2.3.0/24: 5
+all_ATTACKER_SUCCESS_perc_1.2.3.0/24: 31.25
+all_VICTIM_SUCCESS_1.2.3.0/24: 11
+all_VICTIM_SUCCESS_perc_1.2.3.0/24: 68.75
+etc_ARTEMIS: 2
+etc_ARTEMIS_VICTIM_SUCCESS_1.2.3.0/24: 2
+etc_ARTEMIS_VICTIM_SUCCESS_percent_1.2.3.0/24: 100.0
+etc_BGP Simple: 6
+etc_BGP Simple_ATTACKER_SUCCESS_1.2.3.0/24: 1
+etc_BGP Simple_ATTACKER_SUCCESS_percent_1.2.3.0/24: 16.666666666666668
+etc_BGP Simple_VICTIM_SUCCESS_1.2.3.0/24: 5
+etc_BGP Simple_VICTIM_SUCCESS_percent_1.2.3.0/24: 83.33333333333333
+etc_ROVSimple: 1
+etc_ROVSimple_VICTIM_SUCCESS_1.2.3.0/24: 1
+etc_ROVSimple_VICTIM_SUCCESS_percent_1.2.3.0/24: 100.0
+set: true
+stubs_or_mh_ARTEMIS: 3
+stubs_or_mh_ARTEMIS_ATTACKER_SUCCESS_1.2.3.0/24: 3
+stubs_or_mh_ARTEMIS_ATTACKER_SUCCESS_percent_1.2.3.0/24: 100.0
+stubs_or_mh_BGP Simple: 4
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_1.2.3.0/24: 1
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_percent_1.2.3.0/24: 25.0
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_1.2.3.0/24: 3
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_percent_1.2.3.0/24: 75.0

@@ -1,10 +1,12 @@
+from dataclasses import replace
 import random
-import ipaddress
 
-from rovpp_pkg import ROVPPV1LiteSimpleAS
+from rovpp import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg.simulation_engine.trusted_server import TrustedServer
-from secure_monitoring_service_pkg.simulation_framework.sim_logger import sim_logger as logger
+from secure_monitoring_service_pkg.simulation_framework.sim_logger import (
+    sim_logger as logger,
+)
 from secure_monitoring_service_pkg.simulation_engine.report import Report
 
 
@@ -33,41 +35,56 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
             if self._max_num_dishonest_nodes > 0:
                 if self.asn not in ann.as_path:
                     adjusted_as_path = (self.asn,) + ann.as_path
-                    report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=adjusted_as_path)
+                    report = Report(
+                        reporting_asn=self.asn,
+                        prefix=ann.prefix,
+                        as_path=adjusted_as_path,
+                    )
                     self.trusted_server.receive_report(report)
             else:
-                report = Report(reporting_asn=self.asn, prefix=ann.prefix, as_path=ann.as_path)
+                report = Report(
+                    reporting_asn=self.asn, prefix=ann.prefix, as_path=ann.as_path
+                )
                 self.trusted_server.receive_report(report)
         return super(ROVSMS, self).receive_ann(ann, *args, **kwargs)
 
     def _force_add_blackholes_from_avoid_list(self, ordered_prefix_subprefix_dict):
         holes = []
         for reported_prefix in self.trusted_server._recommendations:
-            reported_prefix_network = ipaddress.ip_network(reported_prefix)
+            # reported_prefix_network = ipaddress.ip_network(reported_prefix)
             # If the reported prefix is a prefix hijack, and a valid ann already exists,
             # don't consider blackholing it. Hidden Hijacks don't exist in prefix hijacks.
             reported_prefix_ann = self._local_rib.get_ann(reported_prefix)
             if reported_prefix_ann and reported_prefix_ann.valid_by_roa:
                 continue
             for prefix, ann in self._local_rib.prefix_anns():
-                ann_prefix_network = ipaddress.ip_network(prefix)
+                assert reported_prefix in ordered_prefix_subprefix_dict
+                # ann_prefix_network = ipaddress.ip_network(prefix)
                 # Check if ann is
                 # - The reported prefix is a subprefix of it
                 # - The AS path of has a member on the avoid list
-                if reported_prefix_network.subnet_of(ann_prefix_network) and \
-                    self.trusted_server.rec_blackhole(reported_prefix, ann.as_path):
+                if (
+                    # reported_prefix_network.subnet_of(ann_prefix_network)
+                    (
+                        reported_prefix in ordered_prefix_subprefix_dict[prefix]
+                        or reported_prefix == prefix
+                    )
+                    and self.trusted_server.rec_blackhole(reported_prefix, ann.as_path)
+                ):
                     # Create Blackhole
                     # We need to create our own subprefix ann
                     # Since we may not have actually received the hijack
                     # Since this policy is for hidden hijacks
+                    blackhole_kwargs = {
+                        "prefix": reported_prefix,
+                        "roa_valid_length": False,
+                        "blackhole": True,
+                        "traceback_end": True,
+                    }
                     if reported_prefix_ann:
-                        blackhole_ann = reported_prefix_ann.copy()
+                        blackhole_ann = replace(reported_prefix_ann, **blackhole_kwargs)
                     else:
-                        blackhole_ann = ann.copy()
-                    blackhole_ann.prefix = reported_prefix
-                    blackhole_ann.roa_valid_length = False
-                    blackhole_ann.blackhole = True
-                    blackhole_ann.traceback_end = True
+                        blackhole_ann = replace(ann, **blackhole_kwargs)
                     holes.append(blackhole_ann)
 
         for hole in holes:
@@ -87,296 +104,156 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
             accessible_relays = list()
             for asn in relay_asns:
                 prefix = relay_prefix_dict[asn]
-                if prefix in self._local_rib._info and asn in self._local_rib._info[prefix].as_path:
+                if (
+                    prefix in self._local_rib._info
+                    and asn in self._local_rib._info[prefix].as_path
+                ):
                     accessible_relays.append(asn)
             # Uniformly at random select from available relays
-            return random.choice(accessible_relays) if len(accessible_relays) > 0 else None
-
+            return (
+                random.choice(accessible_relays) if len(accessible_relays) > 0 else None
+            )
 
 
 class ROVSMSK1(ROVSMS):
     name = "ROV V4 Lite K1"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 1
     trusted_server = TrustedServer(max_num_dishonest_nodes=1)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK2(ROVSMS):
     name = "ROV V4 Lite K2"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 2
     trusted_server = TrustedServer(max_num_dishonest_nodes=2)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK3(ROVSMS):
     name = "ROV V4 Lite K3"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 3
     trusted_server = TrustedServer(max_num_dishonest_nodes=3)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK4(ROVSMS):
     name = "ROV V4 Lite K4"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 4
     trusted_server = TrustedServer(max_num_dishonest_nodes=4)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK5(ROVSMS):
     name = "ROV V4 Lite K5"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 5
     trusted_server = TrustedServer(max_num_dishonest_nodes=5)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK6(ROVSMS):
     name = "ROV V4 Lite K6"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 6
     trusted_server = TrustedServer(max_num_dishonest_nodes=6)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK7(ROVSMS):
     name = "ROV V4 Lite K7"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 7
     trusted_server = TrustedServer(max_num_dishonest_nodes=7)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK10(ROVSMS):
     name = "ROV V4 Lite K10"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 10
     trusted_server = TrustedServer(max_num_dishonest_nodes=10)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK20(ROVSMS):
     name = "ROV V4 Lite K20"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 20
     trusted_server = TrustedServer(max_num_dishonest_nodes=20)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK30(ROVSMS):
     name = "ROV V4 Lite K30"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 30
     trusted_server = TrustedServer(max_num_dishonest_nodes=30)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK50(ROVSMS):
     name = "ROV V4 Lite K50"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 50
     trusted_server = TrustedServer(max_num_dishonest_nodes=50)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK70(ROVSMS):
     name = "ROV V4 Lite K70"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 70
     trusted_server = TrustedServer(max_num_dishonest_nodes=70)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK100(ROVSMS):
     name = "ROV V4 Lite K100"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 100
     trusted_server = TrustedServer(max_num_dishonest_nodes=100)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK150(ROVSMS):
     name = "ROV V4 Lite K150"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 150
     trusted_server = TrustedServer(max_num_dishonest_nodes=150)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK200(ROVSMS):
     name = "ROV V4 Lite K200"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 200
     trusted_server = TrustedServer(max_num_dishonest_nodes=200)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK300(ROVSMS):
     name = "ROV V4 Lite K300"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 300
     trusted_server = TrustedServer(max_num_dishonest_nodes=300)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK500(ROVSMS):
     name = "ROV V4 Lite K500"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 500
     trusted_server = TrustedServer(max_num_dishonest_nodes=500)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK1000(ROVSMS):
     name = "ROV V4 Lite K1000"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 1000
     trusted_server = TrustedServer(max_num_dishonest_nodes=1000)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK1500(ROVSMS):
     name = "ROV V4 Lite K1500"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 1500
     trusted_server = TrustedServer(max_num_dishonest_nodes=1500)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK2000(ROVSMS):
     name = "ROV V4 Lite K2000"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 2000
     trusted_server = TrustedServer(max_num_dishonest_nodes=2000)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK5000(ROVSMS):
     name = "ROV V4 Lite K5000"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 5000
     trusted_server = TrustedServer(max_num_dishonest_nodes=5000)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK10000(ROVSMS):
     name = "ROV V4 Lite K10000"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 10000
     trusted_server = TrustedServer(max_num_dishonest_nodes=10000)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK20000(ROVSMS):
     name = "ROV V4 Lite K20000"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 20000
     trusted_server = TrustedServer(max_num_dishonest_nodes=20000)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)
 
 
 class ROVSMSK30000(ROVSMS):
     name = "ROV V4 Lite K30000"
-
-    __slots__ = tuple()
-
     _max_num_dishonest_nodes = 30000
     trusted_server = TrustedServer(max_num_dishonest_nodes=30000)
-
-    def __init__(self, *args, **kwargs):
-        super(ROVSMS, self).__init__(*args, **kwargs)

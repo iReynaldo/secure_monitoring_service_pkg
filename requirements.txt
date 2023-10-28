@@ -1,3 +1,5 @@
+bgpy_pkg
+rovpp
 igraph
 cairocffi
 filelock

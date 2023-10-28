@@ -7,7 +7,7 @@ from bgp_simulator_pkg import BGPSimpleAS
 from bgp_simulator_pkg import ROVSimpleAS
 from bgp_simulator_pkg import ASNs
 
-from rovpp_pkg import ROVPPAnn
+from rovpp import ROVPPAnn
 
 from .. import graphs
 from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
@@ -26,20 +26,24 @@ class Config158(EngineTestConfig):
     name = "158"
     desc = "Direct AutoImmune Attack with ROV++ V4 k=2"
     graph = graphs.Graph061()
-    scenario = SubprefixAutoImmuneScenario(num_attackers=2,
-                                           attacker_asns=graph.attacker_asn_set,
-                                           victim_asns={ASNs.VICTIM.value},
-                                           AdoptASCls=ROVSMSK2,
-                                           BaseASCls=BGPSimpleAS,
-                                           AnnCls=ROVPPAnn,
-                                           assume_relays_are_reachable=True,
-                                           indirect=False)
+    scenario = SubprefixAutoImmuneScenario(
+        num_attackers=2,
+        attacker_asns=graph.attacker_asn_set,
+        victim_asns={ASNs.VICTIM.value},
+        AdoptASCls=ROVSMSK2,
+        BaseASCls=BGPSimpleAS,
+        AnnCls=ROVPPAnn,
+        assume_relays_are_reachable=True,
+        indirect=False,
+    )
 
-    non_default_as_cls_dict: Dict[int, Type[AS]] = {3: ROVSMSK2,
-                                                    4: ROVSMSK2,
-                                                    8: ROVSMSK2,
-                                                    10: ROVSMSK2,
-                                                    11: ROVSMSK2,
-                                                    7: ROVSimpleAS}
+    non_default_as_cls_dict: Dict[int, Type[AS]] = {
+        3: ROVSMSK2,
+        4: ROVSMSK2,
+        8: ROVSMSK2,
+        10: ROVSMSK2,
+        11: ROVSMSK2,
+        7: ROVSimpleAS,
+    }
 
     propagation_rounds = 1

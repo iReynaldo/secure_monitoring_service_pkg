@@ -1,0 +1,66 @@
+all_ATTACKER_SUCCESS_1.2.1.0/24: 14
+all_ATTACKER_SUCCESS_1.2.2.0/24: 13
+all_ATTACKER_SUCCESS_1.2.3.0/24: 14
+all_ATTACKER_SUCCESS_perc_1.2.1.0/24: 73.6842105263158
+all_ATTACKER_SUCCESS_perc_1.2.2.0/24: 68.42105263157895
+all_ATTACKER_SUCCESS_perc_1.2.3.0/24: 73.6842105263158
+all_DISCONNECTED_1.2.1.0/24: 3
+all_DISCONNECTED_1.2.2.0/24: 4
+all_DISCONNECTED_1.2.3.0/24: 3
+all_DISCONNECTED_perc_1.2.1.0/24: 15.789473684210526
+all_DISCONNECTED_perc_1.2.2.0/24: 21.05263157894737
+all_DISCONNECTED_perc_1.2.3.0/24: 15.789473684210526
+all_VICTIM_SUCCESS_1.2.1.0/24: 2
+all_VICTIM_SUCCESS_1.2.2.0/24: 2
+all_VICTIM_SUCCESS_1.2.3.0/24: 2
+all_VICTIM_SUCCESS_perc_1.2.1.0/24: 10.526315789473685
+all_VICTIM_SUCCESS_perc_1.2.2.0/24: 10.526315789473685
+all_VICTIM_SUCCESS_perc_1.2.3.0/24: 10.526315789473685
+avoid_list_for_1.2.1.0/24:
+- 10
+avoid_list_for_1.2.2.0/24:
+- 2
+avoid_list_for_1.2.3.0/24:
+- 3
+etc_BGP Simple: 11
+etc_BGP Simple_ATTACKER_SUCCESS_1.2.1.0/24: 10
+etc_BGP Simple_ATTACKER_SUCCESS_1.2.2.0/24: 10
+etc_BGP Simple_ATTACKER_SUCCESS_1.2.3.0/24: 10
+etc_BGP Simple_ATTACKER_SUCCESS_percent_1.2.1.0/24: 90.9090909090909
+etc_BGP Simple_ATTACKER_SUCCESS_percent_1.2.2.0/24: 90.9090909090909
+etc_BGP Simple_ATTACKER_SUCCESS_percent_1.2.3.0/24: 90.9090909090909
+etc_BGP Simple_VICTIM_SUCCESS_1.2.1.0/24: 1
+etc_BGP Simple_VICTIM_SUCCESS_1.2.2.0/24: 1
+etc_BGP Simple_VICTIM_SUCCESS_1.2.3.0/24: 1
+etc_BGP Simple_VICTIM_SUCCESS_percent_1.2.1.0/24: 9.090909090909092
+etc_BGP Simple_VICTIM_SUCCESS_percent_1.2.2.0/24: 9.090909090909092
+etc_BGP Simple_VICTIM_SUCCESS_percent_1.2.3.0/24: 9.090909090909092
+num_ases_should_not_be_on_avoid_list: 0
+num_of_victim_providers: 3
+num_victim_providers_on_avoid_list: 3
+set: true
+size_of_avoid_list: 3
+stubs_or_mh_BGP Simple: 4
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_1.2.1.0/24: 3
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_1.2.2.0/24: 3
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_1.2.3.0/24: 3
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_percent_1.2.1.0/24: 75.0
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_percent_1.2.2.0/24: 75.0
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_percent_1.2.3.0/24: 75.0
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_1.2.1.0/24: 1
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_1.2.2.0/24: 1
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_1.2.3.0/24: 1
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_percent_1.2.1.0/24: 25.0
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_percent_1.2.2.0/24: 25.0
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_percent_1.2.3.0/24: 25.0
+stubs_or_mh_ROV V4 Lite K2: 4
+stubs_or_mh_ROV V4 Lite K2_ATTACKER_SUCCESS_1.2.1.0/24: 1
+stubs_or_mh_ROV V4 Lite K2_ATTACKER_SUCCESS_1.2.3.0/24: 1
+stubs_or_mh_ROV V4 Lite K2_ATTACKER_SUCCESS_percent_1.2.1.0/24: 25.0
+stubs_or_mh_ROV V4 Lite K2_ATTACKER_SUCCESS_percent_1.2.3.0/24: 25.0
+stubs_or_mh_ROV V4 Lite K2_DISCONNECTED_1.2.1.0/24: 3
+stubs_or_mh_ROV V4 Lite K2_DISCONNECTED_1.2.2.0/24: 4
+stubs_or_mh_ROV V4 Lite K2_DISCONNECTED_1.2.3.0/24: 3
+stubs_or_mh_ROV V4 Lite K2_DISCONNECTED_percent_1.2.1.0/24: 75.0
+stubs_or_mh_ROV V4 Lite K2_DISCONNECTED_percent_1.2.2.0/24: 100.0
+stubs_or_mh_ROV V4 Lite K2_DISCONNECTED_percent_1.2.3.0/24: 75.0

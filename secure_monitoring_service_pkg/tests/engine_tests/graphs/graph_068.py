@@ -12,13 +12,16 @@ class Graph068(GraphInfo):
     """
 
     def __init__(self):
-        self.attacker_asn_set = {666,}
+        self.attacker_asn_set = {
+            666,
+        }
         super(Graph068, self).__init__(
-            peer_links=set([
-
-                PeerLink(3, 12),
-                PeerLink(5, 16),
-            ]),
+            peer_links=set(
+                [
+                    PeerLink(3, 12),
+                    PeerLink(5, 16),
+                ]
+            ),
             customer_provider_links=set(
                 [
                     CPLink(provider_asn=3, customer_asn=6),

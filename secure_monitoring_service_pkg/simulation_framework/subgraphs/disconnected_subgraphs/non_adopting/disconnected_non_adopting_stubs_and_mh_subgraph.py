@@ -1,6 +1,6 @@
 from ..disconnected_subgraph import DisconnectedSubgraph
-from bgp_simulator_pkg.enums import ASTypes
-from bgp_simulator_pkg import Outcomes
+from bgpy.enums import ASGroups
+from bgpy import Outcomes
 
 
 class DisconnectedNonAdoptingStubsAndMHSubgraph(DisconnectedSubgraph):
@@ -12,7 +12,10 @@ class DisconnectedNonAdoptingStubsAndMHSubgraph(DisconnectedSubgraph):
         """Returns the key to be used in shared_data on the subgraph"""
 
         return self._get_as_type_pol_outcome_perc_k(
-            ASTypes.STUBS_OR_MH, scenario.BaseASCls, Outcomes.DISCONNECTED)
+            ASGroups.STUBS_OR_MH,
+            scenario.scenario_config.BaseASCls,
+            Outcomes.DISCONNECTED,
+        )
 
     @property
     def y_axis_label(self) -> str:

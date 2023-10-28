@@ -1,0 +1,124 @@
+Filename: /home/reynaldo/Dropbox/School/Research/BGP/ROV++/projects/secure_monitoring_service_pkg/secure_monitoring_service_pkg/mvdp.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+   174    180.1 MiB    180.1 MiB           1   @profile
+   175                                         def create_report_graph(path_list):
+   176                                             """
+   177                                             TODO: Complete Documentation
+   178                                         
+   179                                             :param path_list:
+   180                                             :param target_asn:
+   181                                             :param k: maximum number of dishonest nodes
+   182                                             :return:
+   183                                             """
+   184                                             # path_list_copy = copy.deepcopy(path_list)
+   185                                             # logger.debug("Path List: {0}".format(path_list_copy))
+   186                                         
+   187                                             # Create v_in and v_out vertices
+   188    184.0 MiB      3.9 MiB           1       converted_path_list = create_vin_vout_vertices(path_list)
+   189                                         
+   190                                             # Remap asns to sequence
+   191    184.2 MiB      0.3 MiB           1       (seq_asn_map, asn_seq_map) = map_asns_to_seq(converted_path_list)
+   192    184.5 MiB      0.3 MiB           1       logger.debug("Remapped Converted path list: {0}".format(converted_path_list))
+   193                                         
+   194                                             # Create artificial source edges
+   195    184.5 MiB      0.0 MiB           1       artificial_source_asn = max(seq_asn_map) + 1
+   196    184.5 MiB      0.0 MiB           1       seq_asn_map[artificial_source_asn] = artificial_source_asn
+   197    184.5 MiB      0.0 MiB           1       asn_seq_map[artificial_source_asn] = artificial_source_asn
+   198    184.5 MiB      0.0 MiB           1       source_edge_set = set()
+   199    190.3 MiB      3.2 MiB        3244       for path in converted_path_list:
+   200    190.3 MiB      2.6 MiB        3243           source_edge_set.add((artificial_source_asn, path[0]))
+   201    190.3 MiB      0.0 MiB           1       source_edge_list = list(source_edge_set)
+   202                                         
+   203                                             # Create graph edge list
+   204    191.3 MiB      1.0 MiB           1       graph_edge_list = paths_to_edge_list(converted_path_list)
+   205    191.3 MiB      0.0 MiB           1       graph_edge_list.extend(source_edge_list)
+   206                                         
+   207                                             # Create graph
+   208    197.7 MiB      6.4 MiB           1       report_graph = create_report_graph_object_with_capacities(graph_edge_list)
+   209                                         
+   210    197.7 MiB      0.0 MiB           1       return report_graph, seq_asn_map, asn_seq_map, artificial_source_asn
+
+
+Path List 1 : 140.64350509299402
+Expected Time: 124
+This Run was -0.1342218152660808% faster than Expected: 
+Filename: benchmark_mvdp.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    59    178.2 MiB    178.2 MiB           1   @profile
+    60                                         def internet_scale_path_list_1():
+    61                                             """
+    62                                             k = 1
+    63                                             :return:
+    64                                             """
+    65    179.3 MiB      1.2 MiB           1       from secure_monitoring_service_pkg.tests.performance_tests.mvdp_benchmark.report_path_lists.path_list_1 import expected_time, reports_path_list
+    66                                             # flow_value = mvdp.get_mvdp_with_subgraph_pictures(reports_path_list, 1)
+    67    179.3 MiB      0.0 MiB           1       with timer("Path List 1", expected_time) as _:
+    68    383.7 MiB    204.4 MiB           1           avoid_list = mvdp.get_avoid_list(reports_path_list, 1)
+
+
+Filename: /home/reynaldo/Dropbox/School/Research/BGP/ROV++/projects/secure_monitoring_service_pkg/secure_monitoring_service_pkg/mvdp.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+   174    383.7 MiB    383.7 MiB           1   @profile
+   175                                         def create_report_graph(path_list):
+   176                                             """
+   177                                             TODO: Complete Documentation
+   178                                         
+   179                                             :param path_list:
+   180                                             :param target_asn:
+   181                                             :param k: maximum number of dishonest nodes
+   182                                             :return:
+   183                                             """
+   184                                             # path_list_copy = copy.deepcopy(path_list)
+   185                                             # logger.debug("Path List: {0}".format(path_list_copy))
+   186                                         
+   187                                             # Create v_in and v_out vertices
+   188    383.7 MiB      0.0 MiB           1       converted_path_list = create_vin_vout_vertices(path_list)
+   189                                         
+   190                                             # Remap asns to sequence
+   191    383.7 MiB      0.0 MiB           1       (seq_asn_map, asn_seq_map) = map_asns_to_seq(converted_path_list)
+   192    383.7 MiB      0.0 MiB           1       logger.debug("Remapped Converted path list: {0}".format(converted_path_list))
+   193                                         
+   194                                             # Create artificial source edges
+   195    383.7 MiB      0.0 MiB           1       artificial_source_asn = max(seq_asn_map) + 1
+   196    383.7 MiB      0.0 MiB           1       seq_asn_map[artificial_source_asn] = artificial_source_asn
+   197    383.7 MiB      0.0 MiB           1       asn_seq_map[artificial_source_asn] = artificial_source_asn
+   198    383.7 MiB      0.0 MiB           1       source_edge_set = set()
+   199    383.7 MiB      0.0 MiB           2       for path in converted_path_list:
+   200    383.7 MiB      0.0 MiB           1           source_edge_set.add((artificial_source_asn, path[0]))
+   201    383.7 MiB      0.0 MiB           1       source_edge_list = list(source_edge_set)
+   202                                         
+   203                                             # Create graph edge list
+   204    383.7 MiB      0.0 MiB           1       graph_edge_list = paths_to_edge_list(converted_path_list)
+   205    383.7 MiB      0.0 MiB           1       graph_edge_list.extend(source_edge_list)
+   206                                         
+   207                                             # Create graph
+   208    383.7 MiB      0.0 MiB           1       report_graph = create_report_graph_object_with_capacities(graph_edge_list)
+   209                                         
+   210    383.7 MiB      0.0 MiB           1       return report_graph, seq_asn_map, asn_seq_map, artificial_source_asn
+
+
+Path List 3 : 0.05622631900041597
+Expected Time: 0.009
+This Run was -5.247368777823997% faster than Expected: 
+Filename: benchmark_mvdp.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    82    383.7 MiB    383.7 MiB           1   @profile
+    83                                         def internet_scale_path_list_3():
+    84                                             """
+    85                                             k = 1
+    86                                             :return:
+    87                                             """
+    88    383.7 MiB      0.0 MiB           1       from secure_monitoring_service_pkg.tests.performance_tests.mvdp_benchmark.report_path_lists.path_list_3 import expected_time, reports_path_list
+    89                                             # flow_value = mvdp.get_mvdp_with_subgraph_pictures(reports_path_list, 1)
+    90    383.7 MiB      0.0 MiB           1       with timer("Path List 3", expected_time) as _:
+    91    383.7 MiB      0.0 MiB           1           avoid_list = mvdp.get_avoid_list(reports_path_list, 1)
+
+

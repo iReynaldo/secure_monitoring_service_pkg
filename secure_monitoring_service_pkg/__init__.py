@@ -3,12 +3,12 @@ from .simulation_engine import *
 
 __all__ = [
     "V4Scenario",
+    "V4ScenarioConfig",
     "V4SubprefixHijackScenario",
     "SubprefixAutoImmuneScenario",
     "ArtemisSubprefixHijackScenario",
     "V4SuperprefixPrefixHijack",
     "V4PrefixHijackScenario",
-    "V4Simulation",
     "V4Subgraph",
     "CDN",
     "Peer",
@@ -35,5 +35,5 @@ __all__ = [
     "ROVSMSK5000",
     "ROVSMSK10000",
     "ROVSMSK20000",
-    "ROVSMSK30000"
+    "ROVSMSK30000",
 ]

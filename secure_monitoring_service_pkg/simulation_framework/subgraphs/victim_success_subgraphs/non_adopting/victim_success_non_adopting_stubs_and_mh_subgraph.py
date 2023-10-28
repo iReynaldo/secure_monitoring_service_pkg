@@ -1,6 +1,6 @@
 from ..victim_success_subgraph import VictimSuccessSubgraph
-from bgp_simulator_pkg.enums import ASTypes
-from bgp_simulator_pkg import Outcomes
+from bgpy.enums import ASGroups
+from bgpy import Outcomes
 
 
 class VictimSuccessNonAdoptingStubsAndMHSubgraph(VictimSuccessSubgraph):
@@ -12,7 +12,10 @@ class VictimSuccessNonAdoptingStubsAndMHSubgraph(VictimSuccessSubgraph):
         """Returns the key to be used in shared_data on the subgraph"""
 
         return self._get_as_type_pol_outcome_perc_k(
-            ASTypes.STUBS_OR_MH, scenario.BaseASCls, Outcomes.VICTIM_SUCCESS)
+            ASGroups.STUBS_OR_MH,
+            scenario.scenario_config.BaseASCls,
+            Outcomes.VICTIM_SUCCESS,
+        )
 
     @property
     def y_axis_label(self) -> str:
