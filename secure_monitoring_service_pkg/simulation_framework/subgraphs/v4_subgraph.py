@@ -172,7 +172,7 @@ class V4Subgraph(Subgraph):
                 # {as_obj: outcome}
                 outcomes, traceback_asn_outcomes = \
                     self._get_engine_outcomes(engine, scenario, attacker_ann)
-                if scenario.relay_asns and not isinstance(scenario, ArtemisSubprefixHijackScenario):
+                if scenario.scenario_config.relay_asns and not isinstance(scenario, ArtemisSubprefixHijackScenario):
                     self._recalculate_outcomes_with_relays(scenario, engine, attacker_ann, outcomes,
                                                            traceback_asn_outcomes, shared_data,
                                                            before_relay_usage=before_relay_usage,
@@ -247,17 +247,17 @@ class V4Subgraph(Subgraph):
                         prefix]
                     avoid_list_len = len(avoid_list)
                 # Calculate some CSV features
-                num_relay_asns = 0 if not scenario.relay_asns else len(scenario.relay_asns)
+                num_relay_asns = 0 if not scenario.scenario_config.relay_asns else len(scenario.scenario_config.relay_asns)
                 # Create new row
                 row = {
                     'trial': trial,
                     'percentage': percent_adopt,
                     'propagation_round': propagation_round,
-                    'adoption_setting': scenario.AdoptASCls.name,
+                    'adoption_setting': scenario.scenario_config.AdoptASCls.name,
                     'prefix_for_outcome': prefix,
                     'attacker_asns': str(list(scenario.attacker_asns)),
                     'victim_asn': next(iter(scenario.victim_asns)),
-                    'relay_name': scenario.relay_name,
+                    'relay_name': scenario.scenario_config.relay_name,
                     'num_relays': num_relay_asns,
                     'edge_using_relay': after_relay_usage[self.relay_usage_edge_counter_key],
                     'etc_using_relay': after_relay_usage[self.relay_usage_etc_counter_key],
@@ -297,11 +297,11 @@ class V4Subgraph(Subgraph):
                         'trial': trial,
                         'percentage': percent_adopt,
                         'propagation_round': propagation_round,
-                        'adoption_setting': scenario.AdoptASCls.name,
+                        'adoption_setting': scenario.scenario_config.AdoptASCls.name,
                         'prefix_for_outcome': prefix,
                         'attacker_asns': str(list(scenario.attacker_asns)),
                         'victim_asn': next(iter(scenario.victim_asns)),
-                        'relay_name': scenario.relay_name,
+                        'relay_name': scenario.scenario_config.relay_name,
                         'asn': as_obj.asn,
                         'policy': as_obj.name,
                         'topology_section': topology_section,
@@ -324,7 +324,7 @@ class V4Subgraph(Subgraph):
                 # Get counts
                 counts = Counter()
                 for as_obj, outcome in outcomes.items():
-                    adoption_setting = 'ad' if as_obj.name == scenario.AdoptASCls.name else 'nonad'
+                    adoption_setting = 'ad' if as_obj.name == scenario.scenario_config.AdoptASCls.name else 'nonad'
                     provider_setting, using_adopting_provider_setting = self._provider_setting(as_obj, scenario, prefix)
                     topology_section = self._topology_section(as_obj)
                     outcome = self.outcome_map[outcome]
@@ -346,11 +346,11 @@ class V4Subgraph(Subgraph):
                     'trial': trial,
                     'percentage': percent_adopt,
                     'propagation_round': propagation_round,
-                    'adoption_setting': scenario.AdoptASCls.name,
+                    'adoption_setting': scenario.scenario_config.AdoptASCls.name,
                     'prefix_for_outcome': prefix,
                     'attacker_asns': str(list(scenario.attacker_asns)),
                     'victim_asn': next(iter(scenario.victim_asns)),
-                    'relay_name': scenario.relay_name,
+                    'relay_name': scenario.scenario_config.relay_name,
 
                 }
                 row.update(counts)
@@ -395,7 +395,7 @@ class V4Subgraph(Subgraph):
         using_adopting_provider = False
         num_adopting_providers = 0
         for provider_as_obj in as_obj.providers:
-            if isinstance(provider_as_obj, scenario.AdoptASCls):
+            if isinstance(provider_as_obj, scenario.scenario_config.AdoptASCls):
                 num_adopting_providers += 1
                 if most_specific_ann_as_path and provider_as_obj.asn in most_specific_ann_as_path:
                     using_adopting_provider = True
@@ -419,7 +419,7 @@ class V4Subgraph(Subgraph):
         :param relay_asn:
         :return: bool
         """
-        if scenario.probe_data_plane:
+        if scenario.scenario_config.probe_data_plane:
             return outcomes[engine.as_dict[relay_asn]] == Outcomes.VICTIM_SUCCESS
         else:
             as_obj = engine.as_dict[relay_asn]
@@ -466,7 +466,7 @@ class V4Subgraph(Subgraph):
 
         # Create a set of relays that have successful connections to origin
         available_relays = set()
-        for relay_asn in scenario.relay_asns:
+        for relay_asn in scenario.scenario_config.relay_asns:
             if self._relay_is_available(engine, scenario, outcomes, attacker_ann.prefix, relay_asn):
                 available_relays.add(relay_asn)
         # Update Metadata tracking variable
@@ -476,8 +476,8 @@ class V4Subgraph(Subgraph):
         # relay ASNs is available, then all corresponding relay
         # ASNs are also available, as we can assume they can tunnel to each other
         not_connected_relay_as_obj = list()
-        if scenario.relay_setting == CDN_RELAY_SETTING:
-            for asn in scenario.relay_asns - available_relays:
+        if scenario.scenario_config.relay_setting == CDN_RELAY_SETTING:
+            for asn in scenario.scenario_config.relay_asns - available_relays:
                 not_connected_relay_as_obj.append(engine.as_dict[asn])
 
         seen_relay_ases = set()
@@ -487,19 +487,19 @@ class V4Subgraph(Subgraph):
             for as_obj_iterator in [not_connected_relay_as_obj, outcomes]:
                 for as_obj in as_obj_iterator:
                     # Update Metadata tracking variable
-                    if as_obj.asn in scenario.relay_asns and as_obj.asn not in seen_relay_ases:
+                    if as_obj.asn in scenario.scenario_config.relay_asns and as_obj.asn not in seen_relay_ases:
                         before_relay_usage.update((outcomes[as_obj],))
                     if self.has_access_to_relay_service(as_obj) and \
                             outcomes[as_obj] != Outcomes.VICTIM_SUCCESS and \
                             as_obj.asn not in available_relays:
-                        if as_obj.asn in scenario.relay_asns and scenario.relay_setting == CDN_RELAY_SETTING:
+                        if as_obj.asn in scenario.scenario_config.relay_asns and scenario.scenario_config.relay_setting == CDN_RELAY_SETTING:
                             selected_relay_asn = as_obj.use_relay(available_relays,
                                                                   scenario.relay_prefixes,
                                                                   True)
                         else:
                             selected_relay_asn = as_obj.use_relay(available_relays,
                                                                   scenario.relay_prefixes,
-                                                                  scenario.assume_relays_are_reachable)
+                                                                  scenario.scenario_config.assume_relays_are_reachable)
                         if selected_relay_asn:
                             # Update the ASes relay usage variable
                             as_obj.used_relay = True
@@ -525,17 +525,17 @@ class V4Subgraph(Subgraph):
                                 relay_usage[selected_relay_asn] = relay_users
                                 shared_data["relay_usage"] = relay_usage
                     # Update Metadata tracking variable
-                    if as_obj.asn in scenario.relay_asns and as_obj.asn not in seen_relay_ases:
+                    if as_obj.asn in scenario.scenario_config.relay_asns and as_obj.asn not in seen_relay_ases:
                         after_relay_usage.update((outcomes[as_obj],))
                         # Update seen relay ASNs
                         seen_relay_ases.add(as_obj.asn)
                 # If relay setting is CDN, then they can tunnel between each other
-                if scenario.relay_setting == CDN_RELAY_SETTING:
+                if scenario.scenario_config.relay_setting == CDN_RELAY_SETTING:
                     # After the first time through the inner loop,
                     # all the relays should be considered
                     # available, because their evaluated first.
-                    available_relays = scenario.relay_asns
-            if scenario.tunnel_customers_traffic and changes_made_flag:
+                    available_relays = scenario.scenario_config.relay_asns
+            if scenario.scenario_config.tunnel_customers_traffic and changes_made_flag:
                 self._get_engine_outcomes(engine, scenario, attacker_ann, outcomes, traceback_asn_outcomes, True)
         else:
             # If there's no option to connect to relay and the ASes outcome is
@@ -545,11 +545,11 @@ class V4Subgraph(Subgraph):
                     if self.has_access_to_relay_service(as_obj) and \
                             outcomes[as_obj] == Outcomes.ATTACKER_SUCCESS and \
                             as_obj.asn not in available_relays and \
-                            scenario.probe_data_plane:
+                            scenario.scenario_config.probe_data_plane:
                         # TODO: Add Blackholes in LocalRIBs for this
                         outcomes[as_obj] = Outcomes.DISCONNECTED
             # Update Metadata tracking variables
-            for relay_asn in scenario.relay_asns:
+            for relay_asn in scenario.scenario_config.relay_asns:
                 before_relay_usage.update((outcomes[engine.as_dict[relay_asn]],))
                 after_relay_usage.update((outcomes[engine.as_dict[relay_asn]],))
         # Update Metadata tracking variable
@@ -657,7 +657,7 @@ class V4Subgraph(Subgraph):
         traceback_asn_outcomes: Dict[int, int] = traceback_asn_outcomes if traceback_asn_outcomes else dict()
         for as_obj in engine.as_dict.values():
             if recompute_disconnections:
-                if outcomes[as_obj] == Outcomes.DISCONNECTED and not isinstance(as_obj, scenario.AdoptASCls):
+                if outcomes[as_obj] == Outcomes.DISCONNECTED and not isinstance(as_obj, scenario.scenario_config.AdoptASCls):
                     # Gets AS outcome and stores it in the outcomes dict
                     self._get_as_outcome(as_obj,
                                          outcomes,

@@ -15,7 +15,7 @@ class VictimSuccessAdoptingInputCliqueSubgraph(VictimSuccessSubgraph):
         """Returns the key to be used in shared_data on the subgraph"""
 
         return self._get_as_type_pol_outcome_perc_k(ASGroups.INPUT_CLIQUE,
-                                                    scenario.AdoptASCls,
+                                                    scenario.scenario_config.AdoptASCls,
                                                     Outcomes.VICTIM_SUCCESS)
 
     @property
