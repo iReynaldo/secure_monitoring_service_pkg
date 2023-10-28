@@ -8,16 +8,16 @@ import random
 from copy import deepcopy
 
 
-from caida_collector_pkg import CaidaCollector
+from bgpy import CaidaCollector
 
-from bgp_simulator_pkg import Simulation
-from bgp_simulator_pkg import ROVSimpleAS
-from bgp_simulator_pkg import Scenario
-from bgp_simulator_pkg import Subgraph
-from bgp_simulator_pkg import SpecialPercentAdoptions
-from bgp_simulator_pkg import SubprefixHijack
-from bgp_simulator_pkg import SimulationEngine
-from bgp_simulator_pkg import BGPSimpleAS
+from bgpy import Simulation
+from bgpy import ROVSimpleAS
+from bgpy import Scenario
+from bgpy import Subgraph
+from bgpy import SpecialPercentAdoptions
+from bgpy import SubprefixHijack
+from bgpy import SimulationEngine
+from bgpy import BGPSimpleAS
 
 ####################
 # Constants

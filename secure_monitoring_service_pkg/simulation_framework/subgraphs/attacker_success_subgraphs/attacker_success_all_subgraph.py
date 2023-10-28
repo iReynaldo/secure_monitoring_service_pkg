@@ -1,6 +1,6 @@
 from .attacker_success_subgraph import AttackerSuccessSubgraph
-from bgp_simulator_pkg import Outcomes
-from bgp_simulator_pkg import Scenario
+from bgpy import Outcomes
+from bgpy import Scenario
 
 
 class AttackerSuccessAllSubgraph(AttackerSuccessSubgraph):

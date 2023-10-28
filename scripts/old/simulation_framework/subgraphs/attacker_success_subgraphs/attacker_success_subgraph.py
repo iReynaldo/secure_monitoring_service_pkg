@@ -7,7 +7,7 @@ from secure_monitoring_service_pkg.simulation_framework.subgraphs.v4_subgraph im
 
 
 if TYPE_CHECKING:
-    from bgp_simulator_pkg import Scenario
+    from bgpy import Scenario
 
 
 class AttackerSuccessSubgraph(V4Subgraph):

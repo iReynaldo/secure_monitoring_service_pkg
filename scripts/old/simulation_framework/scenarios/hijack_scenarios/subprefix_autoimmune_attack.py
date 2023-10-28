@@ -1,10 +1,10 @@
 from typing import Tuple
 
 
-from bgp_simulator_pkg import Announcement
-from bgp_simulator_pkg import Prefixes
-from bgp_simulator_pkg import Relationships
-from bgp_simulator_pkg import Timestamps
+from bgpy import Announcement
+from bgpy import Prefixes
+from bgpy import Relationships
+from bgpy import Timestamps
 
 from ..v4_scenario import V4Scenario
 from ....simulation_engine.report import Report

@@ -3,10 +3,10 @@ from typing import Dict, Any
 from pathlib import Path
 import random
 
-from caida_collector_pkg import AS
+from bgpy import AS
 
-from bgp_simulator_pkg import EngineTester
-from bgp_simulator_pkg import Outcomes
+from bgpy import EngineTester
+from bgpy import Outcomes
 
 from .v4_diagram import V4Diagram
 

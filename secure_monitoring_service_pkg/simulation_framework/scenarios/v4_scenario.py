@@ -3,7 +3,7 @@ import random
 from typing import Tuple, Optional, Type, Set, Dict, List, Union
 from ipaddress import ip_network
 
-from caida_collector_pkg import AS
+from bgpy import AS
 
 from bgpy import Outcomes
 from bgpy import Relationships

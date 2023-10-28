@@ -1,12 +1,12 @@
 from typing import Type, Tuple, Optional
 
-from bgp_simulator_pkg import Announcement
-from bgp_simulator_pkg import Relationships
-from bgp_simulator_pkg import SubprefixHijack
-from bgp_simulator_pkg import Outcomes
-from bgp_simulator_pkg import Prefixes
+from bgpy import Announcement
+from bgpy import Relationships
+from bgpy import SubprefixHijack
+from bgpy import Outcomes
+from bgpy import Prefixes
 
-from caida_collector_pkg import AS
+from bgpy import AS
 
 from ..v4_scenario import V4Scenario
 

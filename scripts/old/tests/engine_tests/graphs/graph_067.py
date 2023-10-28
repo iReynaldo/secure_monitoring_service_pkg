@@ -1,8 +1,8 @@
-from caida_collector_pkg import CustomerProviderLink as CPLink
-from caida_collector_pkg import PeerLink
+from bgpy import CustomerProviderLink as CPLink
+from bgpy import PeerLink
 
 from .graph_info import GraphInfo
-from bgp_simulator_pkg.enums import ASNs
+from bgpy.enums import ASNs
 
 
 class Graph067(GraphInfo):

@@ -1,5 +1,5 @@
-from bgp_simulator_pkg.enums import ASGroups
-from bgp_simulator_pkg import Outcomes
+from bgpy.enums import ASGroups
+from bgpy import Outcomes
 
 from ..attacker_success_subgraph import AttackerSuccessSubgraph
 

@@ -1,6 +1,6 @@
-from bgp_simulator_pkg.enums import ASTypes
-from bgp_simulator_pkg import Outcomes
-from bgp_simulator_pkg import Scenario
+from bgpy.enums import ASTypes
+from bgpy import Outcomes
+from bgpy import Scenario
 
 from ..attacker_success_subgraph import AttackerSuccessSubgraph
 

@@ -4,16 +4,16 @@ import math
 from typing import Tuple, Optional, Type, Set, Dict, List, Union
 from ipaddress import ip_network
 
-from caida_collector_pkg import AS
+from bgpy import AS
 
-from bgp_simulator_pkg import Outcomes
-from bgp_simulator_pkg import Relationships
-from bgp_simulator_pkg import Scenario
-from bgp_simulator_pkg import Announcement
-from bgp_simulator_pkg import Timestamps
-from bgp_simulator_pkg import SimulationEngine
-from bgp_simulator_pkg import SpecialPercentAdoptions
-from bgp_simulator_pkg import RealROVSimpleAS
+from bgpy import Outcomes
+from bgpy import Relationships
+from bgpy import Scenario
+from bgpy import Announcement
+from bgpy import Timestamps
+from bgpy import SimulationEngine
+from bgpy import SpecialPercentAdoptions
+from bgpy import RealROVSimpleAS
 
 from .cdn import CDN
 from .peer import Peer

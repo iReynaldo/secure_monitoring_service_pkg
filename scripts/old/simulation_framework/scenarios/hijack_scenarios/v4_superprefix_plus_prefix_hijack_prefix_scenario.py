@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from bgp_simulator_pkg import SuperprefixPrefixHijack
+from bgpy import SuperprefixPrefixHijack
 
 from ..v4_scenario import V4Scenario
 

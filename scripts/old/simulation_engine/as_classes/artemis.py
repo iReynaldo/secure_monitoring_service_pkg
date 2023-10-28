@@ -1,4 +1,4 @@
-from bgp_simulator_pkg import BGPSimpleAS
+from bgpy import BGPSimpleAS
 
 
 class Artermis(BGPSimpleAS):

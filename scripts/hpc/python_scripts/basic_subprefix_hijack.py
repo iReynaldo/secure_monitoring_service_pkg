@@ -3,7 +3,7 @@ from pathlib import Path
 import time
 import sys
 
-from bgp_simulator_pkg import ROVSimpleAS
+from bgpy import ROVSimpleAS
 
 from rovpp_pkg import ROVPPAnn
 from rovpp_pkg import ROVPPV1LiteSimpleAS

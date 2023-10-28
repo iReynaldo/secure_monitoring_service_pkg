@@ -1,6 +1,6 @@
 from ..disconnected_subgraph import DisconnectedSubgraph
-from bgp_simulator_pkg.enums import ASGroups
-from bgp_simulator_pkg import Outcomes
+from bgpy.enums import ASGroups
+from bgpy import Outcomes
 
 
 class DisconnectedNonAdoptingStubsAndMHSubgraph(DisconnectedSubgraph):

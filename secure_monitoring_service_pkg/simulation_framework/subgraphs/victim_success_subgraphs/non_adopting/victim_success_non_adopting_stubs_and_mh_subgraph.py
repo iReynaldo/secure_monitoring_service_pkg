@@ -1,6 +1,6 @@
 from ..victim_success_subgraph import VictimSuccessSubgraph
-from bgp_simulator_pkg.enums import ASGroups
-from bgp_simulator_pkg import Outcomes
+from bgpy.enums import ASGroups
+from bgpy import Outcomes
 
 
 class VictimSuccessNonAdoptingStubsAndMHSubgraph(VictimSuccessSubgraph):

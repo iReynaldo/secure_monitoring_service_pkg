@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 import argparse
 
-from bgp_simulator_pkg import ROVSimpleAS
+from bgpy import ROVSimpleAS
 
 from rovpp_pkg import ROVPPAnn
 from rovpp_pkg import ROVPPV1LiteSimpleAS

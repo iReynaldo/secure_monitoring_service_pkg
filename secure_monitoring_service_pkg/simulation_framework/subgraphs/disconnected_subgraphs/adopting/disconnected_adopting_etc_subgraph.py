@@ -1,7 +1,7 @@
 from ..disconnected_subgraph import DisconnectedSubgraph
-from bgp_simulator_pkg.enums import ASGroups
-from bgp_simulator_pkg import Outcomes
-from bgp_simulator_pkg import Scenario
+from bgpy.enums import ASGroups
+from bgpy import Outcomes
+from bgpy import Scenario
 
 class DisconnectedAdoptingEtcSubgraph(DisconnectedSubgraph):
     """A graph for attacker success for etc ASes that adopt"""

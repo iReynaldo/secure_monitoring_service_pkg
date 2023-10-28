@@ -1,6 +1,6 @@
 import ipaddress
 
-from bgp_simulator_pkg import Diagram
+from bgpy import Diagram
 
 
 

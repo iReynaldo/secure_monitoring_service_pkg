@@ -1,11 +1,11 @@
 from typing import Dict, Type
 
-from caida_collector_pkg import AS
+from bgpy import AS
 
-from bgp_simulator_pkg import graphs
-from bgp_simulator_pkg import EngineTestConfig
-from bgp_simulator_pkg import BGPSimpleAS
-from bgp_simulator_pkg import ASNs
+from bgpy import graphs
+from bgpy import EngineTestConfig
+from bgpy import BGPSimpleAS
+from bgpy import ASNs
 
 from rovpp_pkg import ROVPPAnn
 

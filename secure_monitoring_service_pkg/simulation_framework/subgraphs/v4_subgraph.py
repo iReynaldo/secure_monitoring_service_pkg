@@ -6,13 +6,13 @@ from collections import Counter
 
 from filelock import FileLock
 
-from caida_collector_pkg import AS
+from bgpy import AS
 
-from bgp_simulator_pkg import SimulationEngine
-from bgp_simulator_pkg import Scenario
-from bgp_simulator_pkg import Subgraph
-from bgp_simulator_pkg import Outcomes
-from bgp_simulator_pkg import Announcement as Ann
+from bgpy import SimulationEngine
+from bgpy import Scenario
+from bgpy import Subgraph
+from bgpy import Outcomes
+from bgpy import Announcement as Ann
 
 from rovpp_pkg import ROVPPV1SimpleAS
 from rovpp_pkg import ROVPPV1LiteSimpleAS

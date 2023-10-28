@@ -1,5 +1,5 @@
-from bgp_simulator_pkg import Scenario
-from bgp_simulator_pkg import SimulationEngine
+from bgpy import Scenario
+from bgpy import SimulationEngine
 from typing import Any, Dict
 
 from secure_monitoring_service_pkg.simulation_framework.subgraphs.v4_subgraph import (

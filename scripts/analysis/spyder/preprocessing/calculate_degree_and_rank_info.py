@@ -1,10 +1,10 @@
 from datetime import datetime
 import csv
 
-from caida_collector_pkg import CaidaCollector
+from bgpy import CaidaCollector
 
-from bgp_simulator_pkg import BGPSimpleAS
-from bgp_simulator_pkg import SimulationEngine
+from bgpy import BGPSimpleAS
+from bgpy import SimulationEngine
 
 
 caida_topology_date = "2023.04.29"

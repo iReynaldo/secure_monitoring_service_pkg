@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 import argparse
 
-from bgp_simulator_pkg import ROVSimpleAS
+from bgpy import ROVSimpleAS
 from bgpy.subgraph_simulation_framework import SubgraphSimulation
 
 from rovpp_pkg import ROVPPAnn

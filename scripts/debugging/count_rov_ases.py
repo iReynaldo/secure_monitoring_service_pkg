@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from caida_collector_pkg import CaidaCollector
+from bgpy import CaidaCollector
 
-from bgp_simulator_pkg import BGPSimpleAS
-from bgp_simulator_pkg import SimulationEngine
+from bgpy import BGPSimpleAS
+from bgpy import SimulationEngine
 
 
 print("Loading CAIDA Topology")
