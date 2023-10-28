@@ -1,3 +1,4 @@
+from dataclasses import replace
 import random
 import ipaddress
 
@@ -69,14 +70,18 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                     # We need to create our own subprefix ann
                     # Since we may not have actually received the hijack
                     # Since this policy is for hidden hijacks
+                    blackhole_kwargs = {
+                        'prefix': reported_prefix,
+                        'roa_valid_length': False,
+                        'blackhole': True,
+                        'traceback_end': True
+                    }
                     if reported_prefix_ann:
-                        blackhole_ann = reported_prefix_ann.copy()
+                        blackhole_ann = replace(
+                            reported_prefix_ann, **blackhole_kwargs
+                        )
                     else:
-                        blackhole_ann = ann.copy()
-                    blackhole_ann.prefix = reported_prefix
-                    blackhole_ann.roa_valid_length = False
-                    blackhole_ann.blackhole = True
-                    blackhole_ann.traceback_end = True
+                        blackhole_ann = replace(ann, **blackhole_kwargs)
                     holes.append(blackhole_ann)
 
         for hole in holes:
