@@ -1,10 +1,10 @@
 from typing import Tuple
 
 
-from bgpy import Announcement
-from bgpy import Prefixes
-from bgpy import Relationships
-from bgpy import Timestamps
+from bgp_simulator_pkg import Announcement
+from bgp_simulator_pkg import Prefixes
+from bgp_simulator_pkg import Relationships
+from bgp_simulator_pkg import Timestamps
 
 from ..v4_scenario import V4Scenario
 from ....simulation_engine.report import Report
@@ -16,15 +16,21 @@ from ....simulation_engine import ROVSMS
 
 
 class SubprefixAutoImmuneScenario(V4Scenario):
+    __slots__ = ()
 
-    def __init__(self, *args, **kwargs):
-
-
+    def __init__(
+        self, *args, fightback=False, relay_asns=None, indirect=True, **kwargs
+    ):
+        super(SubprefixAutoImmuneScenario, self).__init__(
+            *args, relay_asns=relay_asns, **kwargs
+        )
         self.subprefixes = dict()
         self.providers = dict()
-
-        super(SubprefixAutoImmuneScenario, self).__init__(*args, **kwargs)
         self.name: str = "SubprefixAutoImmuneScenario"
+        self.indirect = (
+            indirect  # If the autoimmune attack is indirect(True)/direct(False)
+        )
+        self.fightback = fightback
 
     def _get_announcements(self, *args, **kwargs) -> Tuple["Announcement", ...]:
         """Returns victim, attacker, and relay anns for autoimmune attack"""
@@ -33,7 +39,7 @@ class SubprefixAutoImmuneScenario(V4Scenario):
         # Setup Victim Announcements
         for victim_asn in self.victim_asns:
             anns.append(
-                self.scenario_config.AnnCls(
+                self.AnnCls(
                     prefix=Prefixes.PREFIX.value,
                     as_path=(victim_asn,),
                     timestamp=Timestamps.VICTIM.value,
@@ -50,13 +56,13 @@ class SubprefixAutoImmuneScenario(V4Scenario):
         # Setup Attacker Announcements
         engine = kwargs["engine"]
         victim_providers = engine.as_dict[next(iter(self.victim_asns))].providers
-        if self.scenario_config.indirect:
+        if self.indirect:
             anns.extend(self.generate_attacker_announcements(victim_providers))
         else:
-            if issubclass(self.scenario_config.AdoptASCls, ROVSMS):
+            if issubclass(self.AdoptASCls, ROVSMS):
                 self.generate_malicious_reports(victim_providers)
 
-        if self.scenario_config.fightback:
+        if self.fightback:
             anns.extend(self.generate_fightback_relay_announcements())
 
         # If we assume relays are not reachable, then create their announcements
@@ -76,7 +82,7 @@ class SubprefixAutoImmuneScenario(V4Scenario):
             self.providers[subprefix] = provider.asn
             for attacker_asn in self.attacker_asns:
                 anns.append(
-                    self.scenario_config.AnnCls(
+                    self.AnnCls(
                         prefix=subprefix,
                         as_path=(attacker_asn, provider.asn),
                         timestamp=Timestamps.ATTACKER.value,
@@ -94,7 +100,7 @@ class SubprefixAutoImmuneScenario(V4Scenario):
             self.subprefixes[provider.asn] = subprefix
             self.providers[subprefix] = provider.asn
             for attacker_asn in self.attacker_asns:
-                trusted_server_ref = self.scenario_config.AdoptASCls.trusted_server
+                trusted_server_ref = self.AdoptASCls.trusted_server
                 # Instead of sending announcements, submit malicious reports directly
                 report = Report(
                     reporting_asn=attacker_asn,
@@ -104,14 +110,14 @@ class SubprefixAutoImmuneScenario(V4Scenario):
                 trusted_server_ref.receive_report(report)
 
     def get_attacker_announcements(self):
-        if self.scenario_config.indirect:
+        if self.indirect:
             return super().get_attacker_announcements()
         else:
             attacker_announcements = set()
             some_attacker_asn = next(iter(self.attacker_asns))
             for subprefix in self.subprefixes.values():
                 attacker_announcements.add(
-                    self.scenario_config.AnnCls(
+                    self.AnnCls(
                         prefix=subprefix,
                         as_path=(some_attacker_asn,),
                         timestamp=Timestamps.ATTACKER.value,
@@ -126,12 +132,12 @@ class SubprefixAutoImmuneScenario(V4Scenario):
     def generate_fightback_relay_announcements(self):
         anns = list()
         # Setup Relay Announcements
-        if self.scenario_config.relay_asns:
-            for i, relay_asn in enumerate(self.scenario_config.relay_asns):
+        if self.relay_asns:
+            for i, relay_asn in enumerate(self.relay_asns):
                 relay_prefix = Prefixes.SUBPREFIX.value
                 self.relay_prefixes[relay_asn] = relay_prefix
                 anns.append(
-                    self.scenario_config.AnnCls(
+                    self.AnnCls(
                         prefix=relay_prefix,
                         as_path=(relay_asn,),
                         timestamp=2,
@@ -150,7 +156,7 @@ class SubprefixAutoImmuneScenario(V4Scenario):
         # Iterate over all adopting ASNs
         # TODO: Does non_default_as_cls_dict also contain ROV ASes when
         #  doing mixed deployment?
-        for asn in self.scenario_config.override_non_default_asn_cls_dict:
+        for asn in self.non_default_as_cls_dict:
             # Get reference to AS Object
             as_obj = engine.as_dict[asn]
             # TODO: Remove this check if ROV ASes are not in

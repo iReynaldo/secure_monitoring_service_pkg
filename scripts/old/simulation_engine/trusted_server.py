@@ -3,7 +3,7 @@ import copy
 from typing import Dict, Set, List, Tuple
 from collections import defaultdict
 
-from bgpy import Announcement as Ann
+from bgp_simulator_pkg import Announcement as Ann
 
 from secure_monitoring_service_pkg.simulation_engine import mvdp
 from secure_monitoring_service_pkg.simulation_framework.sim_logger import (

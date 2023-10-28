@@ -6,34 +6,32 @@ from ipaddress import ip_network
 
 from caida_collector_pkg import AS
 
-from bgpy import Outcomes
-from bgpy import Relationships
-from bgpy import Scenario
-from bgpy import Announcement
-from bgpy import Timestamps
-from bgpy import SimulationEngine
-from bgpy import SpecialPercentAdoptions
-from bgpy import RealROVSimpleAS
-from bgpy import ASGroups
+from bgp_simulator_pkg import Outcomes
+from bgp_simulator_pkg import Relationships
+from bgp_simulator_pkg import Scenario
+from bgp_simulator_pkg import Announcement
+from bgp_simulator_pkg import Timestamps
+from bgp_simulator_pkg import SimulationEngine
+from bgp_simulator_pkg import SpecialPercentAdoptions
+from bgp_simulator_pkg import RealROVSimpleAS
 
 from .cdn import CDN
 from .peer import Peer
-from .v4_scenario_config import (
-    CDN_RELAY_SETTING,
-    PEER_RELAY_SETTING,
-    CUSTOM_RELAY_SETTING,
-    NO_RELAY_SETTING,
-)
 from secure_monitoring_service_pkg.simulation_framework.sim_logger import (
     sim_logger as logger,
 )
 
+################################
+# Constants
+################################
 
-#############
-# Constants #
-#############
+CDN_RELAY_SETTING = "cdn"
+PEER_RELAY_SETTING = "peer"
+CUSTOM_RELAY_SETTING = "custom"
+NO_RELAY_SETTING = "no_relay"
 
 RELAY_PREFIX = "7.7.7.0/24"
+
 
 ################################
 # Functions
@@ -62,20 +60,76 @@ class V4Scenario(Scenario):
     def __init__(
         self,
         *args,
+        relay_asns=None,
+        attack_relays=False,
+        fraction_of_peer_ases_to_attack=0.5,
+        assume_relays_are_reachable=False,
+        tunnel_customers_traffic=False,
+        probe_data_plane=False,
+        special_static_as_class=None,
         **kwargs,
     ):
-        self.name = "V4 Scenario"
-        # These are all used dynamically
+        super(V4Scenario, self).__init__(*args, **kwargs)
+        self.has_rovsms_ases = False
         self.trusted_server_ref = None
         self.avoid_lists = None  # Used for verifying avoid list
+        self.name = "V4Scenario"
         self.relay_prefixes: Dict[int, str] = dict()
-        self.has_rovsms_ases = False
-        super(V4Scenario, self).__init__(*args, **kwargs)
+        self.relay_asns = relay_asns
+        self.tunnel_customers_traffic = tunnel_customers_traffic
+        self.assume_relays_are_reachable = assume_relays_are_reachable
+        self.attack_relays = attack_relays
+        self.fraction_of_peer_ases_to_attack = fraction_of_peer_ases_to_attack
+        self.probe_data_plane = probe_data_plane
+        self.special_static_as_class = (
+            special_static_as_class if special_static_as_class else RealROVSimpleAS
+        )
+        self.relay_setting = None
+        self.relay_name = None
+        if relay_asns:
+            if self._is_using_cdn(relay_asns):
+                self.relay_setting = CDN_RELAY_SETTING
+                self.relay_name = CDN().reverse_mapping[self.relay_asns]
+            elif self._is_using_peer(relay_asns):
+                self.relay_setting = PEER_RELAY_SETTING
+                self.relay_name = Peer().reverse_mapping[self.relay_asns]
+            else:
+                self.relay_setting = CUSTOM_RELAY_SETTING
+                self.relay_name = CUSTOM_RELAY_SETTING
+        else:
+            self.relay_setting = NO_RELAY_SETTING
+
+    def _is_using_cdn(self, relay_asns):
+        if (
+            relay_asns == CDN().akamai
+            or relay_asns == CDN().cloudflare
+            or relay_asns == CDN().verisign
+            or relay_asns == CDN().incapsula
+            or relay_asns == CDN().neustar
+            or relay_asns == CDN().conglomerate
+        ):
+            return True
+        else:
+            return False
+
+    def _is_using_peer(self, relay_asns):
+        if (
+            relay_asns == Peer().five
+            or relay_asns == Peer().ten
+            or relay_asns == Peer().twenty
+            or relay_asns == Peer().forty
+            or relay_asns == Peer().fifty
+            or relay_asns == Peer().hundred
+        ):
+            return True
+        else:
+            return False
 
     @property
-    def _default_adopters(self) -> frozenset[int]:
-        if self.scenario_config.relay_asns:
-            return self.victim_asns | self.scenario_config.relay_asns
+    def _default_adopters(self) -> Set[int]:
+        """By default, victim always adopts"""
+        if self.relay_asns:
+            return self.victim_asns | self.relay_asns
         else:
             return self.victim_asns
 
@@ -86,7 +140,7 @@ class V4Scenario(Scenario):
         # Iterate over all adopting ASNs
         # TODO: Does non_default_as_cls_dict also contain ROV ASes when
         #  doing mixed deployment?
-        for asn in self.scenario_config.override_non_default_asn_cls_dict:
+        for asn in self.non_default_as_cls_dict:
             # Get reference to AS Object
             as_obj = engine.as_dict[asn]
             # TODO: Remove this check if ROV ASes are not in
@@ -106,6 +160,61 @@ class V4Scenario(Scenario):
                 as_obj._force_add_blackholes_from_avoid_list(
                     self.ordered_prefix_subprefix_dict
                 )
+
+    def _get_adopting_asns_dict(
+        self,
+        engine: SimulationEngine,
+        percent_adopt: Union[float, SpecialPercentAdoptions],
+    ) -> Dict[int, Type[AS]]:
+        """
+        This is a copy of the one in the super class with a single variable change
+        to allow different ASes to be set instead of just ROV for these special mixed
+        adoption setting
+        """
+
+        asn_cls_dict = dict()
+        for subcategory in self.adoption_subcategory_attrs:
+            ases = getattr(engine, subcategory)
+            real_rov_ases = set()
+            # If we are including ROV nodes
+            # Don't always run this to save on time
+            if self.min_rov_confidence <= 1:
+                for as_ in ases:
+                    if as_.rov_confidence >= self.min_rov_confidence:
+                        asn_cls_dict[
+                            as_.asn
+                        ] = self.special_static_as_class  # Change made here
+                        real_rov_ases.add(as_)
+            # Remove ASes that are already pre-set
+            # Ex: Attacker and victim
+            # Ex: ROV Nodes (in certain situations)
+            possible_adopters = ases.difference(self._preset_asns)
+            possible_adopters = possible_adopters.difference(real_rov_ases)
+
+            # Get how many ASes should be adopting
+
+            # Round for the start and end of the graph
+            # (if 0 ASes would be adopting, have 1 as adopt)
+            # (If all ASes would be adopting, have all -1 adopt)
+            # This was a feature request, but it's not supported
+            if percent_adopt == SpecialPercentAdoptions.ONLY_ONE:
+                k = 1
+            elif percent_adopt == SpecialPercentAdoptions.ALL_BUT_ONE:
+                k = len(possible_adopters) - 1
+            else:
+                assert isinstance(percent_adopt, float), "Make mypy happy"
+                k = math.ceil(len(possible_adopters) * percent_adopt)
+
+            # https://stackoverflow.com/a/15837796/8903959
+            possible_adopters = tuple(possible_adopters)
+            try:
+                for as_ in random.sample(possible_adopters, k):
+                    asn_cls_dict[as_.asn] = self.AdoptASCls
+            except ValueError:
+                raise ValueError(f"{k} can't be sampled from {len(possible_adopters)}")
+            for asn in self._default_adopters:
+                asn_cls_dict[asn] = self.AdoptASCls
+        return asn_cls_dict
 
     def _get_ordered_prefix_subprefix_dict(self):
         """Saves a dict of prefix to subprefixes
@@ -138,7 +247,7 @@ class V4Scenario(Scenario):
                 ):
                     subprefix_list.append(str(prefix))
         # Get rid of ip_network
-        return {
+        self.ordered_prefix_subprefix_dict: Dict[str, List[str]] = {
             str(k): v for k, v in prefix_subprefix_dict.items()
         }
 
@@ -149,6 +258,7 @@ class V4Scenario(Scenario):
             "engine": SimulationEngine,
             "percent_adopt": float,
             "trial": int,
+            "scenario": Scenario,
             "propagation_round": int
         }
         """
@@ -171,6 +281,30 @@ class V4Scenario(Scenario):
             self.trusted_server_ref = None
         # Delete saved avoid list
         self.avoid_lists = None
+
+    def determine_as_outcome(
+        self, as_obj: AS, ann: Optional[Announcement]
+    ) -> Tuple[Type[Outcomes], Type[int]]:
+        """Determines the outcome at an AS
+
+        ann is most_specific_ann is the most specific prefix announcement
+        that exists at that AS
+        """
+
+        if as_obj.asn in self.attacker_asns:
+            return Outcomes.ATTACKER_SUCCESS, as_obj.asn
+        elif as_obj.asn in self.victim_asns:
+            return Outcomes.VICTIM_SUCCESS, as_obj.asn
+        # End of traceback
+        elif (
+            ann is None
+            or len(ann.as_path) == 1
+            or ann.recv_relationship == Relationships.ORIGIN
+            or ann.traceback_end
+        ):
+            return Outcomes.DISCONNECTED, as_obj.asn
+        else:
+            return Outcomes.UNDETERMINED, as_obj.asn
 
     def get_attacker_announcements(self):
         attacker_announcements = set()
@@ -205,7 +339,7 @@ class V4Scenario(Scenario):
         return victim_announcements
 
     def create_attacker_relay_announcement(self, prefix, seed_asn, roa_origin):
-        return self.scenario_config.AnnCls(
+        return self.AnnCls(
             prefix=prefix,
             as_path=(seed_asn,),
             timestamp=Timestamps.ATTACKER.value,
@@ -219,16 +353,16 @@ class V4Scenario(Scenario):
         anns = list()
         roa_origin: int = next(iter(self.victim_asns))
         # Setup Relay Announcements
-        if self.scenario_config.relay_asns:
-            for i, relay_asn in enumerate(self.scenario_config.relay_asns):
+        if self.relay_asns:
+            for i, relay_asn in enumerate(self.relay_asns):
                 relay_prefix = (
                     RELAY_PREFIX
-                    if self.scenario_config.relay_setting == CDN_RELAY_SETTING
+                    if self.relay_setting == CDN_RELAY_SETTING
                     else f"{i + 1}.{i + 1}.{i + 1}.0/24"
                 )
                 self.relay_prefixes[relay_asn] = relay_prefix
                 anns.append(
-                    self.scenario_config.AnnCls(
+                    self.AnnCls(
                         prefix=relay_prefix,
                         as_path=(relay_asn,),
                         timestamp=Timestamps.VICTIM.value,
@@ -243,8 +377,8 @@ class V4Scenario(Scenario):
                         relay_prefix
                     ] = relay_asn  # This is not really needed for autoimmune attack
             # Add Attacker announcements for relays
-            if self.scenario_config.attack_relays:
-                if self.scenario_config.relay_setting == CDN_RELAY_SETTING:
+            if self.attack_relays:
+                if self.relay_setting == CDN_RELAY_SETTING:
                     for attacker_asn in self.attacker_asns:
                         anns.append(
                             self.create_attacker_relay_announcement(
@@ -255,7 +389,7 @@ class V4Scenario(Scenario):
                     for attacker_asn in self.attacker_asns:
                         for relay_prefix in select_fraction_from_set(
                             self.relay_prefixes.values(),
-                            self.scenario_config.fraction_of_peer_ases_to_attack,
+                            self.fraction_of_peer_ases_to_attack,
                         ):
                             anns.append(
                                 self.create_attacker_relay_announcement(
@@ -280,11 +414,13 @@ class V4Scenario(Scenario):
         the relay ASNs.
         """
 
-        edge_asns = engine.asn_groups[ASGroups.STUBS_OR_MH.value]
-        if self.scenario_config.relay_asns:
-            return edge_asns - self.scenario_config.relay_asns
+        err = "Make mypy happy"
+        assert all(isinstance(x, int) for x in engine.stub_or_mh_asns), err
+        assert isinstance(engine.stub_or_mh_asns, set), err
+        if self.relay_asns:
+            return engine.stub_or_mh_asns - self.relay_asns
         else:
-            return edge_asns
+            return engine.stub_or_mh_asns
 
     def _get_possible_victim_asns(
         self,
@@ -298,8 +434,10 @@ class V4Scenario(Scenario):
         the relay ASNs.
         """
 
-        edge_asns = engine.asn_groups[ASGroups.STUBS_OR_MH.value]
-        if self.scenario_config.relay_asns:
-            return edge_asns - self.scenario_config.relay_asns
+        err = "Make mypy happy"
+        assert all(isinstance(x, int) for x in engine.stub_or_mh_asns), err
+        assert isinstance(engine.stub_or_mh_asns, set), err
+        if self.relay_asns:
+            return engine.stub_or_mh_asns - self.relay_asns
         else:
-            return edge_asns
+            return engine.stub_or_mh_asns
