@@ -2,8 +2,8 @@ from datetime import datetime
 from pathlib import Path
 import time
 
-from rovpp_pkg import ROVPPAnn
-from rovpp_pkg import ROVPPV1LiteSimpleAS
+from rovpp import ROVPPAnn
+from rovpp import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg import V4Subgraph
 from secure_monitoring_service_pkg import V4Simulation

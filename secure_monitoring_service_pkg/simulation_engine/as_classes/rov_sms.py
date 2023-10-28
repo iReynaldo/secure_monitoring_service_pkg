@@ -2,7 +2,7 @@ from dataclasses import replace
 import random
 import ipaddress
 
-from rovpp_pkg import ROVPPV1LiteSimpleAS
+from rovpp import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg.simulation_engine.trusted_server import TrustedServer
 from secure_monitoring_service_pkg.simulation_framework.sim_logger import (

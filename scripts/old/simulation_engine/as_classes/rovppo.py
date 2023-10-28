@@ -1,6 +1,6 @@
 import random
 
-from rovpp_pkg import ROVPPV1LiteSimpleAS
+from rovpp import ROVPPV1LiteSimpleAS
 
 
 class ROVPPO(ROVPPV1LiteSimpleAS):

@@ -8,8 +8,8 @@ from bgpy import BGPSimpleAS
 from bgpy import ROVSimpleAS
 from bgpy.caida_collector import ASNs
 
-from rovpp_pkg import ROVPPAnn
-from rovpp_pkg import ROVPPV1LiteSimpleAS
+from rovpp import ROVPPAnn
+from rovpp import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 

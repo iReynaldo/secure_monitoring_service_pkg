@@ -7,7 +7,7 @@ from bgpy import EngineTestConfig
 from bgpy import BGPSimpleAS
 from bgpy.caida_collector import ASNs
 
-from rovpp_pkg import ROVPPAnn
+from rovpp import ROVPPAnn
 
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg import ROVSMSK1

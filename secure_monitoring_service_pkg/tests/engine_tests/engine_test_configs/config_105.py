@@ -7,7 +7,7 @@ from bgp_simulator_pkg import EngineTestConfig
 from bgp_simulator_pkg import BGPSimpleAS
 from bgp_simulator_pkg import ASNs
 
-from rovpp_pkg import ROVPPAnn
+from rovpp import ROVPPAnn
 
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg import ROVSMSK1

@@ -14,8 +14,8 @@ from bgpy.subgraph_simulation_framework.subgraphs import Subgraph
 from bgpy import Outcomes
 from bgpy import Announcement as Ann
 
-from rovpp_pkg import ROVPPV1SimpleAS
-from rovpp_pkg import ROVPPV1LiteSimpleAS
+from rovpp import ROVPPV1SimpleAS
+from rovpp import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg.simulation_framework.scenarios import SubprefixAutoImmuneScenario
 from secure_monitoring_service_pkg.simulation_framework.scenarios import V4SubprefixHijackScenario

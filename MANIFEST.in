@@ -1,0 +1,4 @@
+include README.md
+include LICENSE.txt
+include secure_monitoring_service_pkg/aux_files/*
+include tox.ini
