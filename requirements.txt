@@ -1,5 +1,3 @@
-snakeviz
 igraph
 cairocffi
-numpy
-pandas
+filelock

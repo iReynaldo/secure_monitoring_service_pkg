@@ -1,9 +1,0 @@
-[submodule "secure_monitoring_service_pkg/tests/overleaf_systest_doc"]
-	path = secure_monitoring_service_pkg/tests/overleaf_systest_doc
-	url = https://git.overleaf.com/626c2cb342b2921480f2d676
-[submodule "overleaf_design_doc"]
-	path = overleaf_design_doc
-	url = https://git.overleaf.com/61b25a54dd89c57819145342
-[submodule "overleaf_results_doc"]
-	path = overleaf_results_doc
-	url = https://git.overleaf.com/63926a856d9dc275db846374

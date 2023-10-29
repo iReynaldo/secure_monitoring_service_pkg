@@ -8,8 +8,8 @@ then
     commit_message=$1
 fi
 
-output_dir="../overleaf_bgp_immunity/figures/results/new"
-results_dir="../analysis/spyder/immunity_paper_plots"
+output_dir="../../overleaf_bgp_immunity/figures/results/new"
+results_dir="./analysis/spyder/immunity_paper_plots"
 
 # results
 cp -R $results_dir/* $output_dir/
