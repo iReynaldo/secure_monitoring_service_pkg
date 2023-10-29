@@ -6,7 +6,7 @@
 
 export PYTHONHASHSEED=0
 export HIJACK_SCENARIO="V4SubprefixHijackScenario"
-export NUM_TRIALS=250
+export NUM_TRIALS=8000
 
 declare -A cpus
 declare -A ram
@@ -26,7 +26,7 @@ echo 'rm jobs.txt' >> submit_jobs.sh
 
 
 # Create Script Files
-for rov_setting in none
+for rov_setting in none real
 do
 #----------------- File for Base Result for ROV and V1 Lite  --------------------
 cat > standard_policies_rov_${rov_setting}.sh << EOF
@@ -52,7 +52,7 @@ echo "sbatch standard_policies_rov_${rov_setting}.sh >> jobs.txt" >> submit_jobs
 
 # For metadata collection
 # ----------------- Inner Loop Cannot be indented --------------------
-for relay in neustar twenty                                                                                                                                    
+for relay in neustar cloudflare five twenty
 do 
 cat > meta_rov_${rov_setting}_overlay_${relay}.sh << EOF
 #!/bin/bash
@@ -69,7 +69,7 @@ conda activate py311
 
 export PYTHONHASHSEED=$PYTHONHASHSEED
 cd ../../../
-python __main__.py --relay_asns ${relay} --num_trials $NUM_TRIALS --cpus ${cpus[${relay}]} --python_hash_seed $PYTHONHASHSEED --rov_adoption ${rov_setting} --num_attackers 1 --policy rovppo v4 --scenario $HIJACK_SCENARIO --collect_agg_as_metadata --tunnel_customers_traffic
+python __main__.py --relay_asns ${relay} --num_trials $NUM_TRIALS --cpus ${cpus[${relay}]} --python_hash_seed $PYTHONHASHSEED --rov_adoption ${rov_setting} --num_attackers 1 --policy rovppo --scenario $HIJACK_SCENARIO --collect_agg_as_metadata --collect_avoid_list_metadata --tunnel_customers_traffic
 EOF
 
 echo "sbatch meta_rov_${rov_setting}_overlay_${relay}.sh >> jobs.txt" >> submit_jobs.sh
@@ -96,7 +96,7 @@ conda activate py311
 
 export PYTHONHASHSEED=$PYTHONHASHSEED
 cd ../../../
-python __main__.py --relay_asns ${relay} --num_trials $NUM_TRIALS --cpus ${cpus[${relay}]} --python_hash_seed $PYTHONHASHSEED --rov_adoption ${rov_setting} --num_attackers 1 --policy rovppo v4 --scenario $HIJACK_SCENARIO --tunnel_customers_traffic
+python __main__.py --relay_asns ${relay} --num_trials $NUM_TRIALS --cpus ${cpus[${relay}]} --python_hash_seed $PYTHONHASHSEED --rov_adoption ${rov_setting} --num_attackers 1 --policy rovppo --scenario $HIJACK_SCENARIO --tunnel_customers_traffic
 EOF
 
 echo "sbatch rov_${rov_setting}_overlay_${relay}.sh >> jobs.txt" >> submit_jobs.sh
