@@ -40,7 +40,7 @@ num_trials = 8000
 adoption_setting = dm.adopting_setting
 
 metric = dm.victim_success
-relays = ['cloudflare', 'neustar', 'five', 'twenty']
+relays = ['verisign', 'neustar', 'five', 'twenty']
 bgp_immunity_policy = 'rovppo'
 policies = ['rov', 'rovppv1lite'].append(bgp_immunity_policy)
 
