@@ -326,6 +326,9 @@ class V4Subgraph(Subgraph):
                 for as_obj, outcome in outcomes.items():
                     adoption_setting = 'ad' if as_obj.name == scenario.AdoptASCls.name else 'nonad'
                     provider_setting, using_adopting_provider_setting = self._provider_setting(as_obj, scenario, prefix)
+                    # Check if this AS has any providers. In case it doesn't have any, skip this AS
+                    if provider_setting is None and using_adopting_provider_setting is None:
+                        continue
                     topology_section = self._topology_section(as_obj)
                     outcome = self.outcome_map[outcome]
                     counts['_'.join([adoption_setting, provider_setting,
@@ -371,6 +374,7 @@ class V4Subgraph(Subgraph):
                 return 'al1ad', using_adopting_provider_setting
             elif num_adopting_providers == num_proivders:
                 return 'allad', using_adopting_provider_setting
+        return None, None
 
     def _topology_section(self, as_obj):
         if as_obj.stub or as_obj.multihomed:
