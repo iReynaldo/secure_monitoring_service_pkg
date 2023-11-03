@@ -16,7 +16,7 @@ cp -R $results_dir/* $output_dir/
 
 echo "Paper plots added to overleaf paper repo"
 
-cd ../overleaf_bgp_immunity
+cd ../../overleaf_bgp_immunity
 echo "Pulling latest changes from Overleaf"
 git pull origin master
 git status | more

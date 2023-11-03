@@ -40,7 +40,7 @@ num_trials = 8000
 adoption_setting = dm.adopting_setting
 
 metric = dm.victim_success
-relays = ['cloudflare', 'neustar', 'twenty']
+relays = ['verisign', 'neustar', 'twenty']
 policies = ['rovppo', 'v4']
 
 for rov_setting in rov_settings:
