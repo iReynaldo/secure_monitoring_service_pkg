@@ -2,7 +2,7 @@ from pathlib import Path
 import pytest
 import random
 
-from bgp_simulator_pkg import EngineTestConfig
+from bgpy import EngineTestConfig
 
 from secure_monitoring_service_pkg.simulation_framework import sim_logger
 
