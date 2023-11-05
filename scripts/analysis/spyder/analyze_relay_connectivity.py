@@ -30,10 +30,11 @@ import data_manager as dm
 pio.renderers.default = 'browser'
 
 # Data configuration
-relay = 'neustar'
-rov_setting = 'none'
-num_trials = 8000
+relay = "verisign"
+rov_setting = "none"
+num_trials = 12000
 tunnel = True
+policy = "v4"
 
 # TODO: Future new files will need the Tunnel 
 # TODO: Create a function to read the files into dataframes
@@ -89,13 +90,15 @@ _ax = _fig.add_axes([0, 0, 1, 1])
 colors = ('blue', 'red')
 labels = ('Relay Not Attacked', 'Relay Attacked')
 for i, attack_relay_setting in enumerate((False, True)):
-    df = relay_data_agg[relay_data_agg.attack_relay==attack_relay_setting]    
-    _ax.errorbar(df.percentage*100, 
-                 df[feature+'mean']*100, 
-                 yerr=df[feature+'calc_90_per_conf']*100,
-                 marker='.',
-                 color=colors[i],
-                 label=labels[i])
+    df = relay_data_agg[(relay_data_agg.attack_relay == attack_relay_setting) & (relay_data_agg.adoption_setting == policy_name_map[policy])]
+    _ax.errorbar(
+        df.percentage * 100,
+        df[feature + "mean"] * 100,
+        yerr=df[feature + "calc_90_per_conf"] * 100,
+        marker=".",
+        color=colors[i],
+        label=labels[i],
+    )
 # _ax.plot(x=relay_data_agg.loc[relay_data_agg['attack_relay']==False,'percentage'], y=relay_data_agg[relay_data_agg['attack_relay']==False, feature+'mean'], color='blue')
 # _ax.plot(relay_data_agg['percentage'], relay_data_agg[feature+'mean'], color='red')
 # _ax.plot(relay_data_agg['percentage'], relay_data_agg[feature+'mean'], color='red')
