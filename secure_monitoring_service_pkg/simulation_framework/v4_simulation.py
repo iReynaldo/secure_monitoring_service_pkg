@@ -84,10 +84,10 @@ class V4Simulation(Simulation):
             self.caida_download_time = dl_time
             CaidaCollector().run(dl_time=dl_time,
                                  cache_dir=Path(CAIDA_CACHE_DIR),
-                                 tsv_path=Path(CAIDA_CACHE_TSV))
+                                 tsv_path=None)
         else:
             CaidaCollector().run(cache_dir=Path(CAIDA_CACHE_DIR),
-                                 tsv_path=Path(CAIDA_CACHE_TSV))
+                                 tsv_path=None)
 
     def run(self, experiment_settings_to_save=None):
         """Runs the simulation and write the data"""
