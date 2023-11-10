@@ -59,10 +59,6 @@ for policy in ['v4', 'rovppo']:
             # Overlay policy path list
             for attack_relay in (False, True):
                 for relay in relays:
-                    if attack_relay:
-                        num_trials = 16000
-                    else:
-                        num_trials = 8000
                     paths.append(
                             dm.json_file(scenario, scenario_type, 'others', rov_setting, hash_seed, probe, relay, attack_relay, num_attackers, num_trials, tunnel=tunnel)
                         )
@@ -95,5 +91,13 @@ for policy in ['v4', 'rovppo']:
                           outcome_text=dm.metric_outcome[metric],
                           linemap=compare_policies_by_attack_relay_linemap,
                           size_inches=(5, 4),
+                          show_legend=False,
                           legend_kwargs={'loc':'best', 'prop':{'size': 11}},
                           fname=f"./immunity_paper_plots/{policy_dir}/subprefix/{mixed_setting}/subprefix_compare_attack_relay_{dm.metric_filename_prefix[metric]}.pdf")
+            generate_plot(lines,
+                          ylim=100,
+                          outcome_text=dm.metric_outcome[metric],
+                          linemap=compare_policies_by_attack_relay_linemap,
+                          size_inches=(5, 4),
+                          legend_kwargs={'loc':'best', 'prop':{'size': 11}},
+                          fname=f"./immunity_paper_png_plots/{policy_dir}/subprefix/{mixed_setting}/subprefix_compare_attack_relay_{dm.metric_filename_prefix[metric]}.png")

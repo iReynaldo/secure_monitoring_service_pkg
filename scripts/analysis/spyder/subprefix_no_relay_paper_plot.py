@@ -93,9 +93,15 @@ for rov_setting in rov_settings:
         
         # Plot Lines
         generate_plotly(lines, metric)
-        generate_plot(lines,
-                      ylim=100,
-                      outcome_text=dm.metric_outcome[metric],
-                      size_inches=(5, 4),
-                      legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-                      fname=f"./immunity_paper_plots/{policy_dir}/subprefix/{mixed_setting}/{adoption_setting_str}subprefix_no_relay{'_with_probing'if probe else ''}_{dm.metric_filename_prefix[metric]}.pdf")
+        # generate_plot(lines,
+        #               ylim=100,
+        #               outcome_text=dm.metric_outcome[metric],
+        #               size_inches=(5, 4),
+        #               legend_kwargs={'loc':'best', 'prop':{'size': 11}},
+        #               fname=f"./immunity_paper_plots/{policy_dir}/subprefix/{mixed_setting}/{adoption_setting_str}subprefix_no_relay{'_with_probing'if probe else ''}_{dm.metric_filename_prefix[metric]}.pdf")
+        # generate_plot(lines,
+        #               ylim=100,
+        #               outcome_text=dm.metric_outcome[metric],
+        #               size_inches=(5, 4),
+        #               legend_kwargs={'loc':'best', 'prop':{'size': 11}},
+        #               fname=f"./immunity_paper_png_plots/{policy_dir}/subprefix/{mixed_setting}/{adoption_setting_str}subprefix_no_relay{'_with_probing'if probe else ''}_{dm.metric_filename_prefix[metric]}.png")

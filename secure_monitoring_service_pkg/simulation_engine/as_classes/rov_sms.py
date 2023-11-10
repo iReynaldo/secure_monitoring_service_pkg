@@ -87,6 +87,7 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
             accessible_relays = list()
             for asn in relay_asns:
                 prefix = relay_prefix_dict[asn]
+                # TODO: should probably check if ASN is at the end of the path?
                 if prefix in self._local_rib._info and asn in self._local_rib._info[prefix].as_path:
                     accessible_relays.append(asn)
             # Uniformly at random select from available relays

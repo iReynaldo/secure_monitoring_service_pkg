@@ -34,6 +34,7 @@ non_adopting_setting = 'non_adopting'
 
 # Topology Stats
 # Number of ASes in topology section
+# Thees values are from caida topology '2023.05.07' May 7, 2023
 num_stubs_of_multihomed_ases = 63687
 num_etc_ases = 11668
 num_input_clique_ases = 19

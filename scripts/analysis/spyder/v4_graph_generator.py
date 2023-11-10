@@ -756,3 +756,6 @@ def generate_plot(lines: [Line],
         plt.savefig(fname, bbox_inches='tight')
     else:
         plt.show()
+    # plt.close(fig)
+    # plt.cla()
+    # plt.clf()

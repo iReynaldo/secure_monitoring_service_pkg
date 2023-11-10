@@ -114,8 +114,8 @@ _fig.set_size_inches(5, 4, forward=True)
 plt.gca().yaxis.grid()
 plt.tight_layout()
 plt.rcParams.update({"font.size": 12, "lines.markersize": 8})
-plt.savefig(f"./immunity_paper_plots/pheme/subprefix/rov_{rov_setting}/avoid_list_boxplot.pdf", bbox_inches='tight')
-
+# plt.savefig(f"./immunity_paper_plots/pheme/subprefix/rov_{rov_setting}/avoid_list_boxplot.pdf", bbox_inches='tight')
+plt.savefig(f"./immunity_paper_png_plots/pheme/subprefix/rov_{rov_setting}/avoid_list_boxplot.png", bbox_inches='tight')
 #%% Histogram
 # fig = px.bar(counts_df_copy, x='as', y='count')
 # fig.update_traces(marker_color='rgb(255,0,0)', opacity=0.8)

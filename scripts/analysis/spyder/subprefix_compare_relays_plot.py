@@ -84,11 +84,18 @@ for relays in [('akamai', 'cloudflare', 'verisign', 'incapsula', 'neustar', 'con
         relay_filename = 'cdns' if relays[0] in dm.cdns else 'peers'
             
         # Plot Lines
-        generate_plotly(lines, metric)
-        # generate_plot(lines,
-        #               ylim=100,
-        #               outcome_text=dm.metric_outcome[metric],
-        #               size_inches=(5, 4),
-        #               linemap=compare_relays_linemap,
-        #               legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-        #               fname=f"./immunity_paper_plots/{policy_dir}/subprefix/rov_{rov_setting}/subprefix_{relay_filename}_relay_{dm.metric_filename_prefix[metric]}.pdf")
+        # generate_plotly(lines, metric)
+        generate_plot(lines,
+                      ylim=100,
+                      outcome_text=dm.metric_outcome[metric],
+                      size_inches=(5, 4),
+                      linemap=compare_relays_linemap,
+                      legend_kwargs={'loc':'best', 'prop':{'size': 11}},
+                      fname=f"./immunity_paper_plots/{policy_dir}/subprefix/rov_{rov_setting}/subprefix_{relay_filename}_relay_{dm.metric_filename_prefix[metric]}.pdf")
+        generate_plot(lines,
+                      ylim=100,
+                      outcome_text=dm.metric_outcome[metric],
+                      size_inches=(5, 4),
+                      linemap=compare_relays_linemap,
+                      legend_kwargs={'loc':'best', 'prop':{'size': 11}},
+                      fname=f"./immunity_paper_png_plots/{policy_dir}/subprefix/rov_{rov_setting}/subprefix_{relay_filename}_relay_{dm.metric_filename_prefix[metric]}.png")

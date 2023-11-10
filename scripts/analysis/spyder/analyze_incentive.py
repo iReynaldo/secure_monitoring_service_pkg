@@ -34,9 +34,9 @@ pio.renderers.default = 'browser'
 bgp_immunity_policy = 'v4' # 'rovppo'
 
 # Data configuration
-relay = 'neustar'
+relay = 'verisign'
 rov_setting = 'none'
-num_trials = 8000
+num_trials = 12000
 tunneled = True
 
 # TODO: Create a function to read the files into dataframes
@@ -261,12 +261,13 @@ for adoption_setting in (True, False):
         plt.ylim(0, ylim)
         plt.xlim(0, 100)
         plt.gca().yaxis.grid()
-        # plt.tight_layout()
+        plt.tight_layout()
         plt.rcParams.update({"font.size": 12, "lines.markersize": 8})
         
         adopting_str = 'non_adopting_' if not adoption_setting else ''
         policy_dir = 'immunity' if bgp_immunity_policy == 'rovppo' else 'pheme'
         
         plt.savefig(f"./immunity_paper_plots/{policy_dir}/subprefix/rov_{rov_setting}/{adopting_str}incentive_analysis_{relay}_{metric}.pdf", bbox_inches='tight')
-        
+        plt.savefig(f"./immunity_paper_png_plots/{policy_dir}/subprefix/rov_{rov_setting}/{adopting_str}incentive_analysis_{relay}_{metric}.png", bbox_inches='tight')
+        plt.close(_fig)
         
