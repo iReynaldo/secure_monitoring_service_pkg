@@ -17,13 +17,14 @@ def pytest_sessionfinish(session, exitstatus):
 
     # Only run in master thread after all other threads/tests have finished
     # Also runs when xdist isn't running
-    if not hasattr(session.config, "workerinput"):
-        DiagramAggregator(DIAGRAM_PATH).aggregate_diagrams()
-        # Teardown stuff (open PDF for viewing)
-        if session.config.getoption("view"):
-            # https://stackoverflow.com/q/19453338/8903959
-            agg_path = DiagramAggregator(DIAGRAM_PATH).aggregated_diagrams_path
-            subprocess.call(["xdg-open", str(agg_path)])
+    # if not hasattr(session.config, "workerinput"):
+    #     DiagramAggregator(DIAGRAM_PATH).aggregate_diagrams()
+    #     # Teardown stuff (open PDF for viewing)
+    #     if session.config.getoption("view"):
+    #         # https://stackoverflow.com/q/19453338/8903959
+    #         agg_path = DiagramAggregator(DIAGRAM_PATH).aggregated_diagrams_path
+    #         subprocess.call(["xdg-open", str(agg_path)])
+    pass
 
 
 @pytest.fixture(scope="session")
