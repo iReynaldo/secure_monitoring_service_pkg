@@ -1,33 +1,32 @@
 from frozendict import frozendict
 
-from bgpy.tests.engine_tests.graphs import graph_011
+from bgpy.tests.engine_tests.graphs import graph_041
 from bgpy.tests.engine_tests.utils import EngineTestConfig
-from bgpy.simulation_engine import BGPSimpleAS
+from bgpy.simulation_engine import BGPSimpleAS, ROVSimpleAS
 from bgpy.enums import ASNs
 
 from rovpp import ROVPPAnn
 
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg import V4ScenarioConfig
-from secure_monitoring_service_pkg import ROVSMS
+from secure_monitoring_service_pkg import ROVSMSK2
 
-config_101 = EngineTestConfig(
-    name="101",
-    desc="Subprefix Hijack with V4 Lite",
+config_120 = EngineTestConfig(
+    name="120",
+    desc="Subprefix Hijack with V4 Lite k=2",
     scenario_config=V4ScenarioConfig(
         ScenarioCls=V4SubprefixHijackScenario,
         BaseASCls=BGPSimpleAS,
         AnnCls=ROVPPAnn,
-        AdoptASCls=ROVSMS,
+        AdoptASCls=ROVSMSK2,
         override_attacker_asns=frozenset({ASNs.ATTACKER.value}),
         override_victim_asns=frozenset({ASNs.VICTIM.value}),
         override_non_default_asn_cls_dict=frozendict({
-            5: ROVSMS,
-            6: ROVSMS,
-            1: ROVSMS,
-            11: ROVSMS,
-            12: ROVSMS,
+            32: ROVSMSK2,
+            33: ROVSMSK2,
+            55: ROVSMSK2,
+            77: ROVSimpleAS,
         }),
     ),
-    graph=graph_011,
+    graph=graph_041,
 )

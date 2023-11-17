@@ -4,18 +4,20 @@ from bgpy.tests.engine_tests.graphs import graph_011
 from bgpy.tests.engine_tests.utils import EngineTestConfig
 from bgpy.simulation_engine import BGPSimpleAS
 from bgpy.enums import ASNs
-from bgpy.simulation_framework import ScenarioConfig
+
+from rovpp import ROVPPAnn
 
 from secure_monitoring_service_pkg import V4SubprefixHijackScenario
+from secure_monitoring_service_pkg import V4ScenarioConfig
 from secure_monitoring_service_pkg import ROVSMSK1
 
-
 config_102 = EngineTestConfig(
-    name="config_102",
-    desc="Subprefix Hijack with V4 Lite k=1.",
-    scenario_config=ScenarioConfig(
+    name="102",
+    desc="Subprefix Hijack with V4 Lite k=1",
+    scenario_config=V4ScenarioConfig(
         ScenarioCls=V4SubprefixHijackScenario,
         BaseASCls=BGPSimpleAS,
+        AnnCls=ROVPPAnn,
         AdoptASCls=ROVSMSK1,
         override_attacker_asns=frozenset({ASNs.ATTACKER.value}),
         override_victim_asns=frozenset({ASNs.VICTIM.value}),
