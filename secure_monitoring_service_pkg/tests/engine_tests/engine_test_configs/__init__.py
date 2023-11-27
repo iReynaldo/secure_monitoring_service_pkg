@@ -29,6 +29,30 @@ from .config_126 import config_126
 from .config_127 import config_127
 from .config_128 import config_128
 from .config_129 import config_129
+from .config_130 import config_130
+from .config_131 import config_131
+from .config_132 import config_132
+from .config_133 import config_133
+from .config_134 import config_134
+from .config_135 import config_135
+from .config_136 import config_136
+from .config_137 import config_137
+from .config_138 import config_138
+from .config_139 import config_139
+from .config_140 import config_140
+from .config_141 import config_141
+from .config_142 import config_142
+from .config_143 import config_143
+from .config_144 import config_144
+from .config_145 import config_145
+from .config_146 import config_146
+from .config_147 import config_147
+from .config_148 import config_148
+from .config_149 import config_149
+# from .config_150 import config_150
+from .config_151 import config_151
+from .config_152 import config_152
+
 
 
 # Specify module imports
@@ -63,6 +87,29 @@ __all__ = [
     "config_127",
     "config_128",
     "config_129",
+    "config_130",
+    "config_131",
+    "config_132",
+    "config_133",
+    "config_134",
+    "config_135",
+    "config_136",
+    "config_137",
+    "config_138",
+    "config_139",
+    "config_140",
+    "config_141",
+    "config_142",
+    "config_143",
+    "config_144",
+    "config_145",
+    "config_146",
+    "config_147",
+    "config_148",
+    "config_149",
+    # "config_150",
+    "config_151",
+    "config_152",
 ]
 
 # Config variable holder
@@ -97,4 +144,27 @@ engine_test_configs = [
     config_127,
     config_128,
     config_129,
+    config_130,
+    config_131,
+    config_132,
+    config_133,
+    config_134,
+    config_135,
+    config_136,
+    config_137,
+    config_138,
+    config_139,
+    config_140,
+    config_141,
+    config_142,
+    config_143,
+    config_144,
+    config_145,
+    config_146,
+    config_147,
+    config_148,
+    config_149,
+    # config_150,
+    config_151,
+    config_152,
 ]
