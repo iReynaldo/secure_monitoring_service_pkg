@@ -1,12 +1,12 @@
 from frozendict import frozendict
 
-from bgpy.tests.engine_tests.graphs import graph_053
 from bgpy.tests.engine_tests.utils import EngineTestConfig
 from bgpy.simulation_engine import BGPSimpleAS, ROVSimpleAS
 from bgpy.enums import ASNs
 
 from rovpp import ROVPPAnn
 
+from ..graphs import graph_053
 from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
 from secure_monitoring_service_pkg import V4ScenarioConfig
 from secure_monitoring_service_pkg import ROVSMSK2

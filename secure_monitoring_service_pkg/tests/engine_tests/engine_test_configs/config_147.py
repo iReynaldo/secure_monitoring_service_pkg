@@ -1,12 +1,12 @@
 from frozendict import frozendict
 
-from bgpy.tests.engine_tests.graphs import graph_059
 from bgpy.tests.engine_tests.utils import EngineTestConfig
 from bgpy.simulation_engine import BGPSimpleAS, ROVSimpleAS
 from bgpy.enums import ASNs
 
 from rovpp import ROVPPAnn
 
+from .. import graphs
 from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
 from secure_monitoring_service_pkg import V4ScenarioConfig
 from secure_monitoring_service_pkg import ROVSMSK2
@@ -20,7 +20,7 @@ config_147 = EngineTestConfig(
         AdoptASCls=ROVSMSK2,
         BaseASCls=BGPSimpleAS,
         AnnCls=ROVPPAnn,
-        override_attacker_asns=frozenset(graph_059.attacker_asn_set),
+        override_attacker_asns=frozenset(graphs.Graph059().attacker_asn_set),
         override_victim_asns=frozenset({ASNs.VICTIM.value}),
         override_non_default_asn_cls_dict=frozendict({
             3: ROVSMSK2,
@@ -31,5 +31,5 @@ config_147 = EngineTestConfig(
             7: ROVSimpleAS,
         }),
     ),
-    graph=graph_059,
+    graph=graphs.graph_059,
 )
