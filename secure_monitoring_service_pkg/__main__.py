@@ -95,7 +95,7 @@ def process_scenario_args(args):
 
     settings = {
         "num_attackers": args.num_attackers,
-        "min_rov_confidence": 0 if args.rov_adoption != 'none' else 1000,
+        "min_rov_confidence": args.rov_adoption_min_conf if args.rov_adoption != 'none' else 1000,
         "adoption_subcategory_attrs": args.adoption_subcategory,
         "relay_asns": overlay_setting,
         "attack_relays": args.attack_relays,
@@ -257,6 +257,11 @@ def parse_args():
                         help='ROV adoption setting. If given, '
                              'ROV ASes will be added to simulation.',
                         choices=['none', 'real'])
+    parser.add_argument('--rov_adoption_min_conf',
+                        type=float,
+                        nargs='?',
+                        default=0.0,
+                        help='ROV minimum confidence of adopter')
     parser.add_argument('--caida_topology_date',
                         type=str,
                         nargs='?',
