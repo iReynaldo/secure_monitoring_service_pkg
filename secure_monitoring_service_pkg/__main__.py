@@ -162,6 +162,7 @@ def process_other_args(args):
         # TODO: Change this to put the single policy that's being used (if it's a single policy)
         policies_used_str = "standard" if only_using_standard_policies(args.policy) else other_policies(args.policy)
         percentages_str = 'full' if args.percentages == ALL_PERCENTAGES else str(args.percentages).replace(' ', '')
+        min_rov_conf = int(args.rov_adoption_min_conf * 100)
         if args.replace_rov_ases_with:
             mixed_adoption_setting = args.replace_rov_ases_with[0]
         else:
@@ -172,6 +173,7 @@ def process_other_args(args):
                           f"_{args.autoimmune_attack_type}_type" + \
                           f"_{policies_used_str}_policies" + \
                           f"_{mixed_adoption_setting}_rov" + \
+                          f"_{min_rov_conf}" + \
                           f"_{args.python_hash_seed}_hash" + \
                           f"_{args.probe_data_plane}_probe" + \
                           f"_{args.tunnel_customers_traffic}_tunnel" + \
