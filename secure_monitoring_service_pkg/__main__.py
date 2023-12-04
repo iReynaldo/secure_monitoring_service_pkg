@@ -173,7 +173,7 @@ def process_other_args(args):
                           f"_{args.autoimmune_attack_type}_type" + \
                           f"_{policies_used_str}_policies" + \
                           f"_{mixed_adoption_setting}_rov" + \
-                          f"_{min_rov_conf}" + \
+                          f"_{min_rov_conf}_conf" + \
                           f"_{args.python_hash_seed}_hash" + \
                           f"_{args.probe_data_plane}_probe" + \
                           f"_{args.tunnel_customers_traffic}_tunnel" + \
