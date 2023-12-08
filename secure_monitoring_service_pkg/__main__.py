@@ -103,7 +103,9 @@ def process_scenario_args(args):
         "tunnel_customers_traffic": args.tunnel_customers_traffic,
         "probe_data_plane": args.probe_data_plane,
         "special_static_as_class": None if not args.replace_rov_ases_with else POLICIES.get(
-            args.replace_rov_ases_with[0])
+            args.replace_rov_ases_with[0]),
+        "probabilistic_rov_adoption": args.probabilistic_rov_adoption,
+        "allow_rov_turnover": args.allow_rov_turnover
     }
     # Set for AutoImmune attack indirect/direct
     if args.scenario == AUTOIMMUNE:
@@ -357,6 +359,16 @@ def parse_args():
                              'SubprefixAutoImmuneScenario, to indicate '
                              'if it is direct/indirect.',
                         choices=['none', 'direct', 'indirect'])
+    parser.add_argument('--probabilistic_rov_adoption',
+                        action="store_true",
+                        default=False,
+                        help='If ROV adoption is not set to "none", then adopt ROV according to confidence score.')
+    parser.add_argument('--allow_rov_turnover',
+                        action="store_true",
+                        default=False,
+                        help='If ROV adoption is not set to "none", then allow preset ' 
+                             'ROV ases to be converted to other adopting policy selected for simulation.')
+
     # Other Args
     parser.add_argument('--collect_avoid_list_metadata',
                         action="store_true",

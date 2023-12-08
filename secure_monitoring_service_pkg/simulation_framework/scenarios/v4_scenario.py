@@ -57,7 +57,8 @@ class V4Scenario(Scenario):
 
     def __init__(self, *args, relay_asns=None, attack_relays=False, fraction_of_peer_ases_to_attack=0.5,
                  assume_relays_are_reachable=False, tunnel_customers_traffic=False,
-                 probe_data_plane=False, special_static_as_class=None, **kwargs):
+                 probe_data_plane=False, special_static_as_class=None, probabilistic_rov_adoption=False,
+                 allow_rov_turnover=False, **kwargs):
         super(V4Scenario, self).__init__(*args, **kwargs)
         self.has_rovsms_ases = False
         self.trusted_server_ref = None
@@ -73,6 +74,8 @@ class V4Scenario(Scenario):
         self.special_static_as_class = special_static_as_class if special_static_as_class else RealROVSimpleAS
         self.relay_setting = None
         self.relay_name = None
+        self.probabilistic_rov_adoption = probabilistic_rov_adoption
+        self.allow_rov_turnover = allow_rov_turnover
         if relay_asns:
             if self._is_using_cdn(relay_asns):
                 self.relay_setting = CDN_RELAY_SETTING
@@ -153,7 +156,14 @@ class V4Scenario(Scenario):
             real_rov_ases = set()
             # If we are including ROV nodes
             # Don't always run this to save on time
-            if self.min_rov_confidence <= 1:
+            # TODO: Refactor following if else block to be more efficient
+            if self.probabilistic_rov_adoption:
+                rand_num = random.random()
+                for as_ in ases:
+                    if as_.rov_confidence >= rand_num:
+                        asn_cls_dict[as_.asn] = self.special_static_as_class
+                        real_rov_ases.add(as_)
+            elif self.min_rov_confidence <= 1:
                 for as_ in ases:
                     if as_.rov_confidence >= self.min_rov_confidence:
                         asn_cls_dict[as_.asn] = self.special_static_as_class  # Change made here
@@ -162,7 +172,10 @@ class V4Scenario(Scenario):
             # Ex: Attacker and victim
             # Ex: ROV Nodes (in certain situations)
             possible_adopters = ases.difference(self._preset_asns)
-            possible_adopters = possible_adopters.difference(real_rov_ases)
+            # If ROV turnover is enabled, don't remove real_rov_ases from possible adopters
+            # This will allow ases in real_rov_ases to be considered for adoption/turnover
+            if not self.allow_rov_turnover:
+                possible_adopters = possible_adopters.difference(real_rov_ases)
 
             # Get how many ASes should be adopting
 
