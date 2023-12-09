@@ -49,7 +49,7 @@ from .config_146 import config_146
 from .config_147 import config_147
 from .config_148 import config_148
 from .config_149 import config_149
-# from .config_150 import config_150
+from .config_150 import config_150
 from .config_151 import config_151
 from .config_152 import config_152
 
@@ -107,7 +107,7 @@ __all__ = [
     "config_147",
     "config_148",
     "config_149",
-    # "config_150",
+    "config_150",
     "config_151",
     "config_152",
 ]
@@ -164,7 +164,7 @@ engine_test_configs = [
     config_147,
     config_148,
     config_149,
-    # config_150,
+    config_150,
     config_151,
     config_152,
 ]
