@@ -12,7 +12,7 @@ def process_json_file(json_path):
         csv_writer = csv.writer(csv_file)
 
         # Write header
-        csv_writer.writerow(['asn', 'filtering', 'confidence', 'source'])
+        csv_writer.writerow(['asn', 'filtering', 'confidence', 'source', 'category'])
 
         # Write data
         for asn, entries in data.items():
@@ -22,10 +22,11 @@ def process_json_file(json_path):
                 
                 # Convert percent to a 0 to 1 range
                 percent = float(entry.get('percent', 0)) / 100.0
-                
                 source = entry.get('source', 'N/A')
+                metadata = entry.get('metadata', '')
+                category = metadata.get('category', '')
 
-                csv_writer.writerow([asn_value, filter_type, percent, source])
+                csv_writer.writerow([asn_value, filter_type, percent, source, category])
 
     print(f"CSV file has been created: {csv_path}")
 
