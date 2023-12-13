@@ -29,14 +29,15 @@ import data_manager as dm
 
 scenario = 'V4SubprefixHijackScenario' # 'V4PrefixHijackScenario'
 scenario_type = 'none'
-rov_settings = ['none', 'real']
+rov_settings = ['real', ]
+rov_conf = 90
 hash_seed = 0
 probe = False
 tunnel=True
 # relay
 attack_relay = False
-num_attackers = 1
-num_trials = 8000
+num_attackers = 5
+num_trials = 500
 adoption_setting = dm.adopting_setting
 
 metric = dm.victim_success
@@ -45,7 +46,7 @@ bgp_immunity_policy = 'rovppo'
 policies = ['rov', 'rovppv1lite'].append(bgp_immunity_policy)
 
 for bgp_immunity_policy in ['rovppo', 'v4']:
-    for adoption_setting in [dm.adopting_setting, dm.non_adopting_setting]:
+    for adoption_setting in [dm.adopting_setting]:
         for rov_setting in rov_settings:
             for metric in [dm.attacker_success, dm.victim_success, dm.disconnections]:
                 
@@ -59,11 +60,11 @@ for bgp_immunity_policy in ['rovppo', 'v4']:
                 # Load paths
                 paths = list()
                 # Standard policies path list
-                standard_policy_paths = [dm.json_file(scenario, scenario_type, 'standard', rov_setting, hash_seed, probe, 'None', False, num_attackers, num_trials)]
+                standard_policy_paths = [dm.json_file(scenario, scenario_type, 'standard', rov_setting, rov_conf, hash_seed, probe, 'None', False, num_attackers, num_trials)]
                 # Overlay policies path list
                 for relay in relays:
                     paths.append(
-                            dm.json_file(scenario, scenario_type, 'others', rov_setting, hash_seed, probe, relay, attack_relay, num_attackers, num_trials, tunnel=tunnel)
+                            dm.json_file(scenario, scenario_type, 'others', rov_setting, rov_conf, hash_seed, probe, relay, attack_relay, num_attackers, num_trials, tunnel=tunnel)
                         )
                 
                 # Load Results
@@ -102,3 +103,9 @@ for bgp_immunity_policy in ['rovppo', 'v4']:
                               size_inches=(5, 4),
                               legend_kwargs={'loc':'best', 'prop':{'size': 11}},
                               fname=f"./immunity_paper_plots/{policy_dir}/{scenario_str}/{mixed_setting}/{adoption_setting_str}{scenario_str}_{attack_relay_str}_relay{'_with_probing'if probe else ''}_{dm.metric_filename_prefix[metric]}.pdf")
+                # generate_plot(lines,
+                #               ylim=100,
+                #               outcome_text=dm.metric_outcome[metric],
+                #               size_inches=(5, 4),
+                #               legend_kwargs={'loc':'best', 'prop':{'size': 11}},
+                #               fname=f"./immunity_paper_png_plots/{policy_dir}/subprefix/{mixed_setting}/{adoption_setting_str}{scenario_str}_{attack_relay_str}_relay{'_with_probing'if probe else ''}_{dm.metric_filename_prefix[metric]}.png")

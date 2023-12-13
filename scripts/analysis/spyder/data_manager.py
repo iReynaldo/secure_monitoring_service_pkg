@@ -31,6 +31,7 @@ standard_policies = ('rov', 'rovppv1lite')
 
 adopting_setting = 'adopting'
 non_adopting_setting = 'non_adopting'
+all_adoption_setting = 'all'
 
 # Topology Stats
 # Number of ASes in topology section
@@ -117,9 +118,9 @@ def get_metadata(scenario, scenario_type, policies, rov_setting, hash_seed, prob
 
 def get_metric_subgraph(metric, adoption_setting):
     metric_subgraph = {
-            attacker_success: f"v4_attacker_success_{adoption_setting}_stubs_and_multihomed",
-            victim_success: f"v4_victim_success_{adoption_setting}_stubs_and_multihomed",
-            disconnections: f"v4_disconnected_{adoption_setting}_stubs_and_multihomed"
+            attacker_success: f"v4_attacker_success_{adoption_setting}{'_stubs_and_multihomed' if adoption_setting != all_adoption_setting else ''}",
+            victim_success: f"v4_victim_success_{adoption_setting}{'_stubs_and_multihomed' if adoption_setting != all_adoption_setting else ''}",
+            disconnections: f"v4_disconnected_{adoption_setting}{'_stubs_and_multihomed' if adoption_setting != all_adoption_setting else ''}"
         }
     return metric_subgraph[metric]
 
@@ -135,11 +136,11 @@ def lines_style_mapper(policy, relay, attack_relay=False):
     mapping = {
         "rov": "ROV",
         "rovppv1lite": "ROV++ V1 Lite",
-        "rovppo": "BGPIm",
-        "v4": "BGPImMS",
-        "v4k2": "BGPImMS k=2",
-        "v4k5": "BGPImMS k=5",
-        "v4k10": "BGPImMS k=10",
+        "rovppo": "Overlay",
+        "v4": "Minerva",
+        "v4k2": "Minerva k=2",
+        "v4k5": "Minerva k=5",
+        "v4k10": "Minerva k=10",
     }
     attack_relay_str = ' Attacked' if attack_relay else ''
     return mapping[policy] + attack_relay_str + relay_setting + " adopting"
@@ -149,7 +150,7 @@ def lines_style_mapper(policy, relay, attack_relay=False):
 # Functions
 ############################
 
-def json_file(scenario, scenario_type, policies, rov_setting, hash_seed, probe,
+def json_file(scenario, scenario_type, policies, rov_setting, rov_conf, hash_seed, probe,
               relay, attack_relay, num_attackers, num_trials, tunnel=False, percentages="full"):
     # V4SubprefixHijackScenario_scenario_none_type_others_policies_real_rov_0_hash_False_probe_twenty_relay_False_attackRelay_1_attacker_2000_trials_full_percentages
     # if relay == 'twenty':
@@ -159,6 +160,7 @@ def json_file(scenario, scenario_type, policies, rov_setting, hash_seed, probe,
            f"_{scenario_type}_type" \
            f"_{policies}_policies" \
            f"_{rov_setting}_rov" \
+           f"_{rov_conf}_conf" \
            f"_{hash_seed}_hash" \
            f"_{probe}_probe" \
            f"_{tunnel}_tunnel" \

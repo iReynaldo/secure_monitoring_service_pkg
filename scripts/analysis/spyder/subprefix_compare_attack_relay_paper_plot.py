@@ -40,7 +40,7 @@ num_trials = 8000
 adoption_setting = dm.adopting_setting
 
 metric = dm.victim_success
-relays = ['cloudflare', 'neustar', 'twenty']
+relays = ['verisign', 'neustar', 'twenty']
 policy = 'v4'
 
 for policy in ['v4', 'rovppo']:
@@ -91,13 +91,13 @@ for policy in ['v4', 'rovppo']:
                           outcome_text=dm.metric_outcome[metric],
                           linemap=compare_policies_by_attack_relay_linemap,
                           size_inches=(5, 4),
-                          show_legend=False,
+                          show_legend=True,
                           legend_kwargs={'loc':'best', 'prop':{'size': 11}},
                           fname=f"./immunity_paper_plots/{policy_dir}/subprefix/{mixed_setting}/subprefix_compare_attack_relay_{dm.metric_filename_prefix[metric]}.pdf")
-            generate_plot(lines,
-                          ylim=100,
-                          outcome_text=dm.metric_outcome[metric],
-                          linemap=compare_policies_by_attack_relay_linemap,
-                          size_inches=(5, 4),
-                          legend_kwargs={'loc':'best', 'prop':{'size': 11}},
-                          fname=f"./immunity_paper_png_plots/{policy_dir}/subprefix/{mixed_setting}/subprefix_compare_attack_relay_{dm.metric_filename_prefix[metric]}.png")
+            # generate_plot(lines,
+            #               ylim=100,
+            #               outcome_text=dm.metric_outcome[metric],
+            #               linemap=compare_policies_by_attack_relay_linemap,
+            #               size_inches=(5, 4),
+            #               legend_kwargs={'loc':'best', 'prop':{'size': 11}},
+            #               fname=f"./immunity_paper_png_plots/{policy_dir}/subprefix/{mixed_setting}/subprefix_compare_attack_relay_{dm.metric_filename_prefix[metric]}.png")
