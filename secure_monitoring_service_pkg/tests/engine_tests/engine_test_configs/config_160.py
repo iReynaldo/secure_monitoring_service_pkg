@@ -21,8 +21,8 @@ class Config160(EngineTestConfig):
 
     name = "160"
     desc = "ARTEMIS Single Attacker"
-    graph = graphs.Graph062()
-    relay_asns = {12, 13}
+    graph = graphs.Graph069()
+    relay_asns = graph.relay_asns
     scenario = ArtemisSubprefixHijackScenario(num_attackers=1,
                                               attacker_asns=graph.attacker_asn_set,
                                               victim_asns={ASNs.VICTIM.value},
@@ -37,5 +37,8 @@ class Config160(EngineTestConfig):
                                                     10: Artermis,
                                                     11: Artermis,
                                                     7: ROVSimpleAS}
+
+    for relay_asn in relay_asns:
+        non_default_as_cls_dict[relay_asn] = Artermis
 
     propagation_rounds = 1

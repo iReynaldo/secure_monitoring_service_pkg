@@ -8,7 +8,7 @@ from bgp_simulator_pkg import Prefixes
 
 from caida_collector_pkg import AS
 
-from ..v4_scenario import V4Scenario
+from ..v4_scenario import V4Scenario, RELAY_PREFIX
 
 
 class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
@@ -18,10 +18,11 @@ class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
     """
     __slots__ = ()
 
-    def __init__(self, *args, relay_asns=None, **kwargs):
-        super(ArtemisSubprefixHijackScenario, self).__init__(*args, relay_asns=relay_asns, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(ArtemisSubprefixHijackScenario, self).__init__(*args, **kwargs)
         self.name = "ArtemisSubprefixHijackScenario"
-        self.relay_prefixes = dict()
+        # The following gets updated after traceback of RELAY_PREFIX is done
+        self.a_cdn_has_successful_connection_to_origin = False
 
     def determine_as_outcome(self,
                              as_obj: AS,
@@ -35,7 +36,9 @@ class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
 
         if as_obj.asn in self.attacker_asns:
             return Outcomes.ATTACKER_SUCCESS, as_obj.asn
-        elif as_obj.asn in self.victim_asns or as_obj.asn in self.relay_asns:
+        # Key difference here with the relay_asn as a checkpoint for success
+        elif (as_obj.asn in self.victim_asns or
+              (self.a_cdn_has_successful_connection_to_origin and as_obj.asn in self.relay_asns)):
             return Outcomes.VICTIM_SUCCESS, as_obj.asn
         # End of traceback
         elif (ann is None
@@ -46,26 +49,52 @@ class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
         else:
             return Outcomes.UNDETERMINED, as_obj.asn
 
+    def get_victim_announcements(self):
+        # TODO: This method only works for subprefix hijacks
+        #   assuming the victim uses Prefixes.PREFIX.value as origin announcement
+        victim_announcements = set()
+        for ann in self.announcements:
+            for victim_asn in self.victim_asns:
+                if victim_asn == ann.as_path[-1] and Prefixes.PREFIX.value == ann.prefix:
+                    victim_announcements.add(ann)
+        return victim_announcements
+
+    def generate_fightback_relay_announcements(self):
+        anns = list()
+        relay_asns = set() if not self.relay_asns else self.relay_asns
+        # Setup Relay Announcements
+        for i, asn in enumerate(self.victim_asns | relay_asns):
+            relay_prefix = Prefixes.SUBPREFIX.value
+            self.relay_prefixes[asn] = relay_prefix
+            anns.append(self.AnnCls(prefix=relay_prefix,
+                                    as_path=(asn,),
+                                    timestamp=2,
+                                    seed_asn=asn,
+                                    roa_valid_length=True,
+                                    roa_origin=asn,
+                                    recv_relationship=Relationships.ORIGIN))
+        return anns
+
+    def generate_origin_relay_announcement(self):
+        anns = list()
+        # TODO: Extend this for multiple victims if necessary
+        victim_asn = next(iter(self.victim_asns))
+        anns.append(self.AnnCls(prefix=RELAY_PREFIX,
+                                as_path=(victim_asn,),
+                                timestamp=2,
+                                seed_asn=victim_asn,
+                                roa_valid_length=True,
+                                roa_origin=victim_asn,
+                                recv_relationship=Relationships.ORIGIN))
+        return anns
+
     def _get_announcements(self, *args, **kwargs) -> Tuple["Announcement", ...]:
         """Returns victim, attacker, and relay anns for autoimmune attack
 
         """
         anns = super(ArtemisSubprefixHijackScenario, self)._get_announcements(*args, **kwargs)
-        anns = anns + tuple(self.generate_relay_announcements())
-        return anns
-
-    def generate_relay_announcements(self):
-        anns = list()
-        # Setup Relay Announcements
-        if self.relay_asns:
-            for i, relay_asn in enumerate(self.relay_asns):
-                relay_prefix = Prefixes.SUBPREFIX.value
-                self.relay_prefixes[relay_asn] = relay_prefix
-                anns.append(self.AnnCls(prefix=relay_prefix,
-                                        as_path=(relay_asn,),
-                                        timestamp=2,
-                                        seed_asn=relay_asn,
-                                        roa_valid_length=True,
-                                        roa_origin=relay_asn,
-                                        recv_relationship=Relationships.ORIGIN))
+        # Setup Fightback Announcements
+        anns = anns + tuple(self.generate_fightback_relay_announcements())
+        # Setup Origin Relay Announcement
+        anns = anns + tuple(self.generate_origin_relay_announcement())
         return anns

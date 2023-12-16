@@ -14,6 +14,7 @@ from bgp_simulator_pkg import Timestamps
 from bgp_simulator_pkg import SimulationEngine
 from bgp_simulator_pkg import SpecialPercentAdoptions
 from bgp_simulator_pkg import RealROVSimpleAS
+from bgp_simulator_pkg import Prefixes
 
 from .cdn import CDN
 from .peer import Peer
@@ -315,7 +316,7 @@ class V4Scenario(Scenario):
         victim_announcements = set()
         for ann in self.announcements:
             for victim_asn in self.victim_asns:
-                if victim_asn in ann.as_path:
+                if victim_asn == ann.as_path[-1]:
                     victim_announcements.add(ann)
         return victim_announcements
 

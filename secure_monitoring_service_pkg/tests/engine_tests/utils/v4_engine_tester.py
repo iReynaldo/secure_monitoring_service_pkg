@@ -64,6 +64,13 @@ class V4EngineTester(EngineTester):
                                                                traceback_asn_outcomes,
                                                                shared_data,
                                                                track_relay_usage=True)
+            elif isinstance(scenario, ArtemisSubprefixHijackScenario):
+                if V4Subgraph()._origin_can_reach_relay(engine, scenario):
+                    # TODO: Maybe this logic can be improved, but it's testable now
+                    scenario.a_cdn_has_successful_connection_to_origin = True
+                    outcomes, traceback_asn_outcomes = \
+                        V4Subgraph()._get_engine_outcomes(engine, scenario, attacker_ann)
+
             prefix_outcomes[attacker_ann.prefix] = outcomes
             # Convert this to just be {ASN: Outcome} (Not the AS object)
             outcomes_yaml = {as_obj.asn: result for as_obj, result in outcomes.items()}

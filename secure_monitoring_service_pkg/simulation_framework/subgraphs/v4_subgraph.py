@@ -172,11 +172,17 @@ class V4Subgraph(Subgraph):
                 # {as_obj: outcome}
                 outcomes, traceback_asn_outcomes = \
                     self._get_engine_outcomes(engine, scenario, attacker_ann)
-                if scenario.relay_asns and not isinstance(scenario, ArtemisSubprefixHijackScenario):
-                    self._recalculate_outcomes_with_relays(scenario, engine, attacker_ann, outcomes,
-                                                           traceback_asn_outcomes, shared_data,
-                                                           before_relay_usage=before_relay_usage,
-                                                           after_relay_usage=after_relay_usage)
+                if scenario.relay_asns:
+                    if not isinstance(scenario, ArtemisSubprefixHijackScenario):
+                        self._recalculate_outcomes_with_relays(scenario, engine, attacker_ann, outcomes,
+                                                               traceback_asn_outcomes, shared_data,
+                                                               before_relay_usage=before_relay_usage,
+                                                               after_relay_usage=after_relay_usage)
+                    elif self._origin_can_reach_relay(engine, scenario):
+                         # TODO: Maybe this logic can be improved, but it's testable now
+                        scenario.a_cdn_has_successful_connection_to_origin = True
+                        outcomes, traceback_asn_outcomes = \
+                            self._get_engine_outcomes(engine, scenario, attacker_ann)
 
                 prefix_outcomes[attacker_ann.prefix] = outcomes
 
@@ -559,7 +565,34 @@ class V4Subgraph(Subgraph):
         # Update Metadata tracking variable
         after_relay_usage.update((self.available_relay_counter_key,) * len(available_relays))
 
+
+    def _origin_can_reach_relay(self, engine, scenario):
+        relay_ann = scenario.generate_origin_relay_announcement()[0]
+        outcomes, traceback_asn_outcomes = \
+            self._get_engine_outcomes(engine, scenario, relay_ann)
+        victim_asn = next(iter(scenario.victim_asns))
+        # If any of the Relay CDNs can reach the origin successfully, then they will
+        # successfully connect to the origin.
+        for relay_asn in scenario.relay_asns:
+            if outcomes[engine.as_dict[relay_asn]] == Outcomes.VICTIM_SUCCESS:
+                return True
+        return False
+
+    def _recalculate_outcomes_with_artemis(self, scenario, engine, attacker_ann, outcomes, traceback_asn_outcomes,
+                                          shared_data):
+        # TODO: Determine if the origin has a successful connection to the CDN(s)
+        # TODO: If origin has successful connection to origin, then check what
+        #   ASes are able to reach the available CDNs
+        # TODO: Update outcomes of ASes that can reach available CDNs
+        pass
+
     def get_prefix_with_minimum_successful_connections(self, scenario, shared_data):
+
+        # For Artemis Subprefix Hijack Scenario there is only one attacker subprefix
+        if isinstance(scenario, ArtemisSubprefixHijackScenario):
+            return next(iter(scenario.get_attacker_announcements())).prefix
+
+        # For more general scenarios use this
         min_prefix = ""
         min_percentage = sys.maxsize
         for attacker_ann in scenario.get_attacker_announcements_for_origin():

@@ -1,19 +1,17 @@
 from datetime import datetime
-from pathlib import Path
-from tempfile import TemporaryDirectory
 import time
-import json
 import subprocess
 from pathlib import Path
 import argparse
 
-from bgp_simulator_pkg import ROVSimpleAS, BGPSimpleAS
+from bgp_simulator_pkg import ROVSimpleAS
 
 from rovpp_pkg import ROVPPAnn
 from rovpp_pkg import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg import V4Subgraph
 from secure_monitoring_service_pkg import V4Simulation
+from secure_monitoring_service_pkg import Artermis
 from secure_monitoring_service_pkg import ROVPPO
 from secure_monitoring_service_pkg import ROVSMS, ROVSMSK1, ROVSMSK2
 from secure_monitoring_service_pkg import ROVSMSK3, ROVSMSK5, ROVSMSK6
@@ -55,6 +53,7 @@ STANDARD_POLICIES = {
 }
 
 POLICIES = {
+    'artemis': Artermis,
     'rovppo': ROVPPO,
     'v4': ROVSMS,
     'v4k1': ROVSMSK1,
