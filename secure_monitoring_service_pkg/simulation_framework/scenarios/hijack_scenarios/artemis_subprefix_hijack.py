@@ -86,6 +86,10 @@ class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
                                 roa_valid_length=True,
                                 roa_origin=victim_asn,
                                 recv_relationship=Relationships.ORIGIN))
+        if self.attack_relays:
+            roa_origin = next(iter(self.victim_asns))
+            for attacker_asn in self.attacker_asns:
+                anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
         return anns
 
     def _get_announcements(self, *args, **kwargs) -> Tuple["Announcement", ...]:

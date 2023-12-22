@@ -80,7 +80,7 @@ from .engine_test_configs import Config169
 from .engine_test_configs import Config170
 from .engine_test_configs import Config171
 from .engine_test_configs import Config172
-# from .engine_test_configs import Config173
+from .engine_test_configs import Config173
 # from .engine_test_configs import Config174
 # from .engine_test_configs import Config175
 
@@ -179,7 +179,7 @@ class TestEngine:
                               Config170,
                               Config171,
                               Config172,
-                              # Config173,
+                              Config173,
                               # Config174,
                               # Config175,
                               ])
