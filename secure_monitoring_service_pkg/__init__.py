@@ -8,6 +8,7 @@ __all__ = [
     "ArtemisSubprefixHijackScenario",
     "V4SuperprefixPrefixHijack",
     "V4PrefixHijackScenario",
+    "RelayPrefixHijack",
     "V4Simulation",
     "V4Subgraph",
     "CDN",

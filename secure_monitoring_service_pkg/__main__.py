@@ -21,6 +21,7 @@ from secure_monitoring_service_pkg import SubprefixAutoImmuneScenario
 from secure_monitoring_service_pkg import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg import V4SuperprefixPrefixHijack
 from secure_monitoring_service_pkg import V4PrefixHijackScenario
+from secure_monitoring_service_pkg import RelayPrefixHijack
 from secure_monitoring_service_pkg import CDN
 from secure_monitoring_service_pkg import Peer
 from secure_monitoring_service_pkg import metadata_collector
@@ -44,6 +45,7 @@ SUBPREFIX_HIJACK = "V4SubprefixHijackScenario"
 PREFIX_HIJACK = "V4PrefixHijackScenario"
 ARTEMIS_SUBPREFIX_HIJACK = "ArtemisSubprefixHijackScenario"
 SUPERPREFIX_PLUS_PREFIX_HIJACK = "V4SuperprefixPrefixHijack"
+RELAY_PREFIX_HIJACK = "RelayPrefixHijack"
 
 ALL_PERCENTAGES = [0.0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99]
 
@@ -350,7 +352,8 @@ def parse_args():
                                  PREFIX_HIJACK,
                                  AUTOIMMUNE,
                                  ARTEMIS_SUBPREFIX_HIJACK,
-                                 SUPERPREFIX_PLUS_PREFIX_HIJACK])
+                                 SUPERPREFIX_PLUS_PREFIX_HIJACK,
+                                 RELAY_PREFIX_HIJACK])
     parser.add_argument('--autoimmune_attack_type',
                         type=str,
                         nargs='?',
@@ -473,6 +476,16 @@ def main():
             V4Simulation(scenarios=[V4SuperprefixPrefixHijack(AdoptASCls=Cls,
                                                               AnnCls=ROVPPAnn,
                                                               **scenario_args)
+                                    for Cls in adoption_classes
+                                    ],
+                         output_path=BASE_PATH / other_args["output_filename"],
+                         **simulation_args),
+        ]
+    elif other_args["scenario"] == RELAY_PREFIX_HIJACK:
+        sims = [
+            V4Simulation(scenarios=[RelayPrefixHijack(AdoptASCls=Cls,
+                                                      AnnCls=ROVPPAnn,
+                                                      **scenario_args)
                                     for Cls in adoption_classes
                                     ],
                          output_path=BASE_PATH / other_args["output_filename"],
