@@ -108,9 +108,11 @@ def process_scenario_args(args):
         "probabilistic_rov_adoption": args.probabilistic_rov_adoption,
         "allow_rov_turnover": args.allow_rov_turnover
     }
-    # Set for AutoImmune attack indirect/direct
+    # Special Settings for some scenarios
     if args.scenario == AUTOIMMUNE:
         settings["indirect"] = True if args.autoimmune_attack_type == 'indirect' else False
+    if args.scenario == ARTEMIS_SUBPREFIX_HIJACK:
+        settings["fightback_origin_only"] = args.fightback_origin_only
 
     return settings
 
@@ -170,10 +172,14 @@ def process_other_args(args):
             mixed_adoption_setting = args.replace_rov_ases_with[0]
         else:
             mixed_adoption_setting = args.rov_adoption
+        if args.scenario == ARTEMIS_SUBPREFIX_HIJACK and args.fightback_origin_only:
+            scenario_type = 'originOnly'
+        elif args.scenario == AUTOIMMUNE:
+            scenario_type = args.autoimmune_attack_type
 
         # Auto Generate Filename
         output_filename = f"{args.scenario}_scenario" + \
-                          f"_{args.autoimmune_attack_type}_type" + \
+                          f"_{scenario_type}_type" + \
                           f"_{policies_used_str}_policies" + \
                           f"_{mixed_adoption_setting}_rov" + \
                           f"_{min_rov_conf}_conf" + \
@@ -371,6 +377,10 @@ def parse_args():
                         default=False,
                         help='If ROV adoption is not set to "none", then allow preset ' 
                              'ROV ases to be converted to other adopting policy selected for simulation.')
+    parser.add_argument('--fightback_origin_only',
+                        action="store_true",
+                        default=False,
+                        help='Whether or not the origin fights back alone in the Artemis scenario settings ')
 
     # Other Args
     parser.add_argument('--collect_avoid_list_metadata',
