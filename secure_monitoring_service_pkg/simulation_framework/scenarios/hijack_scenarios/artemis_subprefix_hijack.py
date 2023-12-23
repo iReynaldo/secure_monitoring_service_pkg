@@ -18,12 +18,13 @@ class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
     """
     __slots__ = ()
 
-    def __init__(self, fightback_origin_only=False, *args, **kwargs):
+    def __init__(self, fightback_origin_only=False, fightback_cdn_only=False, *args, **kwargs):
         super(ArtemisSubprefixHijackScenario, self).__init__(*args, **kwargs)
         self.name = "ArtemisSubprefixHijackScenario"
         # The following gets updated after traceback of RELAY_PREFIX is done
         self.a_cdn_has_successful_connection_to_origin = False
         self.fightback_origin_only = fightback_origin_only
+        self.fightback_cdn_only = fightback_cdn_only
 
     def determine_as_outcome(self,
                              as_obj: AS,
@@ -64,7 +65,12 @@ class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
         anns = list()
         relay_asns = set() if not self.relay_asns else self.relay_asns
         # Set of fightback ASes
-        fightback_ases = self.victim_asns if self.fightback_origin_only else self.victim_asns | relay_asns
+        if self.fightback_origin_only:
+            fightback_ases = self.victim_asns
+        elif self.fightback_cdn_only:
+            fightback_ases = relay_asns
+        else:
+            fightback_ases = self.victim_asns | relay_asns
         # Setup Relay Announcements
         for i, asn in enumerate(fightback_ases):
             relay_prefix = Prefixes.SUBPREFIX.value

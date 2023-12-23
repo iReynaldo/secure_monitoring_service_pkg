@@ -113,6 +113,7 @@ def process_scenario_args(args):
         settings["indirect"] = True if args.autoimmune_attack_type == 'indirect' else False
     if args.scenario == ARTEMIS_SUBPREFIX_HIJACK:
         settings["fightback_origin_only"] = args.fightback_origin_only
+        settings["fightback_cdn_only"] = args.fightback_cdn_only
 
     return settings
 
@@ -174,6 +175,8 @@ def process_other_args(args):
             mixed_adoption_setting = args.rov_adoption
         if args.scenario == ARTEMIS_SUBPREFIX_HIJACK and args.fightback_origin_only:
             scenario_type = 'originOnly'
+        elif args.scenario == ARTEMIS_SUBPREFIX_HIJACK and args.fightback_cdn_only:
+            scenario_type = 'cdnOnly'
         elif args.scenario == AUTOIMMUNE:
             scenario_type = args.autoimmune_attack_type
 
@@ -380,7 +383,11 @@ def parse_args():
     parser.add_argument('--fightback_origin_only',
                         action="store_true",
                         default=False,
-                        help='Whether or not the origin fights back alone in the Artemis scenario settings ')
+                        help='Whether or not the origin fights back alone in the Artemis scenario settings.')
+    parser.add_argument('--fightback_cdn_only',
+                        action="store_true",
+                        default=False,
+                        help='Whether or not the CDN fights back without origin in the Artemis scenario settings.')
 
     # Other Args
     parser.add_argument('--collect_avoid_list_metadata',
