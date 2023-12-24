@@ -173,12 +173,16 @@ def process_other_args(args):
             mixed_adoption_setting = args.replace_rov_ases_with[0]
         else:
             mixed_adoption_setting = args.rov_adoption
+
+        # Scenario type
         if args.scenario == ARTEMIS_SUBPREFIX_HIJACK and args.fightback_origin_only:
             scenario_type = 'originOnly'
         elif args.scenario == ARTEMIS_SUBPREFIX_HIJACK and args.fightback_cdn_only:
             scenario_type = 'cdnOnly'
         elif args.scenario == AUTOIMMUNE:
             scenario_type = args.autoimmune_attack_type
+        else:
+            scenario_type = 'none'
 
         # Auto Generate Filename
         output_filename = f"{args.scenario}_scenario" + \
