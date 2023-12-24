@@ -22,6 +22,7 @@ class RelayPrefixHijack(V4Scenario, PrefixHijack):
         super(RelayPrefixHijack, self).__init__(*args, **kwargs)
         self.name = "RelayPrefixHijack"
         self.victim_asns = self.relay_asns
+        self.num_victims = len(self.victim_asns)
         self.relay_asns = None
 
     def _get_announcements(self,
