@@ -331,9 +331,9 @@ def parse_args():
     parser.add_argument('--fraction_of_peer_ases_to_attack',
                         type=float,
                         nargs='?',
-                        default=0.5,
+                        default=1.0,
                         help='A float representing the fraction peers to be '
-                             'attacker when the "attack_relays" flag is set')
+                             'attacked when the "attack_relays" flag is set')
     parser.add_argument('--assume_relays_are_reachable',
                         action="store_true",
                         default=False,
