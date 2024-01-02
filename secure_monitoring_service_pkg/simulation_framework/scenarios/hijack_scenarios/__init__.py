@@ -4,6 +4,7 @@ from .artemis_subprefix_hijack import ArtemisSubprefixHijackScenario
 from .v4_superprefix_plus_prefix_hijack_prefix_scenario import V4SuperprefixPrefixHijack
 from .v4_prefix_hijack_scenario import V4PrefixHijackScenario
 from .relay_prefix_hijack import RelayPrefixHijack
+from .v4_origin_hijack import V4OriginHijack
 
 __all__ = [
     "V4SubprefixHijackScenario",
@@ -11,5 +12,6 @@ __all__ = [
     "ArtemisSubprefixHijackScenario",
     "V4SuperprefixPrefixHijack",
     "V4PrefixHijackScenario",
-    "RelayPrefixHijack"
+    "RelayPrefixHijack",
+    "V4OriginHijack"
 ]

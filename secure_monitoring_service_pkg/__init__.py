@@ -9,6 +9,7 @@ __all__ = [
     "V4SuperprefixPrefixHijack",
     "V4PrefixHijackScenario",
     "RelayPrefixHijack",
+    "V4OriginHijack",
     "V4Simulation",
     "V4Subgraph",
     "CDN",
