@@ -516,6 +516,16 @@ def main():
                          output_path=BASE_PATH / other_args["output_filename"],
                          **simulation_args),
         ]
+    elif other_args["scenario"] == ORIGIN_HIJACK:
+        sims = [
+            V4Simulation(scenarios=[V4OriginHijack(AdoptASCls=Cls,
+                                                      AnnCls=ROVPPAnn,
+                                                      **scenario_args)
+                                    for Cls in adoption_classes
+                                    ],
+                         output_path=BASE_PATH / other_args["output_filename"],
+                         **simulation_args),
+        ]
     else:
         raise f"Unknown scenario specified: {other_args['scenario']}"
 
