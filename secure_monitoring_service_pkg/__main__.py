@@ -11,7 +11,7 @@ from rovpp_pkg import ROVPPV1LiteSimpleAS
 
 from secure_monitoring_service_pkg import V4Subgraph
 from secure_monitoring_service_pkg import V4Simulation
-from secure_monitoring_service_pkg import Artermis
+from secure_monitoring_service_pkg import Artemis
 from secure_monitoring_service_pkg import ROVPPO, ROVO
 from secure_monitoring_service_pkg import ROVSMS, ROVSMSK1, ROVSMSK2
 from secure_monitoring_service_pkg import ROVSMSK3, ROVSMSK5, ROVSMSK6
@@ -57,7 +57,7 @@ STANDARD_POLICIES = {
 }
 
 POLICIES = {
-    'artemis': Artermis,
+    'artemis': Artemis,
     'rovppo': ROVPPO,
     'rovo': ROVO,
     'v4': ROVSMS,

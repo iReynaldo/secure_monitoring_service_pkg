@@ -26,6 +26,15 @@ class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
         self.fightback_origin_only = fightback_origin_only
         self.fightback_cdn_only = fightback_cdn_only
 
+
+    def get_victim_announcements(self):
+        victim_announcements = set()
+        for ann in self.announcements:
+            for victim_asn in self.victim_asns:
+                if victim_asn == ann.as_path[-1] and ann.prefix == Prefixes.PREFIX.value:
+                    victim_announcements.add(ann)
+        return victim_announcements
+
     def determine_as_outcome(self,
                              as_obj: AS,
                              ann: Optional[Announcement]
@@ -74,7 +83,8 @@ class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
         # Setup Relay Announcements
         for i, asn in enumerate(fightback_ases):
             relay_prefix = Prefixes.SUBPREFIX.value
-            self.relay_prefixes[asn] = relay_prefix
+            if asn not in self.victim_asns:
+                self.relay_prefixes[asn] = relay_prefix
             anns.append(self.AnnCls(prefix=relay_prefix,
                                     as_path=(asn,),
                                     timestamp=2,

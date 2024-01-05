@@ -1,10 +1,10 @@
 from .rov_sms import *
-from .artemis import Artermis
+from .artemis import Artemis
 from .rovppo import ROVPPO
 from .rovo import ROVO
 
 __all__ = [
-    "Artermis",
+    "Artemis",
     "ROVPPO",
     "ROVO",
     "ROVSMS",

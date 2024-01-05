@@ -13,6 +13,7 @@ from bgp_simulator_pkg import Scenario
 from bgp_simulator_pkg import Subgraph
 from bgp_simulator_pkg import Outcomes
 from bgp_simulator_pkg import Announcement as Ann
+from bgp_simulator_pkg import Prefixes
 
 from rovpp_pkg import ROVPPV1SimpleAS
 from rovpp_pkg import ROVPPV1LiteSimpleAS
@@ -588,9 +589,8 @@ class V4Subgraph(Subgraph):
 
     def get_prefix_with_minimum_successful_connections(self, scenario, shared_data):
 
-        # For Artemis Subprefix Hijack Scenario there is only one attacker subprefix
         if isinstance(scenario, ArtemisSubprefixHijackScenario):
-            return next(iter(scenario.get_attacker_announcements())).prefix
+            return Prefixes.SUBPREFIX.value
 
         # For more general scenarios use this
         min_prefix = ""

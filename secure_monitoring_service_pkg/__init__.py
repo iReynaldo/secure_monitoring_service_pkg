@@ -17,7 +17,7 @@ __all__ = [
     "TrustedServer",
     "Report",
     "mvdp",
-    "Artermis",
+    "Artemis",
     "ROVPPO",
     "ROVO",
     "ROVSMS",
