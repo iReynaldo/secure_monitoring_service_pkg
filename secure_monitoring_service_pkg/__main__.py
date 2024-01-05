@@ -222,6 +222,9 @@ def process_other_args(args):
     if args.collect_agg_as_metadata:
         metadata_collector.collect_agg_as_metadata = args.collect_agg_as_metadata
         metadata_collector.write_agg_as_csv_header()
+    if args.collect_artemis_metadata:
+        metadata_collector.collect_artemis_metadata = args.collect_artemis_metadata
+        metadata_collector.write_artemis_csv_header()
     return settings
 
 
@@ -405,11 +408,17 @@ def parse_args():
     parser.add_argument('--collect_as_metadata',
                         action="store_true",
                         default=False,
-                        help='Whether or not to collect individual AS metadata.')
+                        help='Whether or not to collect individual AS metadata. '
+                             'WARNING: Should only be done for a small number of trials, '
+                             'as the resulting file grows large very quickly.')
     parser.add_argument('--collect_agg_as_metadata',
                         action="store_true",
                         default=False,
                         help='Whether or not to collect aggregated AS metadata.')
+    parser.add_argument('--collect_artemis_metadata',
+                        action="store_true",
+                        default=False,
+                        help='Whether or not to collect Artemis metadata.')
     return process_args(parser.parse_args())
 
 

@@ -42,6 +42,21 @@ AGG_AS_CSV_FIELDNAMES = ['trial', 'percentage', 'propagation_round',
                          'relay_name', 'empty_rib', 'no_providers',
                          'no_legit_origin_prefix']
 
+ARTEMIS_CSV_FIELDNAMES = ['trial', 'percentage', 'propagation_round',
+                          'adoption_setting', 'prefix_for_outcome',
+                          'attacker_asns', 'victim_asn',
+                          'relay_name', 'num_relays',
+                          'count_of_cdn_with_successful_path_to_origin']
+
+# CONTROL_PLANE_CSV_FIELDNAMES = ['trial', 'percentage', 'propagation_round',
+#                                 'adoption_setting', 'prefix_for_outcome',
+#                                 'attacker_asns', 'victim_asn',
+#                                 'relay_name', 'num_relays',
+#                                 'adopting_attacker_success', 'adopting_victim_success',
+#                                 'adopting_disconnections', 'non_adopting_attacker_success',
+#                                 'non_adopting_victim_success', 'non_adopting_disconnections',
+#                                 'num_adopting', 'num_non_adopting']
+
 # Add all the rest of the columns
 #
 # Abbreviation Meanings
@@ -89,6 +104,18 @@ collect_agg_as_metadata = False  # Defines control switch of enable/disabling me
 agg_as_csv_filename = ''
 agg_as_csv_lock_filename = ''
 agg_as_csv_flock = None
+
+# Artemis Metadata Collection
+collect_artemis_metadata = False  # Defines control switch of enable/disabling metadata collection for aggregated AS data
+artemis_csv_filename = ''
+artemis_csv_lock_filename = ''
+artemis_csv_flock = None
+
+# # Control Plane Metadata Collection
+# collect_control_plane_metadata = False  # Defines control switch of enable/disabling metadata collection for aggregated AS data
+# control_plane_csv_filename = ''
+# control_plane_csv_lock_filename = ''
+# control_plane_csv_flock = None
 
 
 #########################################################
@@ -138,6 +165,18 @@ def write_agg_as_csv_header():
     write_csv_file_header(agg_as_csv_filename, AGG_AS_CSV_FIELDNAMES, CSV_FILE_DELIMITER)
 
 
+def write_artemis_csv_header():
+    # Setup Metadata collection CSV
+    global artemis_csv_filename
+    global artemis_csv_lock_filename
+    global artemis_csv_flock
+    artemis_csv_filename = ''.join([base_path, '/', output_filename, '_artemis_metadata.csv'])
+    artemis_csv_lock_filename = ''.join([artemis_csv_filename, '.lock'])
+    artemis_csv_flock = FileLock(artemis_csv_lock_filename)
+    # Write their headers
+    write_csv_file_header(artemis_csv_filename, ARTEMIS_CSV_FIELDNAMES, CSV_FILE_DELIMITER)
+
+
 def clean_up_lock_files():
     if collect_avoid_list_metadata:
         os.remove(avoid_list_csv_lock_filename)
@@ -145,3 +184,5 @@ def clean_up_lock_files():
         os.remove(as_csv_lock_filename)
     if collect_agg_as_metadata:
         os.remove(agg_as_csv_lock_filename)
+    if collect_artemis_metadata:
+        os.remove(artemis_csv_lock_filename)

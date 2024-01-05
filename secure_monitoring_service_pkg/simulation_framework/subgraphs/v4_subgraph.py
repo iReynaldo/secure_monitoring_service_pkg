@@ -68,6 +68,10 @@ class V4Subgraph(Subgraph):
         self.collect_agg_as_metadata = metadata_collector.collect_agg_as_metadata
         self.agg_as_csv_filename = metadata_collector.agg_as_csv_filename
         self.agg_as_metadata_fieldnames = metadata_collector.AGG_AS_CSV_FIELDNAMES
+        # Artemis metadata variables
+        self.collect_artemis_metadata = metadata_collector.collect_artemis_metadata
+        self.artemis_csv_filename = metadata_collector.artemis_csv_filename
+        self.artemis_metadata_fieldnames = metadata_collector.ARTEMIS_CSV_FIELDNAMES
 
 
     def verify_avoid_list(self,
@@ -179,7 +183,7 @@ class V4Subgraph(Subgraph):
                                                                traceback_asn_outcomes, shared_data,
                                                                before_relay_usage=before_relay_usage,
                                                                after_relay_usage=after_relay_usage)
-                    elif self._origin_can_reach_relay(engine, scenario):
+                    elif self._count_origin_can_reach_relay(engine, scenario) > 0:
                          # TODO: Maybe this logic can be improved, but it's testable now
                         scenario.a_cdn_has_successful_connection_to_origin = True
                         outcomes, traceback_asn_outcomes = \
@@ -233,6 +237,12 @@ class V4Subgraph(Subgraph):
                  scenario, origin_prefix,
                  prefix_with_minimum_successful_connections,
                  prefix_outcomes[prefix_with_minimum_successful_connections])
+
+        if self.collect_artemis_metadata and prefix_outcomes:
+            self.write_artemis_metadata(
+                 trial, percent_adopt, propagation_round,
+                 scenario, prefix_with_minimum_successful_connections,
+                 engine)
 
         key = self._get_subgraph_key(scenario)
         shared_data[key] = shared_data.get(key + f"_{prefix_with_minimum_successful_connections}", 0)
@@ -361,9 +371,29 @@ class V4Subgraph(Subgraph):
                     'attacker_asns': str(list(scenario.attacker_asns)),
                     'victim_asn': next(iter(scenario.victim_asns)),
                     'relay_name': scenario.relay_name,
-
                 }
                 row.update(counts)
+                writer.writerow(row)
+
+    def write_artemis_metadata(self, trial, percent_adopt, propagation_round,
+                              scenario, prefix, engine):
+        with metadata_collector.artemis_csv_flock:
+            with open(self.artemis_csv_filename, 'a') as csvfile:
+                writer = csv.DictWriter(csvfile,
+                                        fieldnames=self.artemis_metadata_fieldnames,
+                                        delimiter=self.csv_file_delimiter)
+                row = {
+                    'trial': trial,
+                    'percentage': percent_adopt,
+                    'propagation_round': propagation_round,
+                    'adoption_setting': scenario.AdoptASCls.name,
+                    'prefix_for_outcome': prefix,
+                    'attacker_asns': str(list(scenario.attacker_asns)),
+                    'victim_asn': next(iter(scenario.victim_asns)),
+                    'relay_name': scenario.relay_name,
+                    'num_relays': len(scenario.relay_asns),
+                    'count_of_cdn_with_successful_path_to_origin': self._count_origin_can_reach_relay(engine, scenario),
+                }
                 writer.writerow(row)
 
     def _provider_setting(self, as_obj, scenario, prefix):
@@ -566,26 +596,16 @@ class V4Subgraph(Subgraph):
         # Update Metadata tracking variable
         after_relay_usage.update((self.available_relay_counter_key,) * len(available_relays))
 
-
-    def _origin_can_reach_relay(self, engine, scenario):
+    def _count_origin_can_reach_relay(self, engine, scenario):
         relay_ann = scenario.generate_origin_relay_announcement()[0]
         outcomes, traceback_asn_outcomes = \
             self._get_engine_outcomes(engine, scenario, relay_ann)
-        victim_asn = next(iter(scenario.victim_asns))
-        # If any of the Relay CDNs can reach the origin successfully, then they will
-        # successfully connect to the origin.
+        # Count relays with success connections to the origin via the special prefix
+        count = 0
         for relay_asn in scenario.relay_asns:
             if outcomes[engine.as_dict[relay_asn]] == Outcomes.VICTIM_SUCCESS:
-                return True
-        return False
-
-    def _recalculate_outcomes_with_artemis(self, scenario, engine, attacker_ann, outcomes, traceback_asn_outcomes,
-                                          shared_data):
-        # TODO: Determine if the origin has a successful connection to the CDN(s)
-        # TODO: If origin has successful connection to origin, then check what
-        #   ASes are able to reach the available CDNs
-        # TODO: Update outcomes of ASes that can reach available CDNs
-        pass
+                count += 1
+        return count
 
     def get_prefix_with_minimum_successful_connections(self, scenario, shared_data):
 
