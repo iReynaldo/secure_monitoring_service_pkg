@@ -21,8 +21,9 @@ class RelayPrefixHijack(V4Scenario, PrefixHijack):
     def __init__(self, *args, **kwargs):
         super(RelayPrefixHijack, self).__init__(*args, **kwargs)
         self.name = "RelayPrefixHijack"
+        self.attacker_victim_asns_preset = True
         self.victim_asns = self.relay_asns
-        self.num_victims = len(self.victim_asns)
+        self.num_victims = len(self.relay_asns)
         self.relay_asns = None
 
     def _get_announcements(self,
@@ -60,6 +61,16 @@ class RelayPrefixHijack(V4Scenario, PrefixHijack):
                                     recv_relationship=Relationships.ORIGIN))
 
         return tuple(anns)
+
+    def _set_attackers_victims(self, *args, **kwargs):
+        """Sets attacker victim pair"""
+
+        self.attacker_asns = self._get_attacker_asns(*args, **kwargs)
+
+        # Only run if attacker and victims aren't already set
+        if not self.attacker_victim_asns_preset:
+            self.victim_asns = self._get_victim_asns(*args, **kwargs)
+
 
     def determine_as_outcome(self,
                              as_obj: AS,
