@@ -5,6 +5,7 @@ from pathlib import Path
 import argparse
 
 from bgp_simulator_pkg import ROVSimpleAS
+from bgp_simulator_pkg import SpecialPercentAdoptions
 
 from rovpp_pkg import ROVPPAnn
 from rovpp_pkg import ROVPPV1LiteSimpleAS
@@ -49,7 +50,7 @@ SUPERPREFIX_PLUS_PREFIX_HIJACK = "V4SuperprefixPrefixHijack"
 RELAY_PREFIX_HIJACK = "RelayPrefixHijack"
 ORIGIN_HIJACK = "V4OriginHijack"
 
-ALL_PERCENTAGES = [0.0, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99]
+ALL_PERCENTAGES = [SpecialPercentAdoptions.ONLY_ONE, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99]
 
 STANDARD_POLICIES = {
     'rov': ROVSimpleAS,

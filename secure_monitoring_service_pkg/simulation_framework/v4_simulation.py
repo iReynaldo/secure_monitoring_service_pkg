@@ -94,6 +94,8 @@ class V4Simulation(Simulation):
         start = datetime.now()
         self._get_data()
         elapsed_time = (datetime.now() - start).total_seconds()
+        # Replace SpecialPercentAdoption
+        experiment_settings_to_save["percent_adoptions"] = [ x.value if isinstance(x, SpecialPercentAdoptions) else x for x in experiment_settings_to_save["percent_adoptions"]]
         if experiment_settings_to_save:
             experiment_settings_to_save["runtime_seconds"] = elapsed_time
         self._write_data(experiment_settings_to_save)
