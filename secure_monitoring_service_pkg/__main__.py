@@ -135,8 +135,13 @@ def process_simulation_args(args):
         raise ValueError(f"Unknown ROV setting given: {rov_setting_raw}")
 
     aux_path = Path(__file__).parent / "aux_files"
+    percentages = args.percentages
+    if percentages == [-1.0,]:
+        percentages = [SpecialPercentAdoptions.ONLY_ONE,]
+    elif percentages == [1000.0,]:
+        percentages = [SpecialPercentAdoptions.ALL_BUT_ONE,]
     return {
-        "percent_adoptions": args.percentages,
+        "percent_adoptions": percentages,
         "num_trials": args.num_trials,
         "subgraphs": [Cls() for Cls in V4Subgraph.v4_subclasses if Cls.name],
         "parse_cpus": args.cpus,
