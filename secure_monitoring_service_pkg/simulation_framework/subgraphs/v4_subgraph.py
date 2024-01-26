@@ -531,7 +531,7 @@ class V4Subgraph(Subgraph):
                     if as_obj.asn in scenario.relay_asns and as_obj.asn not in seen_relay_ases:
                         before_relay_usage.update((outcomes[as_obj],))
                     if self.has_access_to_relay_service(as_obj) and \
-                            outcomes[as_obj] != Outcomes.VICTIM_SUCCESS and \
+                            outcomes[as_obj] == Outcomes.DISCONNECTED and \
                             as_obj.asn not in available_relays:
                         if as_obj.asn in scenario.relay_asns and scenario.relay_setting == CDN_RELAY_SETTING:
                             selected_relay_asn = as_obj.use_relay(available_relays,
