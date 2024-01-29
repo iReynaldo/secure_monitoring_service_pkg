@@ -32,6 +32,8 @@ NO_RELAY_SETTING = "no_relay"
 
 RELAY_PREFIX = "7.7.7.0/24"
 
+ATTACK_RELAY_PREFIX_HIJACK = 'prefix_hijack'
+ATTACK_RELAY_ORIGIN_HIJACK = 'origin_hijack'
 
 ################################
 # Functions
@@ -59,7 +61,7 @@ class V4Scenario(Scenario):
     def __init__(self, *args, relay_asns=None, attack_relays=False, fraction_of_peer_ases_to_attack=0.5,
                  assume_relays_are_reachable=False, tunnel_customers_traffic=False,
                  probe_data_plane=False, special_static_as_class=None, probabilistic_rov_adoption=False,
-                 allow_rov_turnover=False, **kwargs):
+                 allow_rov_turnover=False, attack_relays_type=ATTACK_RELAY_PREFIX_HIJACK, **kwargs):
         super(V4Scenario, self).__init__(*args, **kwargs)
         self.has_rovsms_ases = False
         self.trusted_server_ref = None
@@ -70,6 +72,7 @@ class V4Scenario(Scenario):
         self.tunnel_customers_traffic = tunnel_customers_traffic
         self.assume_relays_are_reachable = assume_relays_are_reachable
         self.attack_relays = attack_relays
+        self.attack_relays_type = attack_relays_type
         self.fraction_of_peer_ases_to_attack = fraction_of_peer_ases_to_attack
         self.probe_data_plane = probe_data_plane
         self.special_static_as_class = special_static_as_class if special_static_as_class else RealROVSimpleAS
@@ -321,13 +324,25 @@ class V4Scenario(Scenario):
         return victim_announcements
 
     def create_attacker_relay_announcement(self, prefix, seed_asn, roa_origin):
-        return self.AnnCls(prefix=prefix,
-                           as_path=(seed_asn,),
-                           timestamp=Timestamps.ATTACKER.value,
-                           seed_asn=seed_asn,
-                           roa_valid_length=True,
-                           roa_origin=roa_origin,
-                           recv_relationship=Relationships.ORIGIN)
+        if self.attack_relays_type == ATTACK_RELAY_PREFIX_HIJACK:
+            return self.AnnCls(prefix=prefix,
+                               as_path=(seed_asn,),
+                               timestamp=Timestamps.ATTACKER.value,
+                               seed_asn=seed_asn,
+                               roa_valid_length=True,
+                               roa_origin=roa_origin,
+                               recv_relationship=Relationships.ORIGIN)
+        elif self.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
+            roa_origin: int = next(iter(self.victim_asns))
+            return self.AnnCls(prefix=prefix,
+                               as_path=(seed_asn, roa_origin),
+                               timestamp=Timestamps.ATTACKER.value,
+                               seed_asn=seed_asn,
+                               roa_valid_length=True,
+                               roa_origin=roa_origin,
+                               recv_relationship=Relationships.ORIGIN)
+        else:
+            raise ValueError(f"Invalid attack_relays_type option specified: {self.attack_relays_type}")
 
     def generate_relay_announcements(self, providers_dict=None):
         anns = list()
