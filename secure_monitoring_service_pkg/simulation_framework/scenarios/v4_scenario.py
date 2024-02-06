@@ -319,7 +319,7 @@ class V4Scenario(Scenario):
         victim_announcements = set()
         for ann in self.announcements:
             for victim_asn in self.victim_asns:
-                if victim_asn == ann.as_path[-1]:
+                if victim_asn == ann.as_path[-1] and not (self.attacker_asns & set(ann.as_path)):
                     victim_announcements.add(ann)
         return victim_announcements
 
@@ -333,14 +333,16 @@ class V4Scenario(Scenario):
                                roa_origin=roa_origin,
                                recv_relationship=Relationships.ORIGIN)
         elif self.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
-            roa_origin: int = next(iter(self.victim_asns))
-            return self.AnnCls(prefix=prefix,
-                               as_path=(seed_asn, roa_origin),
-                               timestamp=Timestamps.ATTACKER.value,
-                               seed_asn=seed_asn,
-                               roa_valid_length=True,
-                               roa_origin=roa_origin,
-                               recv_relationship=Relationships.ORIGIN)
+            anns = list()
+            for relay_asn in self.relay_asns:
+                anns.append(self.AnnCls(prefix=prefix,
+                                   as_path=(seed_asn, relay_asn),
+                                   timestamp=Timestamps.ATTACKER.value,
+                                   seed_asn=seed_asn,
+                                   roa_valid_length=True,
+                                   roa_origin=relay_asn,
+                                   recv_relationship=Relationships.ORIGIN))
+            return anns
         else:
             raise ValueError(f"Invalid attack_relays_type option specified: {self.attack_relays_type}")
 
@@ -365,7 +367,12 @@ class V4Scenario(Scenario):
             if self.attack_relays:
                 if self.relay_setting == CDN_RELAY_SETTING:
                     for attacker_asn in self.attacker_asns:
-                        anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
+                        if self.attack_relays_type == ATTACK_RELAY_PREFIX_HIJACK:
+                            anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
+                        elif self.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
+                            anns.extend(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
+                        else:
+                            raise ValueError(f"Invalid attack_relays_type option specified: {self.attack_relays_type}")
                 else:
                     for attacker_asn in self.attacker_asns:
                         for relay_prefix in select_fraction_from_set(self.relay_prefixes.values(), self.fraction_of_peer_ases_to_attack):

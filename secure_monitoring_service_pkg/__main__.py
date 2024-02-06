@@ -23,6 +23,7 @@ from secure_monitoring_service_pkg import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg import V4SuperprefixPrefixHijack
 from secure_monitoring_service_pkg import V4PrefixHijackScenario
 from secure_monitoring_service_pkg import RelayPrefixHijack
+from secure_monitoring_service_pkg import V4Scenario
 from secure_monitoring_service_pkg import V4OriginHijack
 from secure_monitoring_service_pkg import CDN
 from secure_monitoring_service_pkg import Peer
@@ -195,6 +196,8 @@ def process_other_args(args):
             scenario_type = 'cdnOnly'
         elif args.scenario == AUTOIMMUNE:
             scenario_type = args.autoimmune_attack_type
+        elif args.attack_relays_type[0] == 'origin_hijack':
+            scenario_type = 'originHijack'
         else:
             scenario_type = 'none'
 
