@@ -371,12 +371,20 @@ class V4Scenario(Scenario):
                             anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
                         elif self.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
                             anns.extend(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
+                            print(anns)
                         else:
                             raise ValueError(f"Invalid attack_relays_type option specified: {self.attack_relays_type}")
                 else:
                     for attacker_asn in self.attacker_asns:
                         for relay_prefix in select_fraction_from_set(self.relay_prefixes.values(), self.fraction_of_peer_ases_to_attack):
-                            anns.append(self.create_attacker_relay_announcement(relay_prefix, attacker_asn, roa_origin))
+                            if self.attack_relays_type == ATTACK_RELAY_PREFIX_HIJACK:
+                                anns.append(self.create_attacker_relay_announcement(relay_prefix, attacker_asn, roa_origin))
+                            elif self.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
+                                anns.extend(
+                                    self.create_attacker_relay_announcement(relay_prefix, attacker_asn, roa_origin))
+                            else:
+                                raise ValueError(
+                                    f"Invalid attack_relays_type option specified: {self.attack_relays_type}")
         return anns
 
     def get_victim_asn(self, **kwargs):

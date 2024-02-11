@@ -534,13 +534,10 @@ class V4Subgraph(Subgraph):
                             outcomes[as_obj] == Outcomes.DISCONNECTED and \
                             as_obj.asn not in available_relays:
                         if as_obj.asn in scenario.relay_asns and scenario.relay_setting == CDN_RELAY_SETTING:
-                            selected_relay_asn = as_obj.use_relay(available_relays,
-                                                                  scenario.relay_prefixes,
-                                                                  True)
+                            selected_relay_asn = as_obj.use_relay(available_relays, scenario.relay_prefixes, True, scenario)
                         else:
-                            selected_relay_asn = as_obj.use_relay(available_relays,
-                                                                  scenario.relay_prefixes,
-                                                                  scenario.assume_relays_are_reachable)
+                            selected_relay_asn = as_obj.use_relay(available_relays, scenario.relay_prefixes,
+                                                                  scenario.assume_relays_are_reachable, scenario)
                         if selected_relay_asn:
                             # Update the ASes relay usage variable
                             as_obj.used_relay = True

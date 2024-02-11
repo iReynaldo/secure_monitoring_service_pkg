@@ -74,8 +74,10 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
             # Add blackhole ann to localRIB
             self._local_rib.add_ann(hole)
 
-    def use_relay(self, relay_asns, relay_prefix_dict, assume_relays_are_reachable):
-        """return the relay that it would use"""
+    def use_relay(self, relay_asns, relay_prefix_dict, assume_relays_are_reachable, scenario):
+        """return the relay that it would use
+        :param scenario:
+        """
         # TODO: Future enhancement: Consider picking preference with
         #   1. Relationship preference
         #   2. Shortest path
@@ -89,7 +91,13 @@ class ROVSMS(ROVPPV1LiteSimpleAS):
                 prefix = relay_prefix_dict[asn]
                 # TODO: should probably check if ASN is at the end of the path?
                 if prefix in self._local_rib._info and asn in self._local_rib._info[prefix].as_path:
-                    accessible_relays.append(asn)
+                    # Check if attacker on path, and if so, add attacker to list
+                    attackers_on_path = scenario.attacker_asns & set(self._local_rib._info[prefix].as_path)
+                    if attackers_on_path:
+                        # attacker_on_path is expected to be of size 1
+                        accessible_relays.append(next(iter(attackers_on_path)))
+                    else:
+                        accessible_relays.append(asn)
             # Uniformly at random select from available relays
             return random.choice(accessible_relays) if len(accessible_relays) > 0 else None
 
