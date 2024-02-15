@@ -391,6 +391,7 @@ class V4Scenario(Scenario):
                             anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
                         elif self.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
                             anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, (attacker_asn, relay_asns_list[relay_i % relay_len]), roa_origin))
+                            relay_i += 1
                         else:
                             raise ValueError(f"Invalid attack_relays_type option specified: {self.attack_relays_type}")
                 else:
