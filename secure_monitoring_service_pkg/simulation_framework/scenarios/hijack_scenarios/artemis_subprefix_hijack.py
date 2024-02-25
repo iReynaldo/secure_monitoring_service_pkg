@@ -8,7 +8,7 @@ from bgp_simulator_pkg import Prefixes
 
 from caida_collector_pkg import AS
 
-from ..v4_scenario import V4Scenario, RELAY_PREFIX
+from ..v4_scenario import V4Scenario, RELAY_PREFIX, ATTACK_RELAY_PREFIX_HIJACK, ATTACK_RELAY_ORIGIN_HIJACK
 
 
 class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
@@ -23,17 +23,10 @@ class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
         self.name = "ArtemisSubprefixHijackScenario"
         # The following gets updated after traceback of RELAY_PREFIX is done
         self.a_cdn_has_successful_connection_to_origin = False
+        self.cdn_outcomes = dict()
+        self.cdn_outcomes_computed = False
         self.fightback_origin_only = fightback_origin_only
         self.fightback_cdn_only = fightback_cdn_only
-
-
-    def get_victim_announcements(self):
-        victim_announcements = set()
-        for ann in self.announcements:
-            for victim_asn in self.victim_asns:
-                if victim_asn == ann.as_path[-1] and ann.prefix == Prefixes.PREFIX.value:
-                    victim_announcements.add(ann)
-        return victim_announcements
 
     def determine_as_outcome(self,
                              as_obj: AS,
@@ -45,11 +38,13 @@ class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
         that exists at that AS
         """
 
-        if as_obj.asn in self.attacker_asns:
+        if as_obj.asn in self.attacker_asns or \
+            (self.cdn_outcomes_computed and as_obj.asn in self.cdn_outcomes and self.cdn_outcomes[as_obj.asn] == Outcomes.ATTACKER_SUCCESS):
             return Outcomes.ATTACKER_SUCCESS, as_obj.asn
         # Key difference here with the relay_asn as a checkpoint for success
         elif (as_obj.asn in self.victim_asns or
-              (self.a_cdn_has_successful_connection_to_origin and as_obj.asn in self.relay_asns)):
+              (self.a_cdn_has_successful_connection_to_origin and as_obj.asn in self.relay_asns) or
+              (self.cdn_outcomes_computed and as_obj.asn in self.cdn_outcomes and self.cdn_outcomes[as_obj.asn] == Outcomes.VICTIM_SUCCESS)):
             return Outcomes.VICTIM_SUCCESS, as_obj.asn
         # End of traceback
         elif (ann is None
@@ -107,8 +102,13 @@ class ArtemisSubprefixHijackScenario(V4Scenario, SubprefixHijack):
                                 recv_relationship=Relationships.ORIGIN))
         if self.attack_relays:
             roa_origin = next(iter(self.victim_asns))
+
             for attacker_asn in self.attacker_asns:
-                anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
+                if self.attack_relays_type == ATTACK_RELAY_PREFIX_HIJACK:
+                    anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
+                elif self.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
+                    anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, (
+                        attacker_asn, roa_origin), roa_origin))
         return anns
 
     def _get_announcements(self, *args, **kwargs) -> Tuple["Announcement", ...]:

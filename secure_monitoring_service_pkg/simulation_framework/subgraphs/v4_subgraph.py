@@ -22,6 +22,8 @@ from secure_monitoring_service_pkg.simulation_framework.scenarios import Subpref
 from secure_monitoring_service_pkg.simulation_framework.scenarios import V4SubprefixHijackScenario
 from secure_monitoring_service_pkg.simulation_framework.scenarios import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg.simulation_framework.scenarios.v4_scenario import CDN_RELAY_SETTING
+from secure_monitoring_service_pkg.simulation_framework.scenarios.v4_scenario import ATTACK_RELAY_PREFIX_HIJACK
+from secure_monitoring_service_pkg.simulation_framework.scenarios.v4_scenario import ATTACK_RELAY_ORIGIN_HIJACK
 from secure_monitoring_service_pkg.simulation_engine.as_classes import ROVPPO
 from secure_monitoring_service_pkg.simulation_engine.as_classes import ROVSMS
 from secure_monitoring_service_pkg.simulation_framework import metadata_collector
@@ -98,7 +100,6 @@ class V4Subgraph(Subgraph):
         num_victim_providers_on_avoid_list = 0
 
         # Check that the avoid list ASes always lead to attacker
-        # print(outcomes)
         for prefix in scenario.avoid_lists:
             for asn in scenario.avoid_lists[prefix]:
                 if isinstance(scenario, SubprefixAutoImmuneScenario):
@@ -183,7 +184,12 @@ class V4Subgraph(Subgraph):
                                                                traceback_asn_outcomes, shared_data,
                                                                before_relay_usage=before_relay_usage,
                                                                after_relay_usage=after_relay_usage)
-                    elif self._count_origin_can_reach_relay(engine, scenario) > 0:
+                    elif isinstance(scenario, ArtemisSubprefixHijackScenario) and scenario.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
+                        self._count_origin_can_reach_relay(engine, scenario)
+                        scenario.cdn_outcomes_computed = True
+                        outcomes, traceback_asn_outcomes = \
+                            self._get_engine_outcomes(engine, scenario, attacker_ann)
+                    elif isinstance(scenario, ArtemisSubprefixHijackScenario) and self._count_origin_can_reach_relay(engine, scenario) > 0:
                          # TODO: Maybe this logic can be improved, but it's testable now
                         scenario.a_cdn_has_successful_connection_to_origin = True
                         outcomes, traceback_asn_outcomes = \
@@ -600,6 +606,8 @@ class V4Subgraph(Subgraph):
         # Count relays with success connections to the origin via the special prefix
         count = 0
         for relay_asn in scenario.relay_asns:
+            if scenario.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
+                scenario.cdn_outcomes[relay_asn] = outcomes[engine.as_dict[relay_asn]]
             if outcomes[engine.as_dict[relay_asn]] == Outcomes.VICTIM_SUCCESS:
                 count += 1
         return count
