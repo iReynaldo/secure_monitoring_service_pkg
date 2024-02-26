@@ -81,8 +81,20 @@ from .engine_test_configs import Config170
 from .engine_test_configs import Config171
 from .engine_test_configs import Config172
 from .engine_test_configs import Config173
-# from .engine_test_configs import Config174
-# from .engine_test_configs import Config175
+from .engine_test_configs import Config174
+from .engine_test_configs import Config175
+from .engine_test_configs import Config176
+from .engine_test_configs import Config177
+from .engine_test_configs import Config178
+from .engine_test_configs import Config179
+from .engine_test_configs import Config180
+from .engine_test_configs import Config181
+from .engine_test_configs import Config182
+# from .engine_test_configs import Config183
+# from .engine_test_configs import Config184
+# from .engine_test_configs import Config185
+# from .engine_test_configs import Config186
+# from .engine_test_configs import Config187
 
 ######################################
 # Make tests deterministic
@@ -180,8 +192,20 @@ class TestEngine:
                               Config171,
                               Config172,
                               Config173,
-                              # Config174,
-                              # Config175,
+                              Config174,
+                              Config175,
+                              Config176,
+                              Config177,
+                              Config178,
+                              Config179,
+                              Config180,
+                              Config181,
+                              Config182,
+                              # Config183,
+                              # Config184,
+                              # Config185,
+                              # Config186,
+                              # Config187,
                               ])
     def test_engine(self, conf: EngineTestConfig, overwrite: bool):
         """Performs a system test on the engine

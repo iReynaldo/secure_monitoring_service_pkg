@@ -37,7 +37,7 @@ class V4Diagram(Diagram):
                 row = f'''
                     <TR>
                       <TD BGCOLOR="#adadff">{asn}</TD>
-                      <TD BGCOLOR="#adadff:white">{shared_data["relay_prefixes"][asn]}</TD>
+                      <TD BGCOLOR="#adadff:white">{shared_data["relay_prefixes"].get(asn, asn)}</TD>
                       <TD>{relay_usage[asn]}</TD>
                     </TR>
                 '''

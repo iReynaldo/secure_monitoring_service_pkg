@@ -19,6 +19,7 @@ relay_prefixes:
 relay_usage:
   7786: !!set
     1: null
+    12008: null
   12008: !!set
     4: null
 set: true
