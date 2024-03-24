@@ -41,6 +41,11 @@ num_etc_ases = 11668
 num_input_clique_ases = 19
 num_all_ases = 75374
 
+# Confidence interval Z Values
+ZVAL_99 = 2.326  # 99% confidence interval Z value
+ZVAL_95 = 1.960  # 95% confidence interval Z value 
+ZVAL_90 = 1.645  # 90% confidence interval Z value
+
 # Policy Settings
 # 'standard': includes results for only ROV and ROV++ v1 Lite
 # 'others': Any other policies run, which in this case is just BGP Immunity Overlayed and BGP Immunity w/ Monitoring Systemz
@@ -51,9 +56,9 @@ victim_success = "victim_success"
 disconnections = "disconnections"
 
 metric_outcome = {
-        attacker_success: "Attacker Success",
-        victim_success: "Successful Connections",
-        disconnections: "Disconnections"
+        attacker_success: "Attacker Success (%)",
+        victim_success: "Successful Connections (%)",
+        disconnections: "Disconnections (%)"
     }
 
 metric_filename_prefix = {
@@ -65,12 +70,14 @@ metric_filename_prefix = {
 # For indexing in JSON file
 policy_name_map = {
         "rov": "ROVSimple",
+        "rovo": "ROV Simple Overlayed",
         "rovppv1lite": "ROV++V1 Lite Simple",
         "rovppo": "ROV++ V1 Lite Simple Overlayed",
         "v4": "ROV V4 Lite",
         "v4k2": "ROV V4 Lite K2",
         "v4k5": "ROV V4 Lite K5",
         "v4k10": "ROV V4 Lite K10",
+        "artemis": "ARTEMIS"
     }
 
 peer_map = {
@@ -89,9 +96,9 @@ peer_map = {
 ############################
 
 
-def calc_90_per_conf(list_of_vals):
+def calc_per_conf(list_of_vals):
     if len(list_of_vals) > 1:
-        yerr_num = 1.645 * 2 * np.std(list_of_vals)
+        yerr_num = ZVAL_95 * 2 * np.std(list_of_vals)
         yerr_denom = sqrt(len(list_of_vals))
         return yerr_num / yerr_denom
     else:
@@ -126,7 +133,7 @@ def get_metric_subgraph(metric, adoption_setting):
 
 
 # For mapping the styles to the lines
-def lines_style_mapper(policy, relay, attack_relay=False):
+def lines_style_mapper(policy, relay, attack_relay=False, num_attackers=None, rov_setting=None):
     if relay in cdns:
         relay_setting = f" {relay.capitalize()} -"
     elif relay in peers:
@@ -135,22 +142,28 @@ def lines_style_mapper(policy, relay, attack_relay=False):
         relay_setting = ""
     mapping = {
         "rov": "ROV",
+        "rovo": "ROV Overlayed",
         "rovppv1lite": "ROV++ V1 Lite",
         "rovppo": "Overlay",
-        "v4": "Minerva",
-        "v4k2": "Minerva k=2",
-        "v4k5": "Minerva k=5",
-        "v4k10": "Minerva k=10",
+        "v4": "Minerva (Sender)",
+        "v4k2": "Minerva (Sender) k=2",
+        "v4k5": "Minerva (Sender) k=5",
+        "v4k10": "Minerva (Sender) k=10",
+        "artemis": "Minerva (Receiver)",
+        "artemisOriginOnly": "Minerva (Receiver Origin Only)",
+        "artemisCDNOnly": "Minerva (Receiver CDN Only)"
     }
     attack_relay_str = ' Attacked' if attack_relay else ''
-    return mapping[policy] + attack_relay_str + relay_setting + " adopting"
+    num_attackers_str = f' ({num_attackers} Attackers)' if num_attackers else ''
+    rov_setting_str = ' No ROV' if rov_setting == 'none' else ''
+    return mapping[policy] + attack_relay_str + relay_setting + " adopting" + num_attackers_str + rov_setting_str
 
 
 ############################
 # Functions
 ############################
 
-def json_file(scenario, scenario_type, policies, rov_setting, rov_conf, hash_seed, probe,
+def json_file(scenario, scenario_type, policies, rov_setting, rov_conf, turnover, hash_seed, probe,
               relay, attack_relay, num_attackers, num_trials, tunnel=False, percentages="full"):
     # V4SubprefixHijackScenario_scenario_none_type_others_policies_real_rov_0_hash_False_probe_twenty_relay_False_attackRelay_1_attacker_2000_trials_full_percentages
     # if relay == 'twenty':
@@ -161,6 +174,7 @@ def json_file(scenario, scenario_type, policies, rov_setting, rov_conf, hash_see
            f"_{policies}_policies" \
            f"_{rov_setting}_rov" \
            f"_{rov_conf}_conf" \
+           f"{'_True_turnover' if turnover else ''}" \
            f"_{hash_seed}_hash" \
            f"_{probe}_probe" \
            f"_{tunnel}_tunnel" \
