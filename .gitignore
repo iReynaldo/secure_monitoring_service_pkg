@@ -207,10 +207,13 @@ scripts/data/graphs/mixed/
 scripts/data/graphs/*.zip
 scripts/data/graphs/jsons/*.json
 scripts/data/graphs/metadata/*.csv
+scripts/data/rov_sources/
 
 scripts/analysis/spyder/plots/
+scripts/analysis/spyder/minerva_plots/
 scripts/analysis/spyder/paper_plots/
 
+scripts/data/graphs/csvs/
 scripts/data/graphs/attacker_5/
 scripts/data/graphs/archive/
 scripts/data/graphs/beta/
