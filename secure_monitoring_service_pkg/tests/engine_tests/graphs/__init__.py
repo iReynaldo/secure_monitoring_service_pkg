@@ -17,7 +17,11 @@ from .graph_067 import Graph067
 from .graph_068 import Graph068
 from .graph_069 import Graph069
 from .graph_070 import Graph070
-
+from .graph_071 import Graph071
+from .graph_072 import Graph072
+from .graph_073 import Graph073
+from .graph_074 import Graph074
+from .graph_075 import Graph075
 
 __all__ = [
     "Graph052",
@@ -38,5 +42,10 @@ __all__ = [
     "Graph067",
     "Graph068",
     "Graph069",
-    "Graph070"
+    "Graph070",
+    "Graph071",
+    "Graph072",
+    "Graph073",
+    "Graph074",
+    "Graph075"
 ]

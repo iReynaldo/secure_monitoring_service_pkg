@@ -11,7 +11,7 @@ from rovpp_pkg import ROVPPAnn
 
 from .. import graphs
 from secure_monitoring_service_pkg import ArtemisSubprefixHijackScenario
-from secure_monitoring_service_pkg import Artermis
+from secure_monitoring_service_pkg import Artemis
 
 
 class Config173(EngineTestConfig):
@@ -26,19 +26,19 @@ class Config173(EngineTestConfig):
     scenario = ArtemisSubprefixHijackScenario(num_attackers=2,
                                               attacker_asns=graph.attacker_asn_set,
                                               victim_asns={ASNs.VICTIM.value},
-                                              AdoptASCls=Artermis,
+                                              AdoptASCls=Artemis,
                                               BaseASCls=BGPSimpleAS,
                                               AnnCls=ROVPPAnn,
                                               relay_asns=relay_asns,
                                               attack_relays=True)
 
-    non_default_as_cls_dict: Dict[int, Type[AS]] = {3: Artermis,
-                                                    4: Artermis,
-                                                    8: Artermis,
-                                                    10: Artermis,
-                                                    11: Artermis,
+    non_default_as_cls_dict: Dict[int, Type[AS]] = {3: Artemis,
+                                                    4: Artemis,
+                                                    8: Artemis,
+                                                    10: Artemis,
+                                                    11: Artemis,
                                                     7: ROVSimpleAS}
     for relay_asn in relay_asns:
-        non_default_as_cls_dict[relay_asn] = Artermis
+        non_default_as_cls_dict[relay_asn] = Artemis
 
     propagation_rounds = 1

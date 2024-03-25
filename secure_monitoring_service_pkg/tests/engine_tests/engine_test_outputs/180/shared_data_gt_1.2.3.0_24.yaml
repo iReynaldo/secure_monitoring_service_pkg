@@ -1,0 +1,31 @@
+all_ATTACKER_SUCCESS_1.2.3.0/24: 3
+all_ATTACKER_SUCCESS_perc_1.2.3.0/24: 30.0
+all_VICTIM_SUCCESS_1.2.3.0/24: 7
+all_VICTIM_SUCCESS_perc_1.2.3.0/24: 70.0
+avoid_list_for_1.2.3.0/24:
+- 6
+- 666
+etc_BGP Simple: 5
+etc_BGP Simple_ATTACKER_SUCCESS_1.2.3.0/24: 1
+etc_BGP Simple_ATTACKER_SUCCESS_percent_1.2.3.0/24: 20.0
+etc_BGP Simple_VICTIM_SUCCESS_1.2.3.0/24: 4
+etc_BGP Simple_VICTIM_SUCCESS_percent_1.2.3.0/24: 80.0
+etc_ROV V4 Lite: 1
+etc_ROV V4 Lite_VICTIM_SUCCESS_1.2.3.0/24: 1
+etc_ROV V4 Lite_VICTIM_SUCCESS_percent_1.2.3.0/24: 100.0
+relay_prefixes:
+  3: 1.1.1.0/24
+relay_usage:
+  666: !!set
+    9: null
+set: true
+stubs_or_mh_BGP Simple: 2
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_1.2.3.0/24: 1
+stubs_or_mh_BGP Simple_ATTACKER_SUCCESS_percent_1.2.3.0/24: 50.0
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_1.2.3.0/24: 1
+stubs_or_mh_BGP Simple_VICTIM_SUCCESS_percent_1.2.3.0/24: 50.0
+stubs_or_mh_ROV V4 Lite: 2
+stubs_or_mh_ROV V4 Lite_ATTACKER_SUCCESS_1.2.3.0/24: 1
+stubs_or_mh_ROV V4 Lite_ATTACKER_SUCCESS_percent_1.2.3.0/24: 50.0
+stubs_or_mh_ROV V4 Lite_VICTIM_SUCCESS_1.2.3.0/24: 1
+stubs_or_mh_ROV V4 Lite_VICTIM_SUCCESS_percent_1.2.3.0/24: 50.0

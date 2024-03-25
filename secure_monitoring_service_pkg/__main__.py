@@ -23,6 +23,7 @@ from secure_monitoring_service_pkg import ArtemisSubprefixHijackScenario
 from secure_monitoring_service_pkg import V4SuperprefixPrefixHijack
 from secure_monitoring_service_pkg import V4PrefixHijackScenario
 from secure_monitoring_service_pkg import RelayPrefixHijack
+from secure_monitoring_service_pkg import V4Scenario
 from secure_monitoring_service_pkg import V4OriginHijack
 from secure_monitoring_service_pkg import CDN
 from secure_monitoring_service_pkg import Peer
@@ -49,6 +50,10 @@ ARTEMIS_SUBPREFIX_HIJACK = "ArtemisSubprefixHijackScenario"
 SUPERPREFIX_PLUS_PREFIX_HIJACK = "V4SuperprefixPrefixHijack"
 RELAY_PREFIX_HIJACK = "RelayPrefixHijack"
 ORIGIN_HIJACK = "V4OriginHijack"
+
+ATTACK_RELAY_PREFIX_HIJACK = 'prefix_hijack'
+ATTACK_RELAY_ORIGIN_HIJACK = 'origin_hijack'
+
 
 ALL_PERCENTAGES = [SpecialPercentAdoptions.ONLY_ONE, 0.01, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.99]
 
@@ -110,7 +115,8 @@ def process_scenario_args(args):
         "special_static_as_class": None if not args.replace_rov_ases_with else POLICIES.get(
             args.replace_rov_ases_with[0]),
         "probabilistic_rov_adoption": args.probabilistic_rov_adoption,
-        "allow_rov_turnover": args.allow_rov_turnover
+        "allow_rov_turnover": args.allow_rov_turnover,
+        "attack_relays_type": args.attack_relays_type[0]
     }
     # Special Settings for some scenarios
     if args.scenario == AUTOIMMUNE:
@@ -190,6 +196,8 @@ def process_other_args(args):
             scenario_type = 'cdnOnly'
         elif args.scenario == AUTOIMMUNE:
             scenario_type = args.autoimmune_attack_type
+        elif args.attack_relays_type[0] == 'origin_hijack':
+            scenario_type = 'originHijack'
         else:
             scenario_type = 'none'
 
@@ -339,6 +347,13 @@ def parse_args():
                         action="store_true",
                         default=False,
                         help='Whether or not to attack relays.')
+    parser.add_argument('--attack_relays_type',
+                        type=str,
+                        nargs=1,
+                        default=ATTACK_RELAY_PREFIX_HIJACK,
+                        help='The relays that can be used',
+                        choices=['prefix_hijack',
+                                 'origin_hijack'])
     parser.add_argument('--fraction_of_peer_ases_to_attack',
                         type=float,
                         nargs='?',

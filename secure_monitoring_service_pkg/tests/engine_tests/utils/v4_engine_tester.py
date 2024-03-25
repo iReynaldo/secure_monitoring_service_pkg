@@ -14,6 +14,9 @@ from secure_monitoring_service_pkg.simulation_framework.subgraphs.v4_subgraph im
 from ....simulation_framework.scenarios.hijack_scenarios import SubprefixAutoImmuneScenario
 from ....simulation_framework.scenarios.hijack_scenarios import V4SubprefixHijackScenario
 from ....simulation_framework.scenarios.hijack_scenarios import ArtemisSubprefixHijackScenario
+from secure_monitoring_service_pkg.simulation_framework.scenarios.v4_scenario import ATTACK_RELAY_PREFIX_HIJACK
+from secure_monitoring_service_pkg.simulation_framework.scenarios.v4_scenario import ATTACK_RELAY_ORIGIN_HIJACK
+
 
 
 class V4EngineTester(EngineTester):
@@ -64,8 +67,13 @@ class V4EngineTester(EngineTester):
                                                                traceback_asn_outcomes,
                                                                shared_data,
                                                                track_relay_usage=True)
-            elif isinstance(scenario, ArtemisSubprefixHijackScenario):
-                if V4Subgraph()._origin_can_reach_relay(engine, scenario):
+            elif isinstance(scenario, ArtemisSubprefixHijackScenario) and scenario.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
+                V4Subgraph()._count_origin_can_reach_relay(engine, scenario)
+                scenario.cdn_outcomes_computed = True
+                outcomes, traceback_asn_outcomes = \
+                    V4Subgraph()._get_engine_outcomes(engine, scenario, attacker_ann)
+            elif isinstance(scenario, ArtemisSubprefixHijackScenario) and V4Subgraph()._count_origin_can_reach_relay(engine, scenario) > 0:
+                if V4Subgraph()._count_origin_can_reach_relay(engine, scenario) > 0:
                     # TODO: Maybe this logic can be improved, but it's testable now
                     scenario.a_cdn_has_successful_connection_to_origin = True
                     outcomes, traceback_asn_outcomes = \

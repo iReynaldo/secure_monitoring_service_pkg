@@ -34,18 +34,21 @@ pio.renderers.default = 'browser'
 bgp_immunity_policy = 'v4' # 'rovppo'
 
 # Data configuration
-relay = 'verisign'
-rov_setting = 'none'
-num_trials = 12000
-tunneled = True
+relay = 'cloudflare'
+rov_setting = 'real'
+# num_trials = 12000
+# num_trials = 2000
+# tunneled = True
 
 # TODO: Create a function to read the files into dataframes
 # Load data
-data_file_path = f'../../data/graphs/metadata/V4SubprefixHijackScenario_scenario_none_type_others_policies_{rov_setting}_rov_0_hash_False_probe_{tunneled}_tunnel_{relay}_relay_False_attackRelay_1_attacker_{num_trials}_trials_full_percentages_agg_as_metadata.csv'
+data_file_path = f'/media/uconn/Seagate Backup Plus Drive/Archives/school_stuff/bgp_immunity/metadata/V4SubprefixHijackScenario_scenario_none_type_v4_policies_real_rov_20_conf_True_turnover_0_hash_False_probe_True_tunnel_cloudflare_relay_False_attackRelay_5_attacker_500_trials_full_percentages_agg_as_metadata.csv'
+# data_file_path = f'../../data/graphs/metadata/V4SubprefixHijackScenario_scenario_none_type_others_policies_real_rov_20_conf_True_turnover_0_hash_False_probe_True_tunnel_{relay}_relay_False_attackRelay_5_attacker_{num_trials}_trials_full_percentages_agg_as_metadata.csv'
+# data_file_path = f'../../data/graphs/metadata/V4SubprefixHijackScenario_scenario_none_type_others_policies_{rov_setting}_rov_0_hash_False_probe_{tunneled}_tunnel_{relay}_relay_False_attackRelay_1_attacker_{num_trials}_trials_full_percentages_agg_as_metadata.csv'
 data = pd.read_csv(data_file_path, delimiter='\t')
 
-special_data_file_path = '../../data/graphs/metadata/V4SubprefixHijackScenario_scenario_none_type_others_policies_none_rov_0_hash_False_probe_True_tunnel_neustar_relay_False_attackRelay_1_attacker_16000_trials_[0.99]_percentages_agg_as_metadata.csv'
-special_data = pd.read_csv(special_data_file_path, delimiter='\t')
+# special_data_file_path = '../../data/graphs/metadata/V4SubprefixHijackScenario_scenario_none_type_others_policies_none_rov_0_hash_False_probe_True_tunnel_neustar_relay_False_attackRelay_1_attacker_16000_trials_[0.99]_percentages_agg_as_metadata.csv'
+# special_data = pd.read_csv(special_data_file_path, delimiter='\t')
 
 #%% Preview Data Columns
 data.columns.to_list()
@@ -54,11 +57,11 @@ data.columns.to_list()
 # Preprocessing
 ################################
 
-# Analysis of 99% point
-num_adopting_ases_at_99_perc = dm.num_stubs_of_multihomed_ases * 0.99
-num_non_adopting_ases_at_99_perc =  dm.num_stubs_of_multihomed_ases - num_adopting_ases_at_99_perc
+# # Analysis of 99% point
+# num_adopting_ases_at_99_perc = dm.num_stubs_of_multihomed_ases * 0.99
+# num_non_adopting_ases_at_99_perc =  dm.num_stubs_of_multihomed_ases - num_adopting_ases_at_99_perc
 
-special_data['all_reasons'] = special_data.empty_rib.fillna(0) + special_data.no_providers.fillna(0) + special_data.no_legit_origin_prefix.fillna(0)
+# special_data['all_reasons'] = special_data.empty_rib.fillna(0) + special_data.no_providers.fillna(0) + special_data.no_legit_origin_prefix.fillna(0)
 
 
 #%%-----------------------------
@@ -267,7 +270,8 @@ for adoption_setting in (True, False):
         adopting_str = 'non_adopting_' if not adoption_setting else ''
         policy_dir = 'immunity' if bgp_immunity_policy == 'rovppo' else 'pheme'
         
-        plt.savefig(f"./immunity_paper_plots/{policy_dir}/subprefix/rov_{rov_setting}/{adopting_str}incentive_analysis_{relay}_{metric}.pdf", bbox_inches='tight')
-        plt.savefig(f"./immunity_paper_png_plots/{policy_dir}/subprefix/rov_{rov_setting}/{adopting_str}incentive_analysis_{relay}_{metric}.png", bbox_inches='tight')
-        plt.close(_fig)
+        plt.savefig(f"./minerva_plots/others/{adopting_str}incentive_analysis_{relay}_{metric}.pdf", bbox_inches='tight')
+        # plt.savefig(f"./immunity_paper_plots/{policy_dir}/subprefix/rov_{rov_setting}/{adopting_str}incentive_analysis_{relay}_{metric}.pdf", bbox_inches='tight')
+        # plt.savefig(f"./immunity_paper_png_plots/{policy_dir}/subprefix/rov_{rov_setting}/{adopting_str}incentive_analysis_{relay}_{metric}.png", bbox_inches='tight')
+        # plt.close(_fig)
         

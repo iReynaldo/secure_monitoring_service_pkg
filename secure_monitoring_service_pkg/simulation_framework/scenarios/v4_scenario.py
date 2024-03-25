@@ -32,6 +32,8 @@ NO_RELAY_SETTING = "no_relay"
 
 RELAY_PREFIX = "7.7.7.0/24"
 
+ATTACK_RELAY_PREFIX_HIJACK = 'prefix_hijack'
+ATTACK_RELAY_ORIGIN_HIJACK = 'origin_hijack'
 
 ################################
 # Functions
@@ -59,7 +61,7 @@ class V4Scenario(Scenario):
     def __init__(self, *args, relay_asns=None, attack_relays=False, fraction_of_peer_ases_to_attack=0.5,
                  assume_relays_are_reachable=False, tunnel_customers_traffic=False,
                  probe_data_plane=False, special_static_as_class=None, probabilistic_rov_adoption=False,
-                 allow_rov_turnover=False, **kwargs):
+                 allow_rov_turnover=False, attack_relays_type=ATTACK_RELAY_PREFIX_HIJACK, **kwargs):
         super(V4Scenario, self).__init__(*args, **kwargs)
         self.has_rovsms_ases = False
         self.trusted_server_ref = None
@@ -70,6 +72,7 @@ class V4Scenario(Scenario):
         self.tunnel_customers_traffic = tunnel_customers_traffic
         self.assume_relays_are_reachable = assume_relays_are_reachable
         self.attack_relays = attack_relays
+        self.attack_relays_type = attack_relays_type
         self.fraction_of_peer_ases_to_attack = fraction_of_peer_ases_to_attack
         self.probe_data_plane = probe_data_plane
         self.special_static_as_class = special_static_as_class if special_static_as_class else RealROVSimpleAS
@@ -105,6 +108,24 @@ class V4Scenario(Scenario):
             return True
         else:
             return False
+
+    def _seed_engine_announcements(self, engine: SimulationEngine, *args):
+        """Seeds announcement at the proper AS
+
+        Since this is the simulator engine, we should
+        never have to worry about overlapping announcements
+        """
+
+        for ann in self.announcements:
+            assert ann.seed_asn is not None
+            # Get the AS object to seed at
+            # Must ignore type because it doesn't see assert above
+            obj_to_seed = engine.as_dict[ann.seed_asn]  # type: ignore
+            # Ensure we aren't replacing anything
+            err = "Seeding conflict"
+            assert obj_to_seed._local_rib.get_ann(ann.prefix) is None, err
+            # Seed by placing in the local rib
+            obj_to_seed._local_rib.add_ann(ann)
 
     @property
     def _default_adopters(self) -> Set[int]:
@@ -316,18 +337,29 @@ class V4Scenario(Scenario):
         victim_announcements = set()
         for ann in self.announcements:
             for victim_asn in self.victim_asns:
-                if victim_asn == ann.as_path[-1]:
+                if victim_asn == ann.as_path[-1] and not (self.attacker_asns & set(ann.as_path)):
                     victim_announcements.add(ann)
         return victim_announcements
 
     def create_attacker_relay_announcement(self, prefix, seed_asn, roa_origin):
-        return self.AnnCls(prefix=prefix,
-                           as_path=(seed_asn,),
-                           timestamp=Timestamps.ATTACKER.value,
-                           seed_asn=seed_asn,
-                           roa_valid_length=True,
-                           roa_origin=roa_origin,
-                           recv_relationship=Relationships.ORIGIN)
+        if self.attack_relays_type == ATTACK_RELAY_PREFIX_HIJACK:
+            return self.AnnCls(prefix=prefix,
+                               as_path=(seed_asn,),
+                               timestamp=Timestamps.ATTACKER.value,
+                               seed_asn=seed_asn,
+                               roa_valid_length=True,
+                               roa_origin=roa_origin,
+                               recv_relationship=Relationships.ORIGIN)
+        elif self.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
+            return self.AnnCls(prefix=prefix,
+                               as_path=(seed_asn[0], seed_asn[1]),
+                               timestamp=Timestamps.ATTACKER.value,
+                               seed_asn=seed_asn[0],
+                               roa_valid_length=True,
+                               roa_origin=seed_asn[1],
+                               recv_relationship=Relationships.ORIGIN)
+        else:
+            raise ValueError(f"Invalid attack_relays_type option specified: {self.attack_relays_type}")
 
     def generate_relay_announcements(self, providers_dict=None):
         anns = list()
@@ -348,13 +380,32 @@ class V4Scenario(Scenario):
                     providers_dict[relay_prefix] = relay_asn  # This is not really needed for autoimmune attack
             # Add Attacker announcements for relays
             if self.attack_relays:
+                # For Origin Hijack Case
+                relay_i = 0
+                relay_len = len(self.relay_asns)
+                relay_asns_list = list(self.relay_asns)
+
                 if self.relay_setting == CDN_RELAY_SETTING:
                     for attacker_asn in self.attacker_asns:
-                        anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
+                        if self.attack_relays_type == ATTACK_RELAY_PREFIX_HIJACK:
+                            anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, attacker_asn, roa_origin))
+                        elif self.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
+                            anns.append(self.create_attacker_relay_announcement(RELAY_PREFIX, (attacker_asn, relay_asns_list[relay_i % relay_len]), roa_origin))
+                            relay_i += 1
+                        else:
+                            raise ValueError(f"Invalid attack_relays_type option specified: {self.attack_relays_type}")
                 else:
                     for attacker_asn in self.attacker_asns:
                         for relay_prefix in select_fraction_from_set(self.relay_prefixes.values(), self.fraction_of_peer_ases_to_attack):
-                            anns.append(self.create_attacker_relay_announcement(relay_prefix, attacker_asn, roa_origin))
+                            if self.attack_relays_type == ATTACK_RELAY_PREFIX_HIJACK:
+                                anns.append(self.create_attacker_relay_announcement(relay_prefix, attacker_asn, roa_origin))
+                            elif self.attack_relays_type == ATTACK_RELAY_ORIGIN_HIJACK:
+                                anns.append(
+                                    self.create_attacker_relay_announcement(relay_prefix, (attacker_asn, relay_asns_list[relay_i % relay_len]), roa_origin))
+                                relay_i += 1
+                            else:
+                                raise ValueError(
+                                    f"Invalid attack_relays_type option specified: {self.attack_relays_type}")
         return anns
 
     def get_victim_asn(self, **kwargs):
